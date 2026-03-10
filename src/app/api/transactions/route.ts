@@ -10,17 +10,33 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get all transactions (no row limit)
-    const { data: transactions, error } = await supabase
-      .from('transactions')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('date', { ascending: false })
-      .limit(10000)
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    // Get all transactions - fetch in batches to bypass 1000 row limit
+    type TransactionRow = { id: string; date: string; description: string; amount: number; type: string; user_id: string }
+    let allTransactions: TransactionRow[] = []
+    let from = 0
+    const batchSize = 1000
+    
+    while (true) {
+      const { data: batch, error: batchError } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false })
+        .range(from, from + batchSize - 1)
+      
+      if (batchError) {
+        return NextResponse.json({ error: batchError.message }, { status: 500 })
+      }
+      
+      if (!batch || batch.length === 0) break
+      
+      allTransactions = [...allTransactions, ...batch]
+      
+      if (batch.length < batchSize) break
+      from += batchSize
     }
+    
+    const transactions = allTransactions
 
     // Get category mappings
     const { data: mappings } = await supabase
