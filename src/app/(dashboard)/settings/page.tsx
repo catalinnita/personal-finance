@@ -1,0 +1,116 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Loader2, Check } from 'lucide-react'
+
+type Currency = {
+  code: string
+  symbol: string
+  name: string
+}
+
+type Settings = {
+  currency: string
+}
+
+export default function SettingsPage() {
+  const [settings, setSettings] = useState<Settings | null>(null)
+  const [currencies, setCurrencies] = useState<Currency[]>([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    fetchSettings()
+  }, [])
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings')
+      const data = await response.json()
+      setSettings(data.settings)
+      setCurrencies(data.currencies || [])
+    } catch (error) {
+      console.error('Error fetching settings:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCurrencyChange = async (currency: string) => {
+    setSaving(true)
+    setSaved(false)
+    
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currency }),
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setSettings(data.settings)
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2000)
+      }
+    } catch (error) {
+      console.error('Error saving settings:', error)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-2xl">
+      <h1 className="text-2xl font-bold text-white mb-6">Settings</h1>
+
+      <div className="bg-slate-800 rounded-xl p-6">
+        <div className="space-y-6">
+          {/* Currency Setting */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Currency
+            </label>
+            <p className="text-sm text-slate-400 mb-3">
+              Select your preferred currency for displaying amounts
+            </p>
+            <div className="relative">
+              <select
+                value={settings?.currency || 'USD'}
+                onChange={(e) => handleCurrencyChange(e.target.value)}
+                disabled={saving}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer disabled:opacity-50"
+              >
+                {currencies.map((currency) => (
+                  <option key={currency.code} value={currency.code}>
+                    {currency.symbol} - {currency.name} ({currency.code})
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                {saving ? (
+                  <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+                ) : saved ? (
+                  <Check className="w-5 h-5 text-green-400" />
+                ) : (
+                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
