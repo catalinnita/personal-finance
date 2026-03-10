@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, DragEvent } from 'react'
-import { Loader2, GripVertical, X } from 'lucide-react'
+import { Loader2, GripVertical, X, AlertCircle } from 'lucide-react'
 
 type Category = {
   id: string
@@ -24,11 +24,13 @@ const DEFAULT_CATEGORIES = [
 export default function MappingsPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [mappings, setMappings] = useState<CategoryMapping[]>([])
+  const [unmappedDescriptions, setUnmappedDescriptions] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   
   const [draggedItem, setDraggedItem] = useState<string | null>(null)
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showUnmapped, setShowUnmapped] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -36,16 +38,26 @@ export default function MappingsPage() {
 
   const fetchData = async () => {
     try {
-      const [categoriesRes, mappingsRes] = await Promise.all([
+      const [categoriesRes, mappingsRes, transactionsRes] = await Promise.all([
         fetch('/api/categories'),
         fetch('/api/category-mappings'),
+        fetch('/api/transactions'),
       ])
       
       const categoriesData = await categoriesRes.json()
       const mappingsData = await mappingsRes.json()
+      const transactionsData = await transactionsRes.json()
       
       if (categoriesData.categories) setCategories(categoriesData.categories)
       if (mappingsData.mappings) setMappings(mappingsData.mappings)
+      
+      // Find unmapped descriptions
+      if (transactionsData.transactions && mappingsData.mappings) {
+        const mappedPatterns = new Set(mappingsData.mappings.map((m: CategoryMapping) => m.description_pattern))
+        const allDescriptions = [...new Set(transactionsData.transactions.map((t: { description: string }) => t.description))] as string[]
+        const unmapped = allDescriptions.filter(d => !mappedPatterns.has(d))
+        setUnmappedDescriptions(unmapped.sort())
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -70,6 +82,8 @@ export default function MappingsPage() {
           ...prev.filter(m => m.description_pattern !== descriptionPattern), 
           data.mapping
         ])
+        // Remove from unmapped if it was there
+        setUnmappedDescriptions(prev => prev.filter(d => d !== descriptionPattern))
       }
     } catch (error) {
       console.error('Error updating mapping:', error)
@@ -173,7 +187,58 @@ export default function MappingsPage() {
         />
       </div>
 
-      {mappings.length === 0 ? (
+      {/* Unmapped Descriptions Section */}
+      {unmappedDescriptions.length > 0 && showUnmapped && (
+        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-yellow-400" />
+              <h2 className="text-lg font-semibold text-yellow-400">
+                Unmapped Descriptions ({unmappedDescriptions.length})
+              </h2>
+            </div>
+            <button
+              onClick={() => setShowUnmapped(false)}
+              className="text-slate-400 hover:text-white text-sm"
+            >
+              Hide
+            </button>
+          </div>
+          <p className="text-slate-400 text-sm mb-3">
+            These descriptions don&apos;t have a category mapping. Drag them to a category below.
+          </p>
+          <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+            {unmappedDescriptions
+              .filter(d => !searchTerm || d.toLowerCase().includes(searchTerm.toLowerCase()))
+              .map(description => (
+                <div
+                  key={description}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, description)}
+                  onDragEnd={handleDragEnd}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg cursor-grab active:cursor-grabbing transition-all text-sm ${
+                    draggedItem === description ? 'opacity-50 scale-95' : ''
+                  }`}
+                >
+                  <GripVertical className="w-3 h-3 text-slate-500" />
+                  <span className="text-slate-300">{description}</span>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {!showUnmapped && unmappedDescriptions.length > 0 && (
+        <button
+          onClick={() => setShowUnmapped(true)}
+          className="mb-6 flex items-center gap-2 text-yellow-400 hover:text-yellow-300 text-sm"
+        >
+          <AlertCircle className="w-4 h-4" />
+          Show {unmappedDescriptions.length} unmapped descriptions
+        </button>
+      )}
+
+      {mappings.length === 0 && unmappedDescriptions.length === 0 ? (
         <div className="bg-slate-800 rounded-xl p-8 text-center">
           <p className="text-slate-400">No mappings yet. Run <code className="bg-slate-700 px-2 py-1 rounded">npm run db:seed-mappings</code> to populate from transactions.</p>
         </div>
