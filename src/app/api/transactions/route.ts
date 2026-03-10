@@ -10,12 +10,13 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get transactions
+    // Get all transactions (no row limit)
     const { data: transactions, error } = await supabase
       .from('transactions')
       .select('*')
       .eq('user_id', user.id)
       .order('date', { ascending: false })
+      .limit(10000)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
