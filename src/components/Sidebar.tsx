@@ -2,9 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Settings, LogOut } from 'lucide-react'
+import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Settings, LogOut, Menu, X, Sun, Moon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useSidebar } from '@/context/SidebarContext'
+import { useTheme } from '@/context/ThemeContext'
 
 const navItems = [
   { href: '/upload', label: 'Upload Statement', icon: Upload },
@@ -20,45 +22,101 @@ export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } = useSidebar()
+  const { theme, toggleTheme } = useTheme()
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
   }
 
-  return (
-    <aside className="w-64 bg-slate-900 min-h-screen p-6 flex flex-col">
-      <div className="mb-8">
-        <h1 className="text-xl font-bold text-white">Personal Finance</h1>
-      </div>
-      
-      <nav className="flex-1 space-y-2">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.label}
-            </Link>
-          )
-        })}
-      </nav>
+  const showFull = isExpanded || isHovered || isMobileOpen
 
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+  return (
+    <>
+      {/* Mobile backdrop */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={toggleMobileSidebar}
+        />
+      )}
+      
+      <aside 
+        className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out z-50 flex flex-col
+          ${showFull ? 'w-[280px]' : 'w-[80px]'}
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0
+        `}
+        onMouseEnter={() => !isExpanded && setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <LogOut className="w-5 h-5" />
-        Logout
-      </button>
-    </aside>
+        {/* Logo */}
+        <div className={`py-6 px-5 flex items-center ${!showFull ? 'justify-center' : ''}`}>
+          {showFull ? (
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Personal Finance</h1>
+          ) : (
+            <span className="text-xl font-bold text-brand-500">PF</span>
+          )}
+        </div>
+        
+        {/* Navigation */}
+        <nav className="flex-1 px-4 overflow-y-auto no-scrollbar">
+          <div className="flex flex-col gap-1">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`menu-item ${isActive ? 'menu-item-active' : 'menu-item-inactive'} ${!showFull ? 'justify-center' : ''}`}
+                >
+                  <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                  {showFull && <span>{item.label}</span>}
+                </Link>
+              )
+            })}
+          </div>
+        </nav>
+
+        {/* Bottom section */}
+        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-800 space-y-1">
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className={`menu-item menu-item-inactive ${!showFull ? 'justify-center' : ''}`}
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            ) : (
+              <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            )}
+            {showFull && <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
+          </button>
+          
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            className={`menu-item menu-item-inactive ${!showFull ? 'justify-center' : ''}`}
+          >
+            <LogOut className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            {showFull && <span>Logout</span>}
+          </button>
+        </div>
+      </aside>
+    </>
+  )
+}
+
+export function MobileMenuButton() {
+  const { isMobileOpen, toggleMobileSidebar } = useSidebar()
+  
+  return (
+    <button
+      onClick={toggleMobileSidebar}
+      className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+    >
+      {isMobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+    </button>
   )
 }

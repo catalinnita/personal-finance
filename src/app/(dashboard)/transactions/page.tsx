@@ -112,22 +112,22 @@ export default function TransactionsPage() {
   if (loading || currencyLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
       </div>
     )
   }
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Transactions</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transactions</h1>
         
         {years.length > 0 && (
           <div className="flex items-center gap-3">
             <select
               value={selectedYear ?? ''}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
             >
               {years.map(year => (
                 <option key={year} value={year}>{year}</option>
@@ -137,7 +137,7 @@ export default function TransactionsPage() {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-              className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
             >
               {MONTHS.map(month => (
                 <option key={month.value} value={month.value}>{month.label}</option>
@@ -148,56 +148,58 @@ export default function TransactionsPage() {
       </div>
 
       {filteredTransactions.length === 0 ? (
-        <div className="bg-slate-800 rounded-xl p-8 text-center">
-          <p className="text-slate-400">No transactions yet. Upload a statement to get started.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+          <p className="text-gray-500 dark:text-gray-400">No transactions yet. Upload a statement to get started.</p>
         </div>
       ) : (
-        <div className="bg-slate-800 rounded-xl overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-slate-700">
-                <th className="text-left py-4 px-6 text-slate-400 font-medium">Date</th>
-                <th className="text-left py-4 px-6 text-slate-400 font-medium">Description</th>
-                <th className="text-left py-4 px-6 text-slate-400 font-medium">Category</th>
-                <th className="text-right py-4 px-6 text-slate-400 font-medium">Amount</th>
-                <th className="text-right py-4 px-6 text-slate-400 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransactions.map((t) => (
-                <tr key={t.id} className="border-b border-slate-700/50 hover:bg-slate-700/30">
-                  <td className="py-4 px-6 text-slate-300">{t.date}</td>
-                  <td className="py-4 px-6 text-white">{t.description}</td>
-                  <td className="py-4 px-6">
-                    <span className="px-2 py-1 bg-slate-700 rounded text-sm text-slate-300">
-                      {t.category}
-                    </span>
-                  </td>
-                  <td className={`py-4 px-6 text-right font-medium ${
-                    t.type === 'income' ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {t.type === 'income' ? '+' : '-'}{formatAmount(t.amount)}
-                  </td>
-                  <td className="py-4 px-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => handleEdit(t)}
-                        className="p-2 text-slate-400 hover:text-white hover:bg-slate-600 rounded-lg transition-colors"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(t.id)}
-                        className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+        <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                  <th className="text-left py-4 px-6 text-gray-500 dark:text-gray-400 font-medium text-sm">Date</th>
+                  <th className="text-left py-4 px-6 text-gray-500 dark:text-gray-400 font-medium text-sm">Description</th>
+                  <th className="text-left py-4 px-6 text-gray-500 dark:text-gray-400 font-medium text-sm">Category</th>
+                  <th className="text-right py-4 px-6 text-gray-500 dark:text-gray-400 font-medium text-sm">Amount</th>
+                  <th className="text-right py-4 px-6 text-gray-500 dark:text-gray-400 font-medium text-sm">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredTransactions.map((t) => (
+                  <tr key={t.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                    <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">{t.date}</td>
+                    <td className="py-4 px-6 text-gray-900 dark:text-white text-sm">{t.description}</td>
+                    <td className="py-4 px-6">
+                      <span className="px-2.5 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-sm text-gray-600 dark:text-gray-300">
+                        {t.category}
+                      </span>
+                    </td>
+                    <td className={`py-4 px-6 text-right font-medium text-sm ${
+                      t.type === 'income' ? 'text-success-500' : 'text-error-500'
+                    }`}>
+                      {t.type === 'income' ? '+' : '-'}{formatAmount(t.amount)}
+                    </td>
+                    <td className="py-4 px-6 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => handleEdit(t)}
+                          className="p-2 text-gray-400 hover:text-brand-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(t.id)}
+                          className="p-2 text-gray-400 hover:text-error-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
