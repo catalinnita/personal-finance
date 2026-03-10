@@ -89,17 +89,17 @@ export default function ManageCategoriesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
       </div>
     )
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Manage Categories</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Manage Categories</h1>
 
-      <div className="bg-slate-800 rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Custom Categories</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Custom Categories</h2>
         
         {/* Add new category */}
         <div className="flex gap-3 mb-6">
@@ -108,19 +108,19 @@ export default function ManageCategoriesPage() {
             value={newCategoryName}
             onChange={(e) => setNewCategoryName(e.target.value)}
             placeholder="Category name"
-            className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
           />
           <select
             value={newCategoryType}
             onChange={(e) => setNewCategoryType(e.target.value as 'income' | 'expense')}
-            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
           >
             <option value="expense">Expense</option>
             <option value="income">Income</option>
           </select>
           <button
             onClick={handleAddCategory}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add
@@ -130,36 +130,36 @@ export default function ManageCategoriesPage() {
         {/* Categories list */}
         <div className="space-y-2">
           {categories.map((category) => (
-            <div key={category.id} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+            <div key={category.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
               {editingCategory?.id === category.id ? (
                 <div className="flex items-center gap-3 flex-1">
                   <input
                     type="text"
                     value={editingCategory.name}
                     onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
-                    className="flex-1 px-3 py-1 bg-slate-600 border border-slate-500 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-3 py-1.5 bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                   />
                   <select
                     value={editingCategory.type}
                     onChange={(e) => setEditingCategory({ ...editingCategory, type: e.target.value as 'income' | 'expense' })}
-                    className="px-3 py-1 bg-slate-600 border border-slate-500 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="px-3 py-1.5 bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                   >
                     <option value="expense">Expense</option>
                     <option value="income">Income</option>
                   </select>
-                  <button onClick={handleUpdateCategory} className="p-1 text-green-400 hover:text-green-300">
+                  <button onClick={handleUpdateCategory} className="p-1 text-success-500 hover:text-success-400">
                     <Save className="w-4 h-4" />
                   </button>
-                  <button onClick={() => setEditingCategory(null)} className="p-1 text-slate-400 hover:text-white">
+                  <button onClick={() => setEditingCategory(null)} className="p-1 text-gray-400 hover:text-gray-900 dark:hover:text-white">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center gap-3">
-                    <span className="text-white">{category.name}</span>
+                    <span className="text-gray-900 dark:text-white">{category.name}</span>
                     <span className={`text-xs px-2 py-0.5 rounded ${
-                      category.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                      category.type === 'income' ? 'bg-success-100 dark:bg-success-500/20 text-success-600 dark:text-success-400' : 'bg-error-100 dark:bg-error-500/20 text-error-600 dark:text-error-400'
                     }`}>
                       {category.type}
                     </span>
@@ -167,13 +167,13 @@ export default function ManageCategoriesPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setEditingCategory(category)}
-                      className="p-2 text-slate-400 hover:text-white hover:bg-slate-600 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-brand-500 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors"
                     >
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteCategory(category.id)}
-                      className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-error-500 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -183,7 +183,7 @@ export default function ManageCategoriesPage() {
             </div>
           ))}
           {categories.length === 0 && (
-            <p className="text-slate-400 text-center py-4">No custom categories yet</p>
+            <p className="text-gray-500 dark:text-gray-400 text-center py-4">No custom categories yet</p>
           )}
         </div>
       </div>

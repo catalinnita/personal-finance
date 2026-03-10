@@ -84,7 +84,7 @@ export default function BalancePage() {
   if (loading || currencyLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
       </div>
     )
   }
@@ -92,12 +92,12 @@ export default function BalancePage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Balance Overview</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Balance Overview</h1>
         {years.length > 0 && (
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
           >
             {years.map(year => (
               <option key={year} value={year}>{year}</option>
@@ -107,59 +107,59 @@ export default function BalancePage() {
       </div>
 
       {transactions.length === 0 ? (
-        <div className="bg-slate-800 rounded-xl p-8 text-center">
-          <p className="text-slate-400">No transactions yet. Upload a statement to see your balance.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+          <p className="text-gray-500 dark:text-gray-400">No transactions yet. Upload a statement to see your balance.</p>
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-slate-800 rounded-xl p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-green-500/20 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-green-400" />
+                <div className="p-3 bg-success-500/20 rounded-lg">
+                  <TrendingUp className="w-6 h-6 text-success-500" />
                 </div>
-                <span className="text-slate-400">Total Income</span>
+                <span className="text-gray-500 dark:text-gray-400">Total Income</span>
               </div>
-              <p className="text-3xl font-bold text-green-400">
+              <p className="text-3xl font-bold text-success-500">
                 {formatAmount(yearlyData.income)}
               </p>
             </div>
 
-            <div className="bg-slate-800 rounded-xl p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-red-500/20 rounded-lg">
-                  <TrendingDown className="w-6 h-6 text-red-400" />
+                <div className="p-3 bg-error-500/20 rounded-lg">
+                  <TrendingDown className="w-6 h-6 text-error-500" />
                 </div>
-                <span className="text-slate-400">Total Expenses</span>
+                <span className="text-gray-500 dark:text-gray-400">Total Expenses</span>
               </div>
-              <p className="text-3xl font-bold text-red-400">
+              <p className="text-3xl font-bold text-error-500">
                 {formatAmount(yearlyData.expenses)}
               </p>
             </div>
 
-            <div className="bg-slate-800 rounded-xl p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-blue-500/20 rounded-lg">
-                  <PiggyBank className="w-6 h-6 text-blue-400" />
+                <div className="p-3 bg-brand-500/20 rounded-lg">
+                  <PiggyBank className="w-6 h-6 text-brand-500" />
                 </div>
-                <span className="text-slate-400">Net Savings</span>
+                <span className="text-gray-500 dark:text-gray-400">Net Savings</span>
               </div>
-              <p className={`text-3xl font-bold ${yearlyData.savings >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <p className={`text-3xl font-bold ${yearlyData.savings >= 0 ? 'text-success-500' : 'text-error-500'}`}>
                 {yearlyData.savings >= 0 ? '+' : '-'}{formatAmount(yearlyData.savings)}
               </p>
             </div>
           </div>
 
-          <div className="bg-slate-800 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Monthly Breakdown</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Breakdown</h2>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="text-left py-3 px-4 text-slate-400 font-medium">Month</th>
-                    <th className="text-right py-3 px-4 text-slate-400 font-medium">Income</th>
-                    <th className="text-right py-3 px-4 text-slate-400 font-medium">Expenses</th>
-                    <th className="text-right py-3 px-4 text-slate-400 font-medium">Savings</th>
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th className="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Month</th>
+                    <th className="text-right py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Income</th>
+                    <th className="text-right py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Expenses</th>
+                    <th className="text-right py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Savings</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -167,16 +167,16 @@ export default function BalancePage() {
                     const data = monthlyData[month]
                     if (!data) return null
                     return (
-                      <tr key={month} className="border-b border-slate-700/50">
-                        <td className="py-3 px-4 text-white">{month}</td>
-                        <td className="py-3 px-4 text-right text-green-400">
+                      <tr key={month} className="border-b border-gray-100 dark:border-gray-700/50">
+                        <td className="py-3 px-4 text-gray-900 dark:text-white">{month}</td>
+                        <td className="py-3 px-4 text-right text-success-500">
                           +{formatAmount(data.income)}
                         </td>
-                        <td className="py-3 px-4 text-right text-red-400">
+                        <td className="py-3 px-4 text-right text-error-500">
                           -{formatAmount(data.expenses)}
                         </td>
                         <td className={`py-3 px-4 text-right font-medium ${
-                          data.savings >= 0 ? 'text-green-400' : 'text-red-400'
+                          data.savings >= 0 ? 'text-success-500' : 'text-error-500'
                         }`}>
                           {data.savings >= 0 ? '+' : '-'}{formatAmount(data.savings)}
                         </td>

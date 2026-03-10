@@ -29,7 +29,7 @@ const CATEGORY_COLORS: { [key: string]: string } = {
   Insurance: 'bg-teal-500',
   Education: 'bg-violet-500',
   Travel: 'bg-rose-500',
-  Other: 'bg-slate-500',
+  Other: 'bg-gray-500',
 }
 
 export default function CategoriesPage() {
@@ -91,7 +91,7 @@ export default function CategoriesPage() {
   if (loading || currencyLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
       </div>
     )
   }
@@ -99,12 +99,12 @@ export default function CategoriesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Expenses by Category</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Expenses by Category</h1>
         {years.length > 0 && (
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
           >
             {years.map(year => (
               <option key={year} value={year}>{year}</option>
@@ -114,8 +114,8 @@ export default function CategoriesPage() {
       </div>
 
       {transactions.length === 0 ? (
-        <div className="bg-slate-800 rounded-xl p-8 text-center">
-          <p className="text-slate-400">No transactions yet. Upload a statement to see your expenses.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+          <p className="text-gray-500 dark:text-gray-400">No transactions yet. Upload a statement to see your expenses.</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -127,14 +127,14 @@ export default function CategoriesPage() {
             const sortedCategories = Object.entries(categoryData).sort((a, b) => b[1] - a[1])
 
             return (
-              <div key={month} className="bg-slate-800 rounded-xl p-6">
+              <div key={month} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <PieChart className="w-5 h-5 text-blue-400" />
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <PieChart className="w-5 h-5 text-brand-500" />
                     {month}
                   </h2>
-                  <span className="text-slate-400">
-                    Total: <span className="text-red-400 font-medium">{formatAmount(total)}</span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Total: <span className="text-error-500 font-medium">{formatAmount(total)}</span>
                   </span>
                 </div>
 
@@ -142,17 +142,17 @@ export default function CategoriesPage() {
                 <div className="space-y-3">
                   {sortedCategories.map(([category, amount]) => {
                     const percentage = (amount / total) * 100
-                    const colorClass = CATEGORY_COLORS[category] || 'bg-slate-500'
+                    const colorClass = CATEGORY_COLORS[category] || 'bg-gray-500'
 
                     return (
                       <div key={category}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm text-slate-300">{category}</span>
-                          <span className="text-sm text-slate-400">
+                          <span className="text-sm text-gray-700 dark:text-gray-300">{category}</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
                             {formatAmount(amount)} ({percentage.toFixed(1)}%)
                           </span>
                         </div>
-                        <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div
                             className={`h-full ${colorClass} rounded-full transition-all duration-300`}
                             style={{ width: `${percentage}%` }}
@@ -168,21 +168,21 @@ export default function CategoriesPage() {
 
           {/* Summary table */}
           {allCategories.length > 0 && (
-            <div className="bg-slate-800 rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Category Summary</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Category Summary</h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700">
-                      <th className="text-left py-3 px-2 text-slate-400 font-medium">Category</th>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Category</th>
                       {months.map(month => (
                         monthlyCategories[month] && (
-                          <th key={month} className="text-right py-3 px-2 text-slate-400 font-medium">
+                          <th key={month} className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">
                             {month.substring(0, 3)}
                           </th>
                         )
                       ))}
-                      <th className="text-right py-3 px-2 text-slate-400 font-medium">Total</th>
+                      <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -191,11 +191,11 @@ export default function CategoriesPage() {
                         (sum, monthData) => sum + (monthData[category] || 0), 0
                       )
                       return (
-                        <tr key={category} className="border-b border-slate-700/50">
-                          <td className="py-3 px-2 text-white">{category}</td>
+                        <tr key={category} className="border-b border-gray-100 dark:border-gray-700/50">
+                          <td className="py-3 px-2 text-gray-900 dark:text-white">{category}</td>
                           {months.map(month => (
                             monthlyCategories[month] && (
-                              <td key={month} className="py-3 px-2 text-right text-slate-300">
+                              <td key={month} className="py-3 px-2 text-right text-gray-600 dark:text-gray-300">
                                 {monthlyCategories[month][category] 
                                   ? formatAmount(monthlyCategories[month][category])
                                   : '-'
@@ -203,7 +203,7 @@ export default function CategoriesPage() {
                               </td>
                             )
                           ))}
-                          <td className="py-3 px-2 text-right text-red-400 font-medium">
+                          <td className="py-3 px-2 text-right text-error-500 font-medium">
                             {formatAmount(categoryTotal)}
                           </td>
                         </tr>

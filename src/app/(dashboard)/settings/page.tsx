@@ -64,23 +64,23 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
       </div>
     )
   }
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-white mb-6">Settings</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Settings</h1>
 
-      <div className="bg-slate-800 rounded-xl p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
         <div className="space-y-6">
           {/* Currency Setting */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Currency
             </label>
-            <p className="text-sm text-slate-400 mb-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
               Select your preferred currency for displaying amounts
             </p>
             <div className="relative">
@@ -88,7 +88,7 @@ export default function SettingsPage() {
                 value={settings?.currency || 'USD'}
                 onChange={(e) => handleCurrencyChange(e.target.value)}
                 disabled={saving}
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer disabled:opacity-50"
+                className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 appearance-none cursor-pointer disabled:opacity-50"
               >
                 {currencies.map((currency) => (
                   <option key={currency.code} value={currency.code}>
@@ -98,11 +98,11 @@ export default function SettingsPage() {
               </select>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 {saving ? (
-                  <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+                  <Loader2 className="w-5 h-5 text-brand-500 animate-spin" />
                 ) : saved ? (
-                  <Check className="w-5 h-5 text-green-400" />
+                  <Check className="w-5 h-5 text-success-500" />
                 ) : (
-                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 )}

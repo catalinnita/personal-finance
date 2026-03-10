@@ -121,10 +121,10 @@ export default function UploadPage() {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-2xl font-bold text-white mb-6">Upload Statement</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Upload Statement</h1>
 
-      <div className="bg-slate-800 rounded-xl p-6 mb-6">
-        <div className="border-2 border-dashed border-slate-600 rounded-lg p-8 text-center">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+        <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
           <input
             type="file"
             accept=".csv,.txt,.pdf"
@@ -139,15 +139,15 @@ export default function UploadPage() {
           >
             {files.length > 0 ? (
               <>
-                <FileText className="w-12 h-12 text-blue-400 mb-3" />
-                <p className="text-white font-medium">{files.length} file(s) selected</p>
-                <p className="text-slate-400 text-sm mt-1">Click to change files</p>
+                <FileText className="w-12 h-12 text-brand-500 mb-3" />
+                <p className="text-gray-900 dark:text-white font-medium">{files.length} file(s) selected</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Click to change files</p>
               </>
             ) : (
               <>
-                <Upload className="w-12 h-12 text-slate-400 mb-3" />
-                <p className="text-white font-medium">Drop your statements here</p>
-                <p className="text-slate-400 text-sm mt-1">or click to browse (multiple files supported)</p>
+                <Upload className="w-12 h-12 text-gray-400 mb-3" />
+                <p className="text-gray-900 dark:text-white font-medium">Drop your statements here</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">or click to browse (multiple files supported)</p>
               </>
             )}
           </label>
@@ -156,14 +156,14 @@ export default function UploadPage() {
         {files.length > 0 && !transactions.length && (
           <div className="mt-4 space-y-2">
             {files.map((file, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-slate-400" />
-                  <span className="text-sm text-slate-300">{file.name}</span>
+                  <FileText className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{file.name}</span>
                 </div>
                 <button
                   onClick={() => removeFile(index)}
-                  className="p-1 text-slate-400 hover:text-red-400"
+                  className="p-1 text-gray-400 hover:text-error-500"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -173,7 +173,7 @@ export default function UploadPage() {
         )}
 
         {error && (
-          <div className="mt-4 p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400">
+          <div className="mt-4 p-4 bg-warning-50 dark:bg-warning-500/20 border border-warning-200 dark:border-warning-500/50 rounded-lg text-warning-600 dark:text-warning-400">
             {error}
           </div>
         )}
@@ -182,7 +182,7 @@ export default function UploadPage() {
           <button
             onClick={handleParse}
             disabled={parsing}
-            className="mt-4 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+            className="mt-4 w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white font-medium py-3 px-6 rounded-lg transition-colors"
           >
             {parsing ? (
               <>
@@ -197,16 +197,16 @@ export default function UploadPage() {
       </div>
 
       {transactions.length > 0 && (
-        <div className="bg-slate-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Parsed Transactions ({transactions.length})
             </h2>
             {!saveResult ? (
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 bg-green-600 hover:bg-green-500 disabled:bg-green-800 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                className="flex items-center gap-2 bg-success-500 hover:bg-success-600 disabled:bg-success-400 text-white font-medium py-2 px-4 rounded-lg transition-colors"
               >
                 {saving ? (
                   <>
@@ -218,12 +218,12 @@ export default function UploadPage() {
                 )}
               </button>
             ) : (
-              <div className="flex items-center gap-2 text-green-400">
+              <div className="flex items-center gap-2 text-success-500">
                 <Check className="w-5 h-5" />
                 <span>
                   Saved {saveResult.saved}
                   {saveResult.duplicates > 0 && (
-                    <span className="text-yellow-400 ml-1">
+                    <span className="text-warning-500 ml-1">
                       ({saveResult.duplicates} duplicates skipped)
                     </span>
                   )}
@@ -235,25 +235,25 @@ export default function UploadPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Date</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Description</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Category</th>
-                  <th className="text-right py-3 px-4 text-slate-400 font-medium">Amount</th>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Date</th>
+                  <th className="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Description</th>
+                  <th className="text-left py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Category</th>
+                  <th className="text-right py-3 px-4 text-gray-500 dark:text-gray-400 font-medium">Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.map((t, i) => (
-                  <tr key={i} className="border-b border-slate-700/50">
-                    <td className="py-3 px-4 text-slate-300">{t.date}</td>
-                    <td className="py-3 px-4 text-white">{t.description}</td>
+                  <tr key={i} className="border-b border-gray-100 dark:border-gray-700/50">
+                    <td className="py-3 px-4 text-gray-600 dark:text-gray-300">{t.date}</td>
+                    <td className="py-3 px-4 text-gray-900 dark:text-white">{t.description}</td>
                     <td className="py-3 px-4">
-                      <span className="px-2 py-1 bg-slate-700 rounded text-sm text-slate-300">
+                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm text-gray-600 dark:text-gray-300">
                         {t.category}
                       </span>
                     </td>
                     <td className={`py-3 px-4 text-right font-medium ${
-                      t.type === 'income' ? 'text-green-400' : 'text-red-400'
+                      t.type === 'income' ? 'text-success-500' : 'text-error-500'
                     }`}>
                       {t.type === 'income' ? '+' : '-'}${Math.abs(t.amount).toFixed(2)}
                     </td>

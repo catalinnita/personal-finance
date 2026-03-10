@@ -164,7 +164,7 @@ export default function MappingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
       </div>
     )
   }
@@ -173,8 +173,8 @@ export default function MappingsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Description Mappings</h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Description Mappings</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             Drag descriptions between categories to reassign them
           </p>
         </div>
@@ -183,28 +183,28 @@ export default function MappingsPage() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search descriptions..."
-          className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+          className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 w-64"
         />
       </div>
 
       {/* Unmapped Descriptions Section */}
       {unmappedDescriptions.length > 0 && showUnmapped && (
-        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
+        <div className="bg-warning-50 dark:bg-warning-500/10 border border-warning-200 dark:border-warning-500/30 rounded-xl p-4 mb-6">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-yellow-400" />
-              <h2 className="text-lg font-semibold text-yellow-400">
+              <AlertCircle className="w-5 h-5 text-warning-500" />
+              <h2 className="text-lg font-semibold text-warning-600 dark:text-warning-400">
                 Unmapped Descriptions ({unmappedDescriptions.length})
               </h2>
             </div>
             <button
               onClick={() => setShowUnmapped(false)}
-              className="text-slate-400 hover:text-white text-sm"
+              className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm"
             >
               Hide
             </button>
           </div>
-          <p className="text-slate-400 text-sm mb-3">
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
             These descriptions don&apos;t have a category mapping. Drag them to a category below.
           </p>
           <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
@@ -216,12 +216,12 @@ export default function MappingsPage() {
                   draggable
                   onDragStart={(e) => handleDragStart(e, description)}
                   onDragEnd={handleDragEnd}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg cursor-grab active:cursor-grabbing transition-all text-sm ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg cursor-grab active:cursor-grabbing transition-all text-sm ${
                     draggedItem === description ? 'opacity-50 scale-95' : ''
                   }`}
                 >
-                  <GripVertical className="w-3 h-3 text-slate-500" />
-                  <span className="text-slate-300">{description}</span>
+                  <GripVertical className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+                  <span className="text-gray-700 dark:text-gray-300">{description}</span>
                 </div>
               ))}
           </div>
@@ -231,7 +231,7 @@ export default function MappingsPage() {
       {!showUnmapped && unmappedDescriptions.length > 0 && (
         <button
           onClick={() => setShowUnmapped(true)}
-          className="mb-6 flex items-center gap-2 text-yellow-400 hover:text-yellow-300 text-sm"
+          className="mb-6 flex items-center gap-2 text-warning-500 hover:text-warning-400 text-sm"
         >
           <AlertCircle className="w-4 h-4" />
           Show {unmappedDescriptions.length} unmapped descriptions
@@ -239,24 +239,24 @@ export default function MappingsPage() {
       )}
 
       {mappings.length === 0 && unmappedDescriptions.length === 0 ? (
-        <div className="bg-slate-800 rounded-xl p-8 text-center">
-          <p className="text-slate-400">No mappings yet. Run <code className="bg-slate-700 px-2 py-1 rounded">npm run db:seed-mappings</code> to populate from transactions.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+          <p className="text-gray-500 dark:text-gray-400">No mappings yet. Run <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">npm run db:seed-mappings</code> to populate from transactions.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {categoriesToShow.map(category => (
             <div
               key={category}
-              className={`bg-slate-800 rounded-xl p-4 min-h-[200px] transition-colors ${
-                dragOverCategory === category ? 'bg-blue-600/20 ring-2 ring-blue-500' : ''
+              className={`bg-white dark:bg-gray-800 rounded-xl p-4 min-h-[200px] transition-colors border border-gray-200 dark:border-gray-700 shadow-theme-sm ${
+                dragOverCategory === category ? 'bg-brand-50 dark:bg-brand-500/20 ring-2 ring-brand-500' : ''
               }`}
               onDragOver={(e) => handleDragOver(e, category)}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, category)}
             >
-              <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-700">
-                <h3 className="text-sm font-semibold text-white truncate">{category}</h3>
-                <span className="text-xs text-slate-400 bg-slate-700 px-2 py-0.5 rounded-full">
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{category}</h3>
+                <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
                   {mappingsByCategory[category]?.length || 0}
                 </span>
               </div>
@@ -267,17 +267,17 @@ export default function MappingsPage() {
                     draggable
                     onDragStart={(e) => handleDragStart(e, mapping.description_pattern)}
                     onDragEnd={handleDragEnd}
-                    className={`group flex items-center gap-2 p-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg cursor-grab active:cursor-grabbing transition-all ${
+                    className={`group flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-grab active:cursor-grabbing transition-all ${
                       draggedItem === mapping.description_pattern ? 'opacity-50 scale-95' : ''
                     }`}
                   >
-                    <GripVertical className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                    <span className="text-sm text-slate-300 truncate flex-1" title={mapping.description_pattern}>
+                    <GripVertical className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1" title={mapping.description_pattern}>
                       {mapping.description_pattern}
                     </span>
                     <button
                       onClick={() => handleDeleteMapping(mapping.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-400 transition-opacity"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-error-500 transition-opacity"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
