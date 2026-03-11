@@ -37,7 +37,7 @@ export async function GET() {
       category: (m.categories as unknown as { id: string; name: string } | null)?.name || ''
     })) || []
 
-    return NextResponse.json({ mappings })
+    return NextResponse.json({ mappings, count: mappings.length })
   } catch (error) {
     console.error('Error fetching category mappings:', error)
     return NextResponse.json({ error: 'Failed to fetch category mappings' }, { status: 500 })
@@ -54,6 +54,8 @@ export async function POST(request: NextRequest) {
     }
 
     const { description_pattern, category_id } = await request.json()
+
+    console.log('POST mapping:', { description_pattern, category_id, user_id: user.id })
 
     // Upsert the mapping
     const { data, error } = await supabase
@@ -73,7 +75,10 @@ export async function POST(request: NextRequest) {
       `)
       .single()
 
+    console.log('Upsert result:', { data, error })
+
     if (error) {
+      console.error('Upsert error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
