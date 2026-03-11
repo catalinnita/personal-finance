@@ -244,12 +244,12 @@ export default function BalancePage() {
                   </div>
                 </div>
                 
-                <div className="relative overflow-x-auto">
+                <div className="relative overflow-x-auto overflow-y-visible">
                   <svg 
                     width={chartWidth} 
                     height={chartHeight + 40} 
-                    className="min-w-full"
-                    style={{ minWidth: chartWidth }}
+                    className="min-w-full block"
+                    style={{ minWidth: chartWidth, overflow: 'visible' }}
                   >
                     {/* Grid lines */}
                     {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
