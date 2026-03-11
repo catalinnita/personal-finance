@@ -272,7 +272,7 @@ export default function TimelinePage() {
           </div>
 
           {/* Charts Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className={`grid grid-cols-1 ${selectedYears.length <= 2 ? 'lg:grid-cols-2' : ''} gap-6`}>
             {selectedCategories.map((category, catIndex) => {
               const data = categoryData[category] || {}
               const trend = getTrend(category)
