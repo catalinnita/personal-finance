@@ -188,8 +188,13 @@ export default function MappingsPage() {
     mappingsByCategory[cat] = mappings.filter(m => m.category === cat)
   })
 
+  // Only show categories that have mappings
+  const categoriesWithMappings = allCategoryNames.filter(cat => 
+    mappingsByCategory[cat]?.length > 0
+  )
+
   // Filter categories based on search and selection
-  const filteredCategories = allCategoryNames.filter(cat => {
+  const filteredCategories = categoriesWithMappings.filter(cat => {
     const matchesSearch = !searchTerm || 
       cat.toLowerCase().includes(searchTerm.toLowerCase()) ||
       mappingsByCategory[cat]?.some(m => 
@@ -271,7 +276,7 @@ export default function MappingsPage() {
       <div className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Filter by category:</p>
         <div className="flex flex-wrap gap-2">
-          {allCategoryNames.map((category, index) => (
+          {categoriesWithMappings.map((category, index) => (
             <button
               key={category}
               onClick={() => toggleCategory(category)}
