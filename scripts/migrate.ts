@@ -217,6 +217,31 @@ const MIGRATIONS = [
     name: 'Remove category column from transactions',
     sql: `ALTER TABLE transactions DROP COLUMN IF EXISTS category;`
   },
+  {
+    name: 'Add category_id column to category_mappings',
+    sql: `ALTER TABLE category_mappings ADD COLUMN IF NOT EXISTS category_id UUID REFERENCES categories(id) ON DELETE CASCADE;`
+  },
+  {
+    name: 'Populate category_id from category text',
+    sql: `
+      UPDATE category_mappings cm
+      SET category_id = c.id
+      FROM categories c
+      WHERE cm.category = c.name AND cm.user_id = c.user_id AND cm.category_id IS NULL;
+    `
+  },
+  {
+    name: 'Delete orphaned mappings without matching category',
+    sql: `DELETE FROM category_mappings WHERE category_id IS NULL;`
+  },
+  {
+    name: 'Drop category text column from category_mappings',
+    sql: `ALTER TABLE category_mappings DROP COLUMN IF EXISTS category;`
+  },
+  {
+    name: 'Create category_mappings category_id index',
+    sql: `CREATE INDEX IF NOT EXISTS idx_category_mappings_category_id ON category_mappings(category_id);`
+  },
 ]
 
 async function runMigrations() {
