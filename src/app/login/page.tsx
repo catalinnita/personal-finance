@@ -2,9 +2,25 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { Chrome } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const supabase = createClient()
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        router.replace('/upload')
+      } else {
+        setLoading(false)
+      }
+    }
+    checkUser()
+  }, [supabase, router])
 
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
@@ -13,6 +29,14 @@ export default function LoginPage() {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     })
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    )
   }
 
   return (
