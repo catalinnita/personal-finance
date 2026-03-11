@@ -38,19 +38,34 @@ export async function GET() {
     
     const transactions = allTransactions
 
-    // Get category mappings with joined category names
-    const { data: mappings } = await supabase
-      .from('category_mappings')
-      .select(`
-        description_pattern,
-        category_id,
-        categories (name)
-      `)
-      .eq('user_id', user.id)
+    // Get category mappings with joined category names - paginate to get all
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let allMappings: any[] = []
+    let mappingFrom = 0
+    const mappingBatchSize = 1000
+    
+    while (true) {
+      const { data: mappingBatch } = await supabase
+        .from('category_mappings')
+        .select(`
+          description_pattern,
+          category_id,
+          categories (name)
+        `)
+        .eq('user_id', user.id)
+        .range(mappingFrom, mappingFrom + mappingBatchSize - 1)
+      
+      if (!mappingBatch || mappingBatch.length === 0) break
+      
+      allMappings = [...allMappings, ...mappingBatch]
+      
+      if (mappingBatch.length < mappingBatchSize) break
+      mappingFrom += mappingBatchSize
+    }
 
     // Create a lookup map for categories
     const categoryMap = new Map<string, string>()
-    mappings?.forEach(m => {
+    allMappings.forEach(m => {
       const categoryName = (m.categories as unknown as { name: string } | null)?.name || 'Other'
       categoryMap.set(m.description_pattern, categoryName)
     })
@@ -79,15 +94,30 @@ export async function POST(request: NextRequest) {
 
     const { transactions } = await request.json()
 
-    // Get existing transactions to check for duplicates
-    const { data: existingTransactions } = await supabase
-      .from('transactions')
-      .select('date, description, amount')
-      .eq('user_id', user.id)
+    // Get existing transactions to check for duplicates - paginate to get all
+    type ExistingTx = { date: string; description: string; amount: number }
+    let allExisting: ExistingTx[] = []
+    let existingFrom = 0
+    const existingBatchSize = 1000
+    
+    while (true) {
+      const { data: existingBatch } = await supabase
+        .from('transactions')
+        .select('date, description, amount')
+        .eq('user_id', user.id)
+        .range(existingFrom, existingFrom + existingBatchSize - 1)
+      
+      if (!existingBatch || existingBatch.length === 0) break
+      
+      allExisting = [...allExisting, ...existingBatch]
+      
+      if (existingBatch.length < existingBatchSize) break
+      existingFrom += existingBatchSize
+    }
 
     // Create a set of existing transaction keys for fast lookup
     const existingKeys = new Set(
-      existingTransactions?.map(t => `${t.date}|${t.description}|${t.amount}`) || []
+      allExisting.map(t => `${t.date}|${t.description}|${t.amount}`)
     )
 
     // Filter out duplicates
