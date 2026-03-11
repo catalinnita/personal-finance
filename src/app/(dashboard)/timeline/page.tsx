@@ -252,29 +252,30 @@ export default function TimelinePage() {
                   </p>
 
                   {/* Bar Chart */}
-                  <div className="h-40 flex items-end gap-1">
-                    {months.map((month, monthIndex) => {
+                  <div className="flex items-end gap-1" style={{ height: '160px' }}>
+                    {months.map((month) => {
                       const value = data[month] || 0
                       const height = getBarHeight(value)
+                      const barHeight = value > 0 ? Math.max(height, 5) : 2
                       
                       return (
-                        <div key={month} className="flex-1 flex flex-col items-center group">
-                          <div className="w-full relative flex flex-col items-center">
+                        <div key={month} className="flex-1 flex flex-col items-center group h-full">
+                          <div className="w-full h-full relative flex flex-col justify-end items-center">
                             {/* Tooltip */}
                             {value > 0 && (
-                              <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10">
+                              <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
                                 {formatAmount(value)}
                               </div>
                             )}
                             {/* Bar */}
                             <div
                               className={`w-full rounded-t transition-all duration-300 ${
-                                value > 0 ? getCategoryColor(colorIndex) : 'bg-gray-100 dark:bg-gray-700'
+                                value > 0 ? getCategoryColor(colorIndex) : 'bg-gray-200 dark:bg-gray-700'
                               }`}
-                              style={{ height: `${Math.max(height, value > 0 ? 4 : 2)}%` }}
+                              style={{ height: `${barHeight}%` }}
                             />
                           </div>
-                          <span className="text-xs text-gray-400 mt-2">{month}</span>
+                          <span className="text-xs text-gray-400 mt-2 flex-shrink-0">{month}</span>
                         </div>
                       )
                     })}
