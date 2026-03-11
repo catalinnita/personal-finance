@@ -226,6 +226,37 @@ export default function MappingsPage() {
         />
       </div>
 
+      {/* Category Filter */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Filter by category:</p>
+        <div className="flex flex-wrap gap-2">
+          {allCategoryNames.map((category, index) => (
+            <button
+              key={category}
+              onClick={() => toggleCategory(category)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border-2 ${
+                selectedCategories.includes(category)
+                  ? `${getCategoryColor(index)} text-white border-transparent`
+                  : selectedCategories.length === 0
+                    ? `bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-transparent`
+                    : `bg-transparent ${getCategoryBorderColor(index)} text-gray-700 dark:text-gray-300`
+              }`}
+            >
+              {category}
+              <span className="ml-1.5 text-xs opacity-70">({mappingsByCategory[category]?.length || 0})</span>
+            </button>
+          ))}
+        </div>
+        {selectedCategories.length > 0 && (
+          <button
+            onClick={() => setSelectedCategories([])}
+            className="mt-3 text-sm text-brand-500 hover:text-brand-600"
+          >
+            Clear filter
+          </button>
+        )}
+      </div>
+
       {/* Unmapped Descriptions Section */}
       {unmappedDescriptions.length > 0 && showUnmapped && (
         <div className="bg-warning-50 dark:bg-warning-500/10 border border-warning-200 dark:border-warning-500/30 rounded-xl p-4 mb-6">
@@ -276,37 +307,6 @@ export default function MappingsPage() {
           Show {unmappedDescriptions.length} unmapped descriptions
         </button>
       )}
-
-      {/* Category Filter */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Filter by category:</p>
-        <div className="flex flex-wrap gap-2">
-          {allCategoryNames.map((category, index) => (
-            <button
-              key={category}
-              onClick={() => toggleCategory(category)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border-2 ${
-                selectedCategories.includes(category)
-                  ? `${getCategoryColor(index)} text-white border-transparent`
-                  : selectedCategories.length === 0
-                    ? `bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-transparent`
-                    : `bg-transparent ${getCategoryBorderColor(index)} text-gray-700 dark:text-gray-300`
-              }`}
-            >
-              {category}
-              <span className="ml-1.5 text-xs opacity-70">({mappingsByCategory[category]?.length || 0})</span>
-            </button>
-          ))}
-        </div>
-        {selectedCategories.length > 0 && (
-          <button
-            onClick={() => setSelectedCategories([])}
-            className="mt-3 text-sm text-brand-500 hover:text-brand-600"
-          >
-            Clear filter
-          </button>
-        )}
-      </div>
 
       {mappings.length === 0 && unmappedDescriptions.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
