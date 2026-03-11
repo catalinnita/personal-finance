@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Menu, X, TrendingUp } from 'lucide-react'
+import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Menu, X, TrendingUp, Trash2 } from 'lucide-react'
 import { useSidebar } from '@/context/SidebarContext'
 
 const navSections = [
@@ -11,6 +11,7 @@ const navSections = [
     items: [
       { href: '/upload', label: 'Upload Statements', icon: Upload },
       { href: '/transactions', label: 'Transactions', icon: List },
+      { href: '/cleanup', label: 'Clean Up', icon: Trash2 },
     ]
   },
   {
