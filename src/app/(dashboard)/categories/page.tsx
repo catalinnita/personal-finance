@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, PieChart } from 'lucide-react'
+import { Loader2, PieChart, ChevronDown } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
 
@@ -198,13 +198,18 @@ export default function CategoriesPage() {
                                         ? null
                                         : { category, month: period }
                                     )}
-                                    className={`text-gray-600 dark:text-gray-300 hover:text-brand-500 dark:hover:text-brand-400 hover:underline transition-colors ${
+                                    className={`inline-flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-brand-500 dark:hover:text-brand-400 transition-colors ${
                                       expandedCell?.category === category && expandedCell?.month === period
                                         ? 'text-brand-500 dark:text-brand-400 font-medium'
                                         : ''
                                     }`}
                                   >
                                     {formatAmount(monthlyCategories[period][category])}
+                                    <ChevronDown className={`w-3 h-3 transition-transform ${
+                                      expandedCell?.category === category && expandedCell?.month === period
+                                        ? 'rotate-180'
+                                        : ''
+                                    }`} />
                                   </button>
                                 ) : (
                                   <span className="text-gray-400">-</span>
