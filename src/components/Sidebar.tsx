@@ -83,10 +83,13 @@ export default function Sidebar() {
                       <Link
                         key={item.href}
                         href={item.href}
-                        className={`menu-item ${isActive ? 'menu-item-active' : 'menu-item-inactive'} ${!showFull ? 'justify-center' : ''}`}
+                        className={`menu-item ${isActive ? 'menu-item-active' : 'menu-item-inactive'} ${!showFull ? 'justify-center' : ''} cursor-pointer`}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                        }}
                       >
-                        <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}`} />
-                        {showFull && <span>{item.label}</span>}
+                        <item.icon className={`w-5 h-5 flex-shrink-0 pointer-events-none ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                        {showFull && <span className="pointer-events-none">{item.label}</span>}
                       </Link>
                     )
                   })}
