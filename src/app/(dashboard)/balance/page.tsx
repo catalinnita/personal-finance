@@ -174,59 +174,65 @@ export default function BalancePage() {
             const maxAmount = Math.max(
               ...availableMonths.map(p => Math.max(monthlyData[p]?.income || 0, monthlyData[p]?.expenses || 0))
             )
-            const chartHeight = 200
-            const chartWidth = Math.max(availableMonths.length * 60, 400)
+            const halfHeight = 120
+            const chartHeight = halfHeight * 2
+            const padding = { left: 10, right: 10 }
             
-            // Calculate points for income area
+            // Calculate points for income (positive Y, above center line)
             const incomePoints = availableMonths.map((period, i) => {
               const data = monthlyData[period]
-              const x = (i / (availableMonths.length - 1 || 1)) * chartWidth
-              const y = maxAmount > 0 ? chartHeight - ((data?.income || 0) / maxAmount) * chartHeight : chartHeight
+              const x = padding.left + (availableMonths.length > 1 ? (i / (availableMonths.length - 1)) * (100 - padding.left - padding.right) : 50)
+              const y = maxAmount > 0 ? halfHeight - ((data?.income || 0) / maxAmount) * halfHeight : halfHeight
               return { x, y, value: data?.income || 0, period }
             })
             
-            // Calculate points for expense area
+            // Calculate points for expenses (negative Y, below center line)
             const expensePoints = availableMonths.map((period, i) => {
               const data = monthlyData[period]
-              const x = (i / (availableMonths.length - 1 || 1)) * chartWidth
-              const y = maxAmount > 0 ? chartHeight - ((data?.expenses || 0) / maxAmount) * chartHeight : chartHeight
+              const x = padding.left + (availableMonths.length > 1 ? (i / (availableMonths.length - 1)) * (100 - padding.left - padding.right) : 50)
+              const y = maxAmount > 0 ? halfHeight + ((data?.expenses || 0) / maxAmount) * halfHeight : halfHeight
               return { x, y, value: data?.expenses || 0, period }
             })
             
-            // Create SVG path for smooth area
-            const createAreaPath = (points: typeof incomePoints) => {
+            // Create SVG path for area with straight lines (income - fills up to center)
+            const createIncomeAreaPath = (points: typeof incomePoints) => {
               if (points.length === 0) return ''
               if (points.length === 1) {
-                return `M ${points[0].x},${chartHeight} L ${points[0].x},${points[0].y} L ${points[0].x},${chartHeight} Z`
+                return `M ${points[0].x}%,${halfHeight} L ${points[0].x}%,${points[0].y} L ${points[0].x}%,${halfHeight} Z`
               }
               
-              let path = `M ${points[0].x},${chartHeight} L ${points[0].x},${points[0].y}`
-              
+              let path = `M ${points[0].x}%,${halfHeight} L ${points[0].x}%,${points[0].y}`
               for (let i = 1; i < points.length; i++) {
-                const prev = points[i - 1]
-                const curr = points[i]
-                const cpX = (prev.x + curr.x) / 2
-                path += ` C ${cpX},${prev.y} ${cpX},${curr.y} ${curr.x},${curr.y}`
+                path += ` L ${points[i].x}%,${points[i].y}`
               }
-              
-              path += ` L ${points[points.length - 1].x},${chartHeight} Z`
+              path += ` L ${points[points.length - 1].x}%,${halfHeight} Z`
               return path
             }
             
-            // Create line path
-            const createLinePath = (points: typeof incomePoints) => {
+            // Create SVG path for area with straight lines (expenses - fills down from center)
+            const createExpenseAreaPath = (points: typeof expensePoints) => {
               if (points.length === 0) return ''
-              if (points.length === 1) return `M ${points[0].x},${points[0].y}`
-              
-              let path = `M ${points[0].x},${points[0].y}`
-              
-              for (let i = 1; i < points.length; i++) {
-                const prev = points[i - 1]
-                const curr = points[i]
-                const cpX = (prev.x + curr.x) / 2
-                path += ` C ${cpX},${prev.y} ${cpX},${curr.y} ${curr.x},${curr.y}`
+              if (points.length === 1) {
+                return `M ${points[0].x}%,${halfHeight} L ${points[0].x}%,${points[0].y} L ${points[0].x}%,${halfHeight} Z`
               }
               
+              let path = `M ${points[0].x}%,${halfHeight} L ${points[0].x}%,${points[0].y}`
+              for (let i = 1; i < points.length; i++) {
+                path += ` L ${points[i].x}%,${points[i].y}`
+              }
+              path += ` L ${points[points.length - 1].x}%,${halfHeight} Z`
+              return path
+            }
+            
+            // Create line path with straight lines
+            const createLinePath = (points: typeof incomePoints) => {
+              if (points.length === 0) return ''
+              if (points.length === 1) return `M ${points[0].x}%,${points[0].y}`
+              
+              let path = `M ${points[0].x}%,${points[0].y}`
+              for (let i = 1; i < points.length; i++) {
+                path += ` L ${points[i].x}%,${points[i].y}`
+              }
               return path
             }
             
@@ -244,45 +250,59 @@ export default function BalancePage() {
                   </div>
                 </div>
                 
-                <div className="relative overflow-x-auto overflow-y-visible">
+                <div className="relative">
                   <svg 
-                    width={chartWidth} 
-                    height={chartHeight + 40} 
-                    className="min-w-full block"
-                    style={{ minWidth: chartWidth, overflow: 'visible' }}
+                    viewBox={`0 0 100 ${chartHeight + 30}`}
+                    className="w-full"
+                    style={{ height: chartHeight + 30 }}
+                    preserveAspectRatio="none"
                   >
                     {/* Grid lines */}
-                    {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
+                    {[0, 0.5, 1].map((ratio) => (
                       <line
                         key={ratio}
-                        x1={0}
-                        y1={chartHeight * ratio}
-                        x2={chartWidth}
-                        y2={chartHeight * ratio}
+                        x1="0%"
+                        y1={halfHeight * ratio * 2}
+                        x2="100%"
+                        y2={halfHeight * ratio * 2}
                         stroke="currentColor"
                         className="text-gray-200 dark:text-gray-700"
-                        strokeWidth={1}
+                        strokeWidth={0.5}
+                        vectorEffect="non-scaling-stroke"
                       />
                     ))}
                     
-                    {/* Income area */}
+                    {/* Center line (zero axis) */}
+                    <line
+                      x1="0%"
+                      y1={halfHeight}
+                      x2="100%"
+                      y2={halfHeight}
+                      stroke="currentColor"
+                      className="text-gray-400 dark:text-gray-500"
+                      strokeWidth={1}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    
+                    {/* Income area (above center) */}
                     <path
-                      d={createAreaPath(incomePoints)}
+                      d={createIncomeAreaPath(incomePoints)}
                       fill="rgb(34, 197, 94)"
-                      fillOpacity={0.2}
+                      fillOpacity={0.3}
                     />
                     <path
                       d={createLinePath(incomePoints)}
                       fill="none"
                       stroke="rgb(34, 197, 94)"
                       strokeWidth={2}
+                      vectorEffect="non-scaling-stroke"
                     />
                     
-                    {/* Expense area */}
+                    {/* Expense area (below center) */}
                     <path
-                      d={createAreaPath(expensePoints)}
+                      d={createExpenseAreaPath(expensePoints)}
                       fill="rgb(239, 68, 68)"
-                      fillOpacity={0.2}
+                      fillOpacity={0.3}
                     />
                     <path
                       d={createLinePath(expensePoints)}
@@ -291,101 +311,86 @@ export default function BalancePage() {
                       strokeWidth={2}
                     />
                     
-                    {/* Data points with hover */}
+                    {/* Data points - income */}
                     {incomePoints.map((point, i) => (
-                      <g key={`income-${i}`} className="group">
-                        <circle
-                          cx={point.x}
-                          cy={point.y}
-                          r={4}
-                          fill="rgb(34, 197, 94)"
-                          className="cursor-pointer"
-                        />
-                        <circle
-                          cx={point.x}
-                          cy={point.y}
-                          r={8}
-                          fill="transparent"
-                          className="cursor-pointer"
-                        />
-                        <g className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                          <rect
-                            x={point.x - 40}
-                            y={point.y - 30}
-                            width={80}
-                            height={24}
-                            rx={4}
-                            fill="rgb(17, 24, 39)"
-                          />
-                          <text
-                            x={point.x}
-                            y={point.y - 14}
-                            textAnchor="middle"
-                            fill="white"
-                            fontSize={11}
-                          >
-                            +{formatAmount(point.value)}
-                          </text>
-                        </g>
-                      </g>
+                      <circle
+                        key={`income-${i}`}
+                        cx={`${point.x}%`}
+                        cy={point.y}
+                        r={4}
+                        fill="rgb(34, 197, 94)"
+                        stroke="white"
+                        strokeWidth={2}
+                        vectorEffect="non-scaling-stroke"
+                      />
                     ))}
                     
+                    {/* Data points - expenses */}
                     {expensePoints.map((point, i) => (
-                      <g key={`expense-${i}`} className="group">
-                        <circle
-                          cx={point.x}
-                          cy={point.y}
-                          r={4}
-                          fill="rgb(239, 68, 68)"
-                          className="cursor-pointer"
-                        />
-                        <circle
-                          cx={point.x}
-                          cy={point.y}
-                          r={8}
-                          fill="transparent"
-                          className="cursor-pointer"
-                        />
-                        <g className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                          <rect
-                            x={point.x - 40}
-                            y={point.y - 30}
-                            width={80}
-                            height={24}
-                            rx={4}
-                            fill="rgb(17, 24, 39)"
-                          />
-                          <text
-                            x={point.x}
-                            y={point.y - 14}
-                            textAnchor="middle"
-                            fill="white"
-                            fontSize={11}
-                          >
-                            -{formatAmount(point.value)}
-                          </text>
-                        </g>
-                      </g>
+                      <circle
+                        key={`expense-${i}`}
+                        cx={`${point.x}%`}
+                        cy={point.y}
+                        r={4}
+                        fill="rgb(239, 68, 68)"
+                        stroke="white"
+                        strokeWidth={2}
+                        vectorEffect="non-scaling-stroke"
+                      />
                     ))}
                     
                     {/* X-axis labels */}
                     {availableMonths.map((period, i) => {
-                      const x = (i / (availableMonths.length - 1 || 1)) * chartWidth
+                      const x = padding.left + (availableMonths.length > 1 ? (i / (availableMonths.length - 1)) * (100 - padding.left - padding.right) : 50)
                       return (
                         <text
                           key={period}
-                          x={x}
+                          x={`${x}%`}
                           y={chartHeight + 20}
                           textAnchor="middle"
                           fill="currentColor"
                           className="text-gray-500 dark:text-gray-400"
-                          fontSize={11}
+                          fontSize={10}
                         >
                           {useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
                         </text>
                       )
                     })}
                   </svg>
+                  
+                  {/* Hover tooltips rendered outside SVG */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    {incomePoints.map((point, i) => (
+                      <div
+                        key={`tooltip-income-${i}`}
+                        className="absolute opacity-0 hover:opacity-100 transition-opacity pointer-events-auto"
+                        style={{
+                          left: `${point.x}%`,
+                          top: `${(point.y / (chartHeight + 30)) * 100}%`,
+                          transform: 'translate(-50%, -100%)',
+                        }}
+                      >
+                        <div className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap mb-1">
+                          +{formatAmount(point.value)}
+                        </div>
+                      </div>
+                    ))}
+                    {expensePoints.map((point, i) => (
+                      <div
+                        key={`tooltip-expense-${i}`}
+                        className="absolute opacity-0 hover:opacity-100 transition-opacity pointer-events-auto"
+                        style={{
+                          left: `${point.x}%`,
+                          top: `${(point.y / (chartHeight + 30)) * 100}%`,
+                          transform: 'translate(-50%, 10%)',
+                        }}
+                      >
+                        <div className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                          -{formatAmount(point.value)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )
