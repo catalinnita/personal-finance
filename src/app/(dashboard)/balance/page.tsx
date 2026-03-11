@@ -182,6 +182,75 @@ export default function BalancePage() {
             </div>
           </div>
 
+          {/* Income vs Expenses Chart */}
+          {availableMonths.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Income vs Expenses</h2>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-success-500" />
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Income</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-error-500" />
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Expenses</span>
+                </div>
+              </div>
+              <div className="relative" style={{ height: '300px' }}>
+                {/* Y-axis center line */}
+                <div className="absolute left-0 right-0 top-1/2 border-t border-gray-300 dark:border-gray-600" />
+                
+                {/* Chart container */}
+                <div className="flex items-center h-full gap-1 overflow-x-auto">
+                  {availableMonths.map(period => {
+                    const data = monthlyData[period]
+                    if (!data) return null
+                    
+                    const maxAmount = Math.max(
+                      ...availableMonths.map(p => Math.max(monthlyData[p]?.income || 0, monthlyData[p]?.expenses || 0))
+                    )
+                    
+                    const incomeHeight = maxAmount > 0 ? (data.income / maxAmount) * 45 : 0
+                    const expenseHeight = maxAmount > 0 ? (data.expenses / maxAmount) * 45 : 0
+                    
+                    return (
+                      <div key={period} className="flex-1 min-w-[50px] flex flex-col items-center h-full group">
+                        {/* Top half - Income (positive) */}
+                        <div className="h-1/2 w-full flex flex-col justify-end items-center relative pb-1">
+                          {/* Tooltip */}
+                          <div className="absolute bottom-full mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                            +{formatAmount(data.income)}
+                          </div>
+                          <div 
+                            className="w-3/4 bg-success-500 rounded-t transition-all duration-300"
+                            style={{ height: `${incomeHeight}%` }}
+                          />
+                        </div>
+                        
+                        {/* Bottom half - Expenses (negative) */}
+                        <div className="h-1/2 w-full flex flex-col justify-start items-center relative pt-1">
+                          <div 
+                            className="w-3/4 bg-error-500 rounded-b transition-all duration-300"
+                            style={{ height: `${expenseHeight}%` }}
+                          />
+                          {/* Tooltip */}
+                          <div className="absolute top-full mt-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                            -{formatAmount(data.expenses)}
+                          </div>
+                        </div>
+                        
+                        {/* Label */}
+                        <span className="text-xs text-gray-400 mt-1 text-center whitespace-nowrap">
+                          {useMonthYear ? period.substring(0, 3) + ' ' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Breakdown</h2>
             <div className="overflow-x-auto">
