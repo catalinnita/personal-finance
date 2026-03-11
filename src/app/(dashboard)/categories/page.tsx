@@ -79,39 +79,51 @@ export default function CategoriesPage() {
     t.type === 'expense' && selectedYears.includes(new Date(t.date).getFullYear())
   )
 
-  // Group by month and category
-  const monthlyCategories: MonthlyCategories = yearExpenses.reduce((acc, t) => {
-    const month = new Date(t.date).toLocaleString('default', { month: 'long' })
-    if (!acc[month]) {
-      acc[month] = {}
-    }
-    if (!acc[month][t.category]) {
-      acc[month][t.category] = 0
-    }
-    acc[month][t.category] += Math.abs(t.amount)
-    return acc
-  }, {} as MonthlyCategories)
-
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ]
 
+  const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+  // Use month-year keys when multiple years selected, otherwise just month
+  const useMonthYear = selectedYears.length > 1
+
+  // Group by month (or month-year) and category
+  const monthlyCategories: MonthlyCategories = yearExpenses.reduce((acc, t) => {
+    const date = new Date(t.date)
+    const monthName = date.toLocaleString('default', { month: 'long' })
+    const year = date.getFullYear()
+    const key = useMonthYear ? `${shortMonths[date.getMonth()]} ${year}` : monthName
+    
+    if (!acc[key]) {
+      acc[key] = {}
+    }
+    if (!acc[key][t.category]) {
+      acc[key][t.category] = 0
+    }
+    acc[key][t.category] += Math.abs(t.amount)
+    return acc
+  }, {} as MonthlyCategories)
+
   // Get all unique categories
   const allCategories = [...new Set(yearExpenses.map(t => t.category))].sort()
 
-  // Get months that have data
-  const availableMonths = months.filter(month => monthlyCategories[month])
+  // Get available period keys in chronological order
+  const availableMonths = useMonthYear
+    ? selectedYears.sort((a, b) => a - b).flatMap(year => 
+        shortMonths.map(m => `${m} ${year}`)
+      ).filter(key => monthlyCategories[key])
+    : months.filter(month => monthlyCategories[month])
 
   // Set default selected month to the most recent one with data
   if (availableMonths.length > 0 && !selectedMonth) {
-    // Find the most recent month with data
-    const currentMonth = new Date().toLocaleString('default', { month: 'long' })
-    if (availableMonths.includes(currentMonth)) {
-      setSelectedMonth(currentMonth)
-    } else {
-      setSelectedMonth(availableMonths[availableMonths.length - 1])
-    }
+    setSelectedMonth(availableMonths[availableMonths.length - 1])
+  }
+  
+  // Reset selected month when switching between single/multi year
+  if (selectedMonth && !availableMonths.includes(selectedMonth)) {
+    setSelectedMonth(availableMonths.length > 0 ? availableMonths[availableMonths.length - 1] : null)
   }
 
   if (loading || currencyLoading) {
@@ -160,12 +172,10 @@ export default function CategoriesPage() {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Category</th>
-                      {months.map(month => (
-                        monthlyCategories[month] && (
-                          <th key={month} className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">
-                            {month.substring(0, 3)}
-                          </th>
-                        )
+                      {availableMonths.map(period => (
+                        <th key={period} className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
+                          {useMonthYear ? period : period.substring(0, 3)}
+                        </th>
                       ))}
                       <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Total</th>
                     </tr>
@@ -179,29 +189,27 @@ export default function CategoriesPage() {
                         <>
                           <tr key={category} className="border-b border-gray-100 dark:border-gray-700/50">
                             <td className="py-3 px-2 text-gray-900 dark:text-white">{category}</td>
-                            {months.map(month => (
-                              monthlyCategories[month] && (
-                                <td key={month} className="py-3 px-2 text-right">
-                                  {monthlyCategories[month][category] ? (
-                                    <button
-                                      onClick={() => setExpandedCell(
-                                        expandedCell?.category === category && expandedCell?.month === month
-                                          ? null
-                                          : { category, month }
-                                      )}
-                                      className={`text-gray-600 dark:text-gray-300 hover:text-brand-500 dark:hover:text-brand-400 hover:underline transition-colors ${
-                                        expandedCell?.category === category && expandedCell?.month === month
-                                          ? 'text-brand-500 dark:text-brand-400 font-medium'
-                                          : ''
-                                      }`}
-                                    >
-                                      {formatAmount(monthlyCategories[month][category])}
-                                    </button>
-                                  ) : (
-                                    <span className="text-gray-400">-</span>
-                                  )}
-                                </td>
-                              )
+                            {availableMonths.map(period => (
+                              <td key={period} className="py-3 px-2 text-right">
+                                {monthlyCategories[period]?.[category] ? (
+                                  <button
+                                    onClick={() => setExpandedCell(
+                                      expandedCell?.category === category && expandedCell?.month === period
+                                        ? null
+                                        : { category, month: period }
+                                    )}
+                                    className={`text-gray-600 dark:text-gray-300 hover:text-brand-500 dark:hover:text-brand-400 hover:underline transition-colors ${
+                                      expandedCell?.category === category && expandedCell?.month === period
+                                        ? 'text-brand-500 dark:text-brand-400 font-medium'
+                                        : ''
+                                    }`}
+                                  >
+                                    {formatAmount(monthlyCategories[period][category])}
+                                  </button>
+                                ) : (
+                                  <span className="text-gray-400">-</span>
+                                )}
+                              </td>
                             ))}
                             <td className="py-3 px-2 text-right text-error-500 font-medium">
                               {formatAmount(categoryTotal)}
@@ -225,10 +233,16 @@ export default function CategoriesPage() {
                                   </div>
                                   <div className="space-y-1 max-h-[300px] overflow-y-auto">
                                     {yearExpenses
-                                      .filter(t => 
-                                        t.category === category && 
-                                        new Date(t.date).toLocaleString('default', { month: 'long' }) === expandedCell.month
-                                      )
+                                      .filter(t => {
+                                        if (t.category !== category) return false
+                                        const date = new Date(t.date)
+                                        if (useMonthYear) {
+                                          const key = `${shortMonths[date.getMonth()]} ${date.getFullYear()}`
+                                          return key === expandedCell.month
+                                        } else {
+                                          return date.toLocaleString('default', { month: 'long' }) === expandedCell.month
+                                        }
+                                      })
                                       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                                       .map(t => (
                                         <div 

@@ -71,7 +71,20 @@ export default function TimelinePage() {
     }
   }, [years])
 
-  const { categoryData, categories, maxValue } = useMemo(() => {
+  // Use month-year keys when multiple years selected
+  const useMonthYear = selectedYears.length > 1
+
+  // Generate period keys in chronological order
+  const periodKeys = useMemo(() => {
+    if (useMonthYear) {
+      return selectedYears.sort((a, b) => a - b).flatMap(year => 
+        months.map(m => `${m} ${year}`)
+      )
+    }
+    return months
+  }, [selectedYears, useMonthYear])
+
+  const { categoryData, categories, maxValue, availablePeriods } = useMemo(() => {
     const yearTransactions = transactions.filter(t => {
       const year = new Date(t.date).getFullYear()
       return selectedYears.includes(year) && t.type === 'expense'
@@ -79,21 +92,25 @@ export default function TimelinePage() {
 
     const data: CategoryMonthlyData = {}
     const catSet = new Set<string>()
+    const periodsWithData = new Set<string>()
 
     yearTransactions.forEach(t => {
-      const month = new Date(t.date).getMonth()
-      const monthKey = months[month]
+      const date = new Date(t.date)
+      const month = date.getMonth()
+      const year = date.getFullYear()
+      const periodKey = useMonthYear ? `${months[month]} ${year}` : months[month]
       const category = t.category || 'Uncategorized'
       
       catSet.add(category)
+      periodsWithData.add(periodKey)
       
       if (!data[category]) {
         data[category] = {}
       }
-      if (!data[category][monthKey]) {
-        data[category][monthKey] = 0
+      if (!data[category][periodKey]) {
+        data[category][periodKey] = 0
       }
-      data[category][monthKey] += Math.abs(t.amount)
+      data[category][periodKey] += Math.abs(t.amount)
     })
 
     const cats = Array.from(catSet).sort()
@@ -105,8 +122,11 @@ export default function TimelinePage() {
       })
     })
 
-    return { categoryData: data, categories: cats, maxValue: max }
-  }, [transactions, selectedYears])
+    // Filter period keys to only those with data
+    const available = periodKeys.filter(k => periodsWithData.has(k))
+
+    return { categoryData: data, categories: cats, maxValue: max, availablePeriods: available }
+  }, [transactions, selectedYears, useMonthYear, periodKeys])
 
   useEffect(() => {
     if (categories.length > 0 && selectedCategories.length === 0) {
@@ -306,19 +326,20 @@ export default function TimelinePage() {
                   </p>
 
                   {/* Bar Chart */}
-                  <div className="flex items-end gap-1" style={{ height: '160px' }}>
-                    {months.map((month) => {
-                      const value = data[month] || 0
+                  <div className="flex items-end gap-1 overflow-x-auto" style={{ height: '160px' }}>
+                    {availablePeriods.map((period) => {
+                      const value = data[period] || 0
                       const height = getBarHeight(value, categoryMax)
                       const barHeight = value > 0 ? Math.max(height, 5) : 2
+                      const label = useMonthYear ? period.replace(' ', '\n') : period
                       
                       return (
-                        <div key={month} className="flex-1 flex flex-col items-center group h-full">
+                        <div key={period} className="flex-1 min-w-[40px] flex flex-col items-center group h-full">
                           <div className="w-full h-full relative flex flex-col justify-end items-center">
                             {/* Tooltip */}
                             {value > 0 && (
                               <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
-                                {formatAmount(value)}
+                                {period}: {formatAmount(value)}
                               </div>
                             )}
                             {/* Bar */}
@@ -329,7 +350,7 @@ export default function TimelinePage() {
                               style={{ height: `${barHeight}%` }}
                             />
                           </div>
-                          <span className="text-xs text-gray-400 mt-2 flex-shrink-0">{month}</span>
+                          <span className="text-xs text-gray-400 mt-2 flex-shrink-0 text-center whitespace-pre-line">{useMonthYear ? period.substring(0, 3) + '\n' + period.split(' ')[1] : period}</span>
                         </div>
                       )
                     })}

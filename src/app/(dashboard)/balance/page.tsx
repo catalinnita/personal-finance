@@ -59,6 +59,16 @@ export default function BalancePage() {
     selectedYears.includes(new Date(t.date).getFullYear())
   )
 
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ]
+
+  const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+  // Use month-year keys when multiple years selected
+  const useMonthYear = selectedYears.length > 1
+
   const yearlyData: BalanceData = yearTransactions.reduce(
     (acc, t) => {
       if (t.type === 'income') {
@@ -73,23 +83,29 @@ export default function BalancePage() {
   )
 
   const monthlyData: MonthlyData = yearTransactions.reduce((acc, t) => {
-    const month = new Date(t.date).toLocaleString('default', { month: 'long' })
-    if (!acc[month]) {
-      acc[month] = { income: 0, expenses: 0, savings: 0 }
+    const date = new Date(t.date)
+    const monthName = date.toLocaleString('default', { month: 'long' })
+    const year = date.getFullYear()
+    const key = useMonthYear ? `${shortMonths[date.getMonth()]} ${year}` : monthName
+    
+    if (!acc[key]) {
+      acc[key] = { income: 0, expenses: 0, savings: 0 }
     }
     if (t.type === 'income') {
-      acc[month].income += Math.abs(t.amount)
+      acc[key].income += Math.abs(t.amount)
     } else {
-      acc[month].expenses += Math.abs(t.amount)
+      acc[key].expenses += Math.abs(t.amount)
     }
-    acc[month].savings = acc[month].income - acc[month].expenses
+    acc[key].savings = acc[key].income - acc[key].expenses
     return acc
   }, {} as MonthlyData)
 
-  const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ]
+  // Get available period keys in chronological order
+  const availableMonths = useMonthYear
+    ? selectedYears.sort((a, b) => a - b).flatMap(year => 
+        shortMonths.map(m => `${m} ${year}`)
+      ).filter(key => monthlyData[key])
+    : months.filter(month => monthlyData[month])
 
   if (loading || currencyLoading) {
     return (
@@ -179,12 +195,12 @@ export default function BalancePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {months.map(month => {
-                    const data = monthlyData[month]
+                  {availableMonths.map(period => {
+                    const data = monthlyData[period]
                     if (!data) return null
                     return (
-                      <tr key={month} className="border-b border-gray-100 dark:border-gray-700/50">
-                        <td className="py-3 px-4 text-gray-900 dark:text-white">{month}</td>
+                      <tr key={period} className="border-b border-gray-100 dark:border-gray-700/50">
+                        <td className="py-3 px-4 text-gray-900 dark:text-white whitespace-nowrap">{period}</td>
                         <td className="py-3 px-4 text-right text-success-500">
                           +{formatAmount(data.income)}
                         </td>
