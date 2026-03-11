@@ -357,40 +357,6 @@ export default function BalancePage() {
                       )
                     })}
                   </svg>
-                  
-                  {/* Hover tooltips rendered outside SVG */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    {incomePoints.map((point, i) => (
-                      <div
-                        key={`tooltip-income-${i}`}
-                        className="absolute opacity-0 hover:opacity-100 transition-opacity pointer-events-auto"
-                        style={{
-                          left: `${point.x}%`,
-                          top: `${(point.y / (chartHeight + 30)) * 100}%`,
-                          transform: 'translate(-50%, -100%)',
-                        }}
-                      >
-                        <div className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap mb-1">
-                          +{formatAmount(point.value)}
-                        </div>
-                      </div>
-                    ))}
-                    {expensePoints.map((point, i) => (
-                      <div
-                        key={`tooltip-expense-${i}`}
-                        className="absolute opacity-0 hover:opacity-100 transition-opacity pointer-events-auto"
-                        style={{
-                          left: `${point.x}%`,
-                          top: `${(point.y / (chartHeight + 30)) * 100}%`,
-                          transform: 'translate(-50%, 10%)',
-                        }}
-                      >
-                        <div className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                          -{formatAmount(point.value)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </div>
             )
