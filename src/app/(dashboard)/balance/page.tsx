@@ -169,74 +169,227 @@ export default function BalancePage() {
             </div>
           </div>
 
-          {/* Income vs Expenses Chart */}
-          {availableMonths.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Income vs Expenses</h2>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-success-500" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Income</span>
+          {/* Income vs Expenses Area Chart */}
+          {availableMonths.length > 0 && (() => {
+            const maxAmount = Math.max(
+              ...availableMonths.map(p => Math.max(monthlyData[p]?.income || 0, monthlyData[p]?.expenses || 0))
+            )
+            const chartHeight = 200
+            const chartWidth = Math.max(availableMonths.length * 60, 400)
+            
+            // Calculate points for income area
+            const incomePoints = availableMonths.map((period, i) => {
+              const data = monthlyData[period]
+              const x = (i / (availableMonths.length - 1 || 1)) * chartWidth
+              const y = maxAmount > 0 ? chartHeight - ((data?.income || 0) / maxAmount) * chartHeight : chartHeight
+              return { x, y, value: data?.income || 0, period }
+            })
+            
+            // Calculate points for expense area
+            const expensePoints = availableMonths.map((period, i) => {
+              const data = monthlyData[period]
+              const x = (i / (availableMonths.length - 1 || 1)) * chartWidth
+              const y = maxAmount > 0 ? chartHeight - ((data?.expenses || 0) / maxAmount) * chartHeight : chartHeight
+              return { x, y, value: data?.expenses || 0, period }
+            })
+            
+            // Create SVG path for smooth area
+            const createAreaPath = (points: typeof incomePoints) => {
+              if (points.length === 0) return ''
+              if (points.length === 1) {
+                return `M ${points[0].x},${chartHeight} L ${points[0].x},${points[0].y} L ${points[0].x},${chartHeight} Z`
+              }
+              
+              let path = `M ${points[0].x},${chartHeight} L ${points[0].x},${points[0].y}`
+              
+              for (let i = 1; i < points.length; i++) {
+                const prev = points[i - 1]
+                const curr = points[i]
+                const cpX = (prev.x + curr.x) / 2
+                path += ` C ${cpX},${prev.y} ${cpX},${curr.y} ${curr.x},${curr.y}`
+              }
+              
+              path += ` L ${points[points.length - 1].x},${chartHeight} Z`
+              return path
+            }
+            
+            // Create line path
+            const createLinePath = (points: typeof incomePoints) => {
+              if (points.length === 0) return ''
+              if (points.length === 1) return `M ${points[0].x},${points[0].y}`
+              
+              let path = `M ${points[0].x},${points[0].y}`
+              
+              for (let i = 1; i < points.length; i++) {
+                const prev = points[i - 1]
+                const curr = points[i]
+                const cpX = (prev.x + curr.x) / 2
+                path += ` C ${cpX},${prev.y} ${cpX},${curr.y} ${curr.x},${curr.y}`
+              }
+              
+              return path
+            }
+            
+            return (
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Income vs Expenses</h2>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-success-500" />
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Income</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-error-500" />
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Expenses</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-error-500" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Expenses</span>
-                </div>
-              </div>
-              <div className="relative pt-8 pb-8">
-                {/* Chart area */}
-                <div className="flex gap-2 overflow-x-auto">
-                  {availableMonths.map(period => {
-                    const data = monthlyData[period]
-                    if (!data) return null
+                
+                <div className="relative overflow-x-auto">
+                  <svg 
+                    width={chartWidth} 
+                    height={chartHeight + 40} 
+                    className="min-w-full"
+                    style={{ minWidth: chartWidth }}
+                  >
+                    {/* Grid lines */}
+                    {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
+                      <line
+                        key={ratio}
+                        x1={0}
+                        y1={chartHeight * ratio}
+                        x2={chartWidth}
+                        y2={chartHeight * ratio}
+                        stroke="currentColor"
+                        className="text-gray-200 dark:text-gray-700"
+                        strokeWidth={1}
+                      />
+                    ))}
                     
-                    const maxAmount = Math.max(
-                      ...availableMonths.map(p => Math.max(monthlyData[p]?.income || 0, monthlyData[p]?.expenses || 0))
-                    )
+                    {/* Income area */}
+                    <path
+                      d={createAreaPath(incomePoints)}
+                      fill="rgb(34, 197, 94)"
+                      fillOpacity={0.2}
+                    />
+                    <path
+                      d={createLinePath(incomePoints)}
+                      fill="none"
+                      stroke="rgb(34, 197, 94)"
+                      strokeWidth={2}
+                    />
                     
-                    const incomeHeight = maxAmount > 0 ? (data.income / maxAmount) * 100 : 0
-                    const expenseHeight = maxAmount > 0 ? (data.expenses / maxAmount) * 100 : 0
+                    {/* Expense area */}
+                    <path
+                      d={createAreaPath(expensePoints)}
+                      fill="rgb(239, 68, 68)"
+                      fillOpacity={0.2}
+                    />
+                    <path
+                      d={createLinePath(expensePoints)}
+                      fill="none"
+                      stroke="rgb(239, 68, 68)"
+                      strokeWidth={2}
+                    />
                     
-                    return (
-                      <div key={period} className="flex-1 min-w-[60px] flex flex-col items-center group">
-                        {/* Income bar (top) */}
-                        <div className="h-[120px] w-full flex flex-col justify-end items-center relative">
-                          {/* Tooltip - inside the bar area */}
-                          <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none">
-                            +{formatAmount(data.income)}
-                          </div>
-                          <div 
-                            className="w-8 bg-success-500 rounded-t transition-all duration-300"
-                            style={{ height: `${incomeHeight}%`, minHeight: data.income > 0 ? '4px' : '0' }}
+                    {/* Data points with hover */}
+                    {incomePoints.map((point, i) => (
+                      <g key={`income-${i}`} className="group">
+                        <circle
+                          cx={point.x}
+                          cy={point.y}
+                          r={4}
+                          fill="rgb(34, 197, 94)"
+                          className="cursor-pointer"
+                        />
+                        <circle
+                          cx={point.x}
+                          cy={point.y}
+                          r={8}
+                          fill="transparent"
+                          className="cursor-pointer"
+                        />
+                        <g className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                          <rect
+                            x={point.x - 40}
+                            y={point.y - 30}
+                            width={80}
+                            height={24}
+                            rx={4}
+                            fill="rgb(17, 24, 39)"
                           />
-                        </div>
-                        
-                        {/* Center line / axis */}
-                        <div className="w-full h-[2px] bg-gray-300 dark:bg-gray-600 my-1" />
-                        
-                        {/* Expense bar (bottom) */}
-                        <div className="h-[120px] w-full flex flex-col justify-start items-center relative">
-                          <div 
-                            className="w-8 bg-error-500 rounded-b transition-all duration-300"
-                            style={{ height: `${expenseHeight}%`, minHeight: data.expenses > 0 ? '4px' : '0' }}
+                          <text
+                            x={point.x}
+                            y={point.y - 14}
+                            textAnchor="middle"
+                            fill="white"
+                            fontSize={11}
+                          >
+                            +{formatAmount(point.value)}
+                          </text>
+                        </g>
+                      </g>
+                    ))}
+                    
+                    {expensePoints.map((point, i) => (
+                      <g key={`expense-${i}`} className="group">
+                        <circle
+                          cx={point.x}
+                          cy={point.y}
+                          r={4}
+                          fill="rgb(239, 68, 68)"
+                          className="cursor-pointer"
+                        />
+                        <circle
+                          cx={point.x}
+                          cy={point.y}
+                          r={8}
+                          fill="transparent"
+                          className="cursor-pointer"
+                        />
+                        <g className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                          <rect
+                            x={point.x - 40}
+                            y={point.y - 30}
+                            width={80}
+                            height={24}
+                            rx={4}
+                            fill="rgb(17, 24, 39)"
                           />
-                          {/* Tooltip - inside the bar area */}
-                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none">
-                            -{formatAmount(data.expenses)}
-                          </div>
-                        </div>
-                        
-                        {/* Label */}
-                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center whitespace-nowrap">
+                          <text
+                            x={point.x}
+                            y={point.y - 14}
+                            textAnchor="middle"
+                            fill="white"
+                            fontSize={11}
+                          >
+                            -{formatAmount(point.value)}
+                          </text>
+                        </g>
+                      </g>
+                    ))}
+                    
+                    {/* X-axis labels */}
+                    {availableMonths.map((period, i) => {
+                      const x = (i / (availableMonths.length - 1 || 1)) * chartWidth
+                      return (
+                        <text
+                          key={period}
+                          x={x}
+                          y={chartHeight + 20}
+                          textAnchor="middle"
+                          fill="currentColor"
+                          className="text-gray-500 dark:text-gray-400"
+                          fontSize={11}
+                        >
                           {useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
-                        </span>
-                      </div>
-                    )
-                  })}
+                        </text>
+                      )
+                    })}
+                  </svg>
                 </div>
               </div>
-            </div>
-          )}
+            )
+          })()}
 
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Breakdown</h2>
