@@ -341,11 +341,12 @@ export default function BalancePage() {
                         <text
                           key={period}
                           x={x}
-                          y={chartHeight + 20}
-                          textAnchor="middle"
+                          y={chartHeight + 10}
+                          textAnchor="start"
                           fill="currentColor"
                           className="text-gray-500 dark:text-gray-400"
-                          fontSize={12}
+                          fontSize={10}
+                          transform={`rotate(90, ${x}, ${chartHeight + 10})`}
                         >
                           {useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
                         </text>

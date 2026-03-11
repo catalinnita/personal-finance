@@ -333,7 +333,7 @@ export default function TimelinePage() {
                               style={{ height: `${barHeight}%` }}
                             />
                           </div>
-                          <span className="text-xs text-gray-400 mt-2 flex-shrink-0 text-center whitespace-pre-line">{useMonthYear ? period.substring(0, 3) + '\n\'' + period.split(' ')[1]?.substring(2) : period}</span>
+                          <span className="text-xs text-gray-400 mt-2 flex-shrink-0" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>{useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}</span>
                         </div>
                       )
                     })}
