@@ -38,15 +38,22 @@ export async function GET() {
     
     const transactions = allTransactions
 
-    // Get category mappings
+    // Get category mappings with joined category names
     const { data: mappings } = await supabase
       .from('category_mappings')
-      .select('description_pattern, category')
+      .select(`
+        description_pattern,
+        category_id,
+        categories (name)
+      `)
       .eq('user_id', user.id)
 
     // Create a lookup map for categories
     const categoryMap = new Map<string, string>()
-    mappings?.forEach(m => categoryMap.set(m.description_pattern, m.category))
+    mappings?.forEach(m => {
+      const categoryName = (m.categories as unknown as { name: string } | null)?.name || 'Other'
+      categoryMap.set(m.description_pattern, categoryName)
+    })
 
     // Add category to each transaction based on description mapping
     const transactionsWithCategory = transactions?.map(t => ({
@@ -91,12 +98,30 @@ export async function POST(request: NextRequest) {
 
     const duplicateCount = transactions.length - newTransactions.length
 
+    // Get user's categories to map names to IDs
+    const { data: userCategories } = await supabase
+      .from('categories')
+      .select('id, name')
+      .eq('user_id', user.id)
+    
+    const categoryNameToId: Record<string, string> = {}
+    userCategories?.forEach(c => {
+      categoryNameToId[c.name.toLowerCase()] = c.id
+    })
+
     // Extract category from each new transaction and create/update mappings
-    const mappingsToUpsert = newTransactions.map((t: { description: string; category: string }) => ({
-      user_id: user.id,
-      description_pattern: t.description,
-      category: t.category,
-    }))
+    type MappingEntry = { user_id: string; description_pattern: string; category_id: string }
+    const mappingsToUpsert: MappingEntry[] = newTransactions
+      .map((t: { description: string; category: string }): MappingEntry | null => {
+        const categoryId = categoryNameToId[t.category.toLowerCase()]
+        if (!categoryId) return null
+        return {
+          user_id: user.id,
+          description_pattern: t.description,
+          category_id: categoryId,
+        }
+      })
+      .filter((m: MappingEntry | null): m is MappingEntry => m !== null)
 
     // Upsert category mappings
     if (mappingsToUpsert.length > 0) {
