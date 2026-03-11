@@ -57,28 +57,55 @@ export async function POST(request: NextRequest) {
 
     console.log('POST mapping:', { description_pattern, category_id, user_id: user.id })
 
-    // Upsert the mapping
-    const { data, error } = await supabase
+    // Check if mapping already exists
+    const { data: existing } = await supabase
       .from('category_mappings')
-      .upsert(
-        { description_pattern, category_id, user_id: user.id },
-        { onConflict: 'user_id,description_pattern' }
-      )
-      .select(`
-        id,
-        description_pattern,
-        category_id,
-        categories (
-          id,
-          name
-        )
-      `)
-      .single()
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('description_pattern', description_pattern)
+      .maybeSingle()
 
-    console.log('Upsert result:', { data, error })
+    console.log('Existing mapping:', existing)
+
+    let result
+    if (existing) {
+      // Update existing
+      result = await supabase
+        .from('category_mappings')
+        .update({ category_id })
+        .eq('id', existing.id)
+        .select(`
+          id,
+          description_pattern,
+          category_id,
+          categories (
+            id,
+            name
+          )
+        `)
+        .single()
+    } else {
+      // Insert new
+      result = await supabase
+        .from('category_mappings')
+        .insert({ description_pattern, category_id, user_id: user.id })
+        .select(`
+          id,
+          description_pattern,
+          category_id,
+          categories (
+            id,
+            name
+          )
+        `)
+        .single()
+    }
+
+    const { data, error } = result
+    console.log('Save result:', { data, error })
 
     if (error) {
-      console.error('Upsert error:', error)
+      console.error('Save error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
