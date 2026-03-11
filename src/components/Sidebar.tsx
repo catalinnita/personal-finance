@@ -5,14 +5,29 @@ import { usePathname } from 'next/navigation'
 import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Menu, X, TrendingUp } from 'lucide-react'
 import { useSidebar } from '@/context/SidebarContext'
 
-const navItems = [
-  { href: '/upload', label: 'Upload Statements', icon: Upload },
-  { href: '/transactions', label: 'Transactions', icon: List },
-  { href: '/balance', label: 'Balance', icon: BarChart3 },
-  { href: '/categories', label: 'Categories', icon: PieChart },
-  { href: '/timeline', label: 'Timeline', icon: TrendingUp },
-  { href: '/manage-categories', label: 'Manage Categories', icon: Tags },
-  { href: '/mappings', label: 'Mappings', icon: ArrowRightLeft },
+const navSections = [
+  {
+    title: 'Data',
+    items: [
+      { href: '/upload', label: 'Upload Statements', icon: Upload },
+      { href: '/transactions', label: 'Transactions', icon: List },
+    ]
+  },
+  {
+    title: 'Manage',
+    items: [
+      { href: '/manage-categories', label: 'Manage Categories', icon: Tags },
+      { href: '/mappings', label: 'Mappings', icon: ArrowRightLeft },
+    ]
+  },
+  {
+    title: 'Reporting',
+    items: [
+      { href: '/balance', label: 'Balance', icon: BarChart3 },
+      { href: '/categories', label: 'Categories', icon: PieChart },
+      { href: '/timeline', label: 'Timeline', icon: TrendingUp },
+    ]
+  },
 ]
 
 export default function Sidebar() {
@@ -51,20 +66,31 @@ export default function Sidebar() {
         
         {/* Navigation */}
         <nav className="flex-1 px-4 overflow-y-auto no-scrollbar">
-          <div className="flex flex-col gap-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`menu-item ${isActive ? 'menu-item-active' : 'menu-item-inactive'} ${!showFull ? 'justify-center' : ''}`}
-                >
-                  <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}`} />
-                  {showFull && <span>{item.label}</span>}
-                </Link>
-              )
-            })}
+          <div className="flex flex-col gap-4">
+            {navSections.map((section) => (
+              <div key={section.title}>
+                {showFull && (
+                  <h3 className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                    {section.title}
+                  </h3>
+                )}
+                <div className="flex flex-col gap-1">
+                  {section.items.map((item) => {
+                    const isActive = pathname === item.href
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`menu-item ${isActive ? 'menu-item-active' : 'menu-item-inactive'} ${!showFull ? 'justify-center' : ''}`}
+                      >
+                        <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                        {showFull && <span>{item.label}</span>}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </nav>
       </aside>
