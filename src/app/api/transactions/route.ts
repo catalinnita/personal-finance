@@ -30,6 +30,9 @@ export async function GET() {
       [{ column: 'user_id', value: user.id }]
     )
 
+    console.log('Transactions fetched:', transactions.length)
+    console.log('Mappings fetched:', allMappings.length)
+
     // Create a lookup map for categories
     const categoryMap = new Map<string, string>()
     allMappings.forEach(m => {
@@ -42,6 +45,13 @@ export async function GET() {
       ...t,
       category: categoryMap.get(t.description) || 'Other'
     }))
+
+    // Debug: count categories
+    const categoryCounts: Record<string, number> = {}
+    transactionsWithCategory.forEach(t => {
+      categoryCounts[t.category] = (categoryCounts[t.category] || 0) + 1
+    })
+    console.log('Category distribution:', categoryCounts)
 
     return NextResponse.json({ transactions: transactionsWithCategory })
   } catch (error) {
