@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, DragEvent } from 'react'
-import { Loader2, GripVertical, X, AlertCircle } from 'lucide-react'
+import { Loader2, GripVertical, X, AlertCircle, Sparkles } from 'lucide-react'
 
 type Category = {
   id: string
@@ -32,6 +32,8 @@ export default function MappingsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showUnmapped, setShowUnmapped] = useState(true)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [identifying, setIdentifying] = useState(false)
+  const [identifyProgress, setIdentifyProgress] = useState({ current: 0, total: 0 })
 
   useEffect(() => {
     fetchData()
@@ -99,6 +101,45 @@ export default function MappingsPage() {
       }
     } catch (error) {
       console.error('Error deleting mapping:', error)
+    }
+  }
+
+  const handleIdentifyWithAI = async () => {
+    if (unmappedDescriptions.length === 0) return
+    
+    setIdentifying(true)
+    const batchSize = 20
+    const total = unmappedDescriptions.length
+    setIdentifyProgress({ current: 0, total })
+    
+    try {
+      // Process in batches to avoid token limits
+      for (let i = 0; i < total; i += batchSize) {
+        const batch = unmappedDescriptions.slice(i, i + batchSize)
+        setIdentifyProgress({ current: Math.min(i + batchSize, total), total })
+        
+        const response = await fetch('/api/identify-categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ descriptions: batch }),
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          
+          // Create mappings for each identified category
+          for (const result of data.results) {
+            if (result.description && result.category) {
+              await handleUpdateMapping(result.description, result.category)
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error identifying categories:', error)
+    } finally {
+      setIdentifying(false)
+      setIdentifyProgress({ current: 0, total: 0 })
     }
   }
 
@@ -267,12 +308,31 @@ export default function MappingsPage() {
                 Unmapped Descriptions ({unmappedDescriptions.length})
               </h2>
             </div>
-            <button
-              onClick={() => setShowUnmapped(false)}
-              className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm"
-            >
-              Hide
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleIdentifyWithAI}
+                disabled={identifying || unmappedDescriptions.length === 0}
+                className="flex items-center gap-2 px-3 py-1.5 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                {identifying ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Identifying {identifyProgress.current}/{identifyProgress.total}...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Identify with AI
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => setShowUnmapped(false)}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm"
+              >
+                Hide
+              </button>
+            </div>
           </div>
           <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
             These descriptions don&apos;t have a category mapping. Drag them to a category below.
