@@ -174,23 +174,24 @@ export default function BalancePage() {
             const maxAmount = Math.max(
               ...availableMonths.map(p => Math.max(monthlyData[p]?.income || 0, monthlyData[p]?.expenses || 0))
             )
-            const halfHeight = 120
+            const halfHeight = 100
             const chartHeight = halfHeight * 2
-            const padding = { left: 10, right: 10 }
+            const chartWidth = 800
+            const padding = { left: 40, right: 40 }
             
             // Calculate points for income (positive Y, above center line)
             const incomePoints = availableMonths.map((period, i) => {
               const data = monthlyData[period]
-              const x = padding.left + (availableMonths.length > 1 ? (i / (availableMonths.length - 1)) * (100 - padding.left - padding.right) : 50)
-              const y = maxAmount > 0 ? halfHeight - ((data?.income || 0) / maxAmount) * halfHeight : halfHeight
+              const x = padding.left + (availableMonths.length > 1 ? (i / (availableMonths.length - 1)) * (chartWidth - padding.left - padding.right) : (chartWidth / 2))
+              const y = maxAmount > 0 ? halfHeight - ((data?.income || 0) / maxAmount) * (halfHeight - 10) : halfHeight
               return { x, y, value: data?.income || 0, period }
             })
             
             // Calculate points for expenses (negative Y, below center line)
             const expensePoints = availableMonths.map((period, i) => {
               const data = monthlyData[period]
-              const x = padding.left + (availableMonths.length > 1 ? (i / (availableMonths.length - 1)) * (100 - padding.left - padding.right) : 50)
-              const y = maxAmount > 0 ? halfHeight + ((data?.expenses || 0) / maxAmount) * halfHeight : halfHeight
+              const x = padding.left + (availableMonths.length > 1 ? (i / (availableMonths.length - 1)) * (chartWidth - padding.left - padding.right) : (chartWidth / 2))
+              const y = maxAmount > 0 ? halfHeight + ((data?.expenses || 0) / maxAmount) * (halfHeight - 10) : halfHeight
               return { x, y, value: data?.expenses || 0, period }
             })
             
@@ -198,14 +199,14 @@ export default function BalancePage() {
             const createIncomeAreaPath = (points: typeof incomePoints) => {
               if (points.length === 0) return ''
               if (points.length === 1) {
-                return `M ${points[0].x}%,${halfHeight} L ${points[0].x}%,${points[0].y} L ${points[0].x}%,${halfHeight} Z`
+                return `M ${points[0].x},${halfHeight} L ${points[0].x},${points[0].y} L ${points[0].x},${halfHeight} Z`
               }
               
-              let path = `M ${points[0].x}%,${halfHeight} L ${points[0].x}%,${points[0].y}`
+              let path = `M ${points[0].x},${halfHeight} L ${points[0].x},${points[0].y}`
               for (let i = 1; i < points.length; i++) {
-                path += ` L ${points[i].x}%,${points[i].y}`
+                path += ` L ${points[i].x},${points[i].y}`
               }
-              path += ` L ${points[points.length - 1].x}%,${halfHeight} Z`
+              path += ` L ${points[points.length - 1].x},${halfHeight} Z`
               return path
             }
             
@@ -213,25 +214,25 @@ export default function BalancePage() {
             const createExpenseAreaPath = (points: typeof expensePoints) => {
               if (points.length === 0) return ''
               if (points.length === 1) {
-                return `M ${points[0].x}%,${halfHeight} L ${points[0].x}%,${points[0].y} L ${points[0].x}%,${halfHeight} Z`
+                return `M ${points[0].x},${halfHeight} L ${points[0].x},${points[0].y} L ${points[0].x},${halfHeight} Z`
               }
               
-              let path = `M ${points[0].x}%,${halfHeight} L ${points[0].x}%,${points[0].y}`
+              let path = `M ${points[0].x},${halfHeight} L ${points[0].x},${points[0].y}`
               for (let i = 1; i < points.length; i++) {
-                path += ` L ${points[i].x}%,${points[i].y}`
+                path += ` L ${points[i].x},${points[i].y}`
               }
-              path += ` L ${points[points.length - 1].x}%,${halfHeight} Z`
+              path += ` L ${points[points.length - 1].x},${halfHeight} Z`
               return path
             }
             
             // Create line path with straight lines
             const createLinePath = (points: typeof incomePoints) => {
               if (points.length === 0) return ''
-              if (points.length === 1) return `M ${points[0].x}%,${points[0].y}`
+              if (points.length === 1) return `M ${points[0].x},${points[0].y}`
               
-              let path = `M ${points[0].x}%,${points[0].y}`
+              let path = `M ${points[0].x},${points[0].y}`
               for (let i = 1; i < points.length; i++) {
-                path += ` L ${points[i].x}%,${points[i].y}`
+                path += ` L ${points[i].x},${points[i].y}`
               }
               return path
             }
@@ -252,36 +253,33 @@ export default function BalancePage() {
                 
                 <div className="relative">
                   <svg 
-                    viewBox={`0 0 100 ${chartHeight + 30}`}
-                    className="w-full"
-                    style={{ height: chartHeight + 30 }}
-                    preserveAspectRatio="none"
+                    viewBox={`0 0 ${chartWidth} ${chartHeight + 30}`}
+                    className="w-full h-auto"
+                    preserveAspectRatio="xMidYMid meet"
                   >
                     {/* Grid lines */}
                     {[0, 0.5, 1].map((ratio) => (
                       <line
                         key={ratio}
-                        x1="0%"
+                        x1={0}
                         y1={halfHeight * ratio * 2}
-                        x2="100%"
+                        x2={chartWidth}
                         y2={halfHeight * ratio * 2}
                         stroke="currentColor"
                         className="text-gray-200 dark:text-gray-700"
-                        strokeWidth={0.5}
-                        vectorEffect="non-scaling-stroke"
+                        strokeWidth={1}
                       />
                     ))}
                     
                     {/* Center line (zero axis) */}
                     <line
-                      x1="0%"
+                      x1={0}
                       y1={halfHeight}
-                      x2="100%"
+                      x2={chartWidth}
                       y2={halfHeight}
                       stroke="currentColor"
                       className="text-gray-400 dark:text-gray-500"
-                      strokeWidth={1}
-                      vectorEffect="non-scaling-stroke"
+                      strokeWidth={2}
                     />
                     
                     {/* Income area (above center) */}
@@ -295,7 +293,6 @@ export default function BalancePage() {
                       fill="none"
                       stroke="rgb(34, 197, 94)"
                       strokeWidth={2}
-                      vectorEffect="non-scaling-stroke"
                     />
                     
                     {/* Expense area (below center) */}
@@ -315,13 +312,12 @@ export default function BalancePage() {
                     {incomePoints.map((point, i) => (
                       <circle
                         key={`income-${i}`}
-                        cx={`${point.x}%`}
+                        cx={point.x}
                         cy={point.y}
-                        r={4}
+                        r={5}
                         fill="rgb(34, 197, 94)"
                         stroke="white"
                         strokeWidth={2}
-                        vectorEffect="non-scaling-stroke"
                       />
                     ))}
                     
@@ -329,28 +325,27 @@ export default function BalancePage() {
                     {expensePoints.map((point, i) => (
                       <circle
                         key={`expense-${i}`}
-                        cx={`${point.x}%`}
+                        cx={point.x}
                         cy={point.y}
-                        r={4}
+                        r={5}
                         fill="rgb(239, 68, 68)"
                         stroke="white"
                         strokeWidth={2}
-                        vectorEffect="non-scaling-stroke"
                       />
                     ))}
                     
                     {/* X-axis labels */}
                     {availableMonths.map((period, i) => {
-                      const x = padding.left + (availableMonths.length > 1 ? (i / (availableMonths.length - 1)) * (100 - padding.left - padding.right) : 50)
+                      const x = padding.left + (availableMonths.length > 1 ? (i / (availableMonths.length - 1)) * (chartWidth - padding.left - padding.right) : (chartWidth / 2))
                       return (
                         <text
                           key={period}
-                          x={`${x}%`}
+                          x={x}
                           y={chartHeight + 20}
                           textAnchor="middle"
                           fill="currentColor"
                           className="text-gray-500 dark:text-gray-400"
-                          fontSize={10}
+                          fontSize={12}
                         >
                           {useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
                         </text>
