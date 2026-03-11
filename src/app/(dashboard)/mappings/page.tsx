@@ -71,6 +71,7 @@ export default function MappingsPage() {
 
   const handleUpdateMapping = async (descriptionPattern: string, categoryId: string) => {
     try {
+      console.log('Saving mapping:', { descriptionPattern, categoryId })
       const response = await fetch('/api/category-mappings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,14 +81,18 @@ export default function MappingsPage() {
         }),
       })
 
-      if (response.ok) {
-        const data = await response.json()
+      const data = await response.json()
+      console.log('Response:', response.status, data)
+
+      if (response.ok && data.mapping) {
         setMappings(prev => [
           ...prev.filter(m => m.description_pattern !== descriptionPattern), 
           data.mapping
         ])
         // Remove from unmapped if it was there
         setUnmappedDescriptions(prev => prev.filter(d => d !== descriptionPattern))
+      } else {
+        console.error('Failed to save mapping:', data.error || 'Unknown error')
       }
     } catch (error) {
       console.error('Error updating mapping:', error)
