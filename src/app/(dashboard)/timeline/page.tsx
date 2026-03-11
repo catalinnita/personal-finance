@@ -319,7 +319,7 @@ export default function TimelinePage() {
                       const barHeight = value > 0 ? Math.max(height, 5) : 2
                       
                       return (
-                        <div key={period} className="flex-1 min-w-[20px] flex flex-col items-center group h-full">
+                        <div key={period} className="flex-1 min-w-[10px] flex flex-col items-center group h-full">
                           <div className="w-full h-full relative flex flex-col justify-end items-center">
                             {/* Tooltip - positioned inside container */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none">
