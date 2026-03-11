@@ -337,11 +337,9 @@ export default function TimelinePage() {
                         <div key={period} className="flex-1 min-w-[40px] flex flex-col items-center group h-full">
                           <div className="w-full h-full relative flex flex-col justify-end items-center">
                             {/* Tooltip */}
-                            {value > 0 && (
-                              <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
-                                {period}: {formatAmount(value)}
-                              </div>
-                            )}
+                            <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                              {period}: {formatAmount(value)}
+                            </div>
                             {/* Bar */}
                             <div
                               className={`w-full rounded-t transition-all duration-300 ${
