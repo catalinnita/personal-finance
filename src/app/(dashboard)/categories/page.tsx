@@ -161,7 +161,7 @@ export default function CategoriesPage() {
                       <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Category</th>
                       {availableMonths.map(period => (
                         <th key={period} className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-                          {useMonthYear ? period : period.substring(0, 3)}
+                          {useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
                         </th>
                       ))}
                       <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Total</th>
