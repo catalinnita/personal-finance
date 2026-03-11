@@ -9,7 +9,7 @@ import { useSidebar } from '@/context/SidebarContext'
 import { useTheme } from '@/context/ThemeContext'
 
 const navItems = [
-  { href: '/upload', label: 'Upload Statement', icon: Upload },
+  { href: '/upload', label: 'Upload Statements', icon: Upload },
   { href: '/transactions', label: 'Transactions', icon: List },
   { href: '/balance', label: 'Balance', icon: BarChart3 },
   { href: '/categories', label: 'Categories', icon: PieChart },
