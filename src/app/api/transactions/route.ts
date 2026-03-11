@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { fetchAllRows } from '@/lib/supabase/paginate'
 
 export async function GET() {
   try {
@@ -12,56 +13,22 @@ export async function GET() {
 
     // Get all transactions - fetch in batches to bypass 1000 row limit
     type TransactionRow = { id: string; date: string; description: string; amount: number; type: string; user_id: string }
-    let allTransactions: TransactionRow[] = []
-    let from = 0
-    const batchSize = 1000
-    
-    while (true) {
-      const { data: batch, error: batchError } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false })
-        .range(from, from + batchSize - 1)
-      
-      if (batchError) {
-        return NextResponse.json({ error: batchError.message }, { status: 500 })
-      }
-      
-      if (!batch || batch.length === 0) break
-      
-      allTransactions = [...allTransactions, ...batch]
-      
-      if (batch.length < batchSize) break
-      from += batchSize
-    }
-    
-    const transactions = allTransactions
+    const transactions = await fetchAllRows<TransactionRow>(
+      supabase,
+      'transactions',
+      '*',
+      [{ column: 'user_id', value: user.id }],
+      { column: 'date', ascending: false }
+    )
 
     // Get category mappings with joined category names - paginate to get all
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let allMappings: any[] = []
-    let mappingFrom = 0
-    const mappingBatchSize = 1000
-    
-    while (true) {
-      const { data: mappingBatch } = await supabase
-        .from('category_mappings')
-        .select(`
-          description_pattern,
-          category_id,
-          categories (name)
-        `)
-        .eq('user_id', user.id)
-        .range(mappingFrom, mappingFrom + mappingBatchSize - 1)
-      
-      if (!mappingBatch || mappingBatch.length === 0) break
-      
-      allMappings = [...allMappings, ...mappingBatch]
-      
-      if (mappingBatch.length < mappingBatchSize) break
-      mappingFrom += mappingBatchSize
-    }
+    type MappingRow = { description_pattern: string; category_id: string; categories: { name: string } | null }
+    const allMappings = await fetchAllRows<MappingRow>(
+      supabase,
+      'category_mappings',
+      'description_pattern, category_id, categories (name)',
+      [{ column: 'user_id', value: user.id }]
+    )
 
     // Create a lookup map for categories
     const categoryMap = new Map<string, string>()
@@ -96,24 +63,12 @@ export async function POST(request: NextRequest) {
 
     // Get existing transactions to check for duplicates - paginate to get all
     type ExistingTx = { date: string; description: string; amount: number }
-    let allExisting: ExistingTx[] = []
-    let existingFrom = 0
-    const existingBatchSize = 1000
-    
-    while (true) {
-      const { data: existingBatch } = await supabase
-        .from('transactions')
-        .select('date, description, amount')
-        .eq('user_id', user.id)
-        .range(existingFrom, existingFrom + existingBatchSize - 1)
-      
-      if (!existingBatch || existingBatch.length === 0) break
-      
-      allExisting = [...allExisting, ...existingBatch]
-      
-      if (existingBatch.length < existingBatchSize) break
-      existingFrom += existingBatchSize
-    }
+    const allExisting = await fetchAllRows<ExistingTx>(
+      supabase,
+      'transactions',
+      'date, description, amount',
+      [{ column: 'user_id', value: user.id }]
+    )
 
     // Create a set of existing transaction keys for fast lookup
     const existingKeys = new Set(

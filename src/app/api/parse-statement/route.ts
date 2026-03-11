@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
+import { fetchAllRows } from '@/lib/supabase/paginate'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -55,29 +56,13 @@ export async function POST(request: NextRequest) {
     const allCategories = [...new Set([...DEFAULT_CATEGORIES, ...customCategories])].sort()
     
     // Fetch all mappings with pagination to bypass 1000 row limit
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let allMappingsData: any[] = []
-    let mappingFrom = 0
-    const mappingBatchSize = 1000
-    
-    while (true) {
-      const { data: mappingBatch } = await supabase
-        .from('category_mappings')
-        .select(`
-          description_pattern,
-          category_id,
-          categories (name)
-        `)
-        .eq('user_id', user.id)
-        .range(mappingFrom, mappingFrom + mappingBatchSize - 1)
-      
-      if (!mappingBatch || mappingBatch.length === 0) break
-      
-      allMappingsData = [...allMappingsData, ...mappingBatch]
-      
-      if (mappingBatch.length < mappingBatchSize) break
-      mappingFrom += mappingBatchSize
-    }
+    type MappingRow = { description_pattern: string; category_id: string; categories: { name: string } | null }
+    const allMappingsData = await fetchAllRows<MappingRow>(
+      supabase,
+      'category_mappings',
+      'description_pattern, category_id, categories (name)',
+      [{ column: 'user_id', value: user.id }]
+    )
     
     // Transform mappings to include category name
     const mappings = allMappingsData.map(m => ({

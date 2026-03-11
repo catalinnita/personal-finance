@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { fetchAllRows } from '@/lib/supabase/paginate'
 
 export async function GET() {
   try {
@@ -11,41 +12,14 @@ export async function GET() {
     }
 
     // Fetch all mappings using pagination to bypass 1000 row limit
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allData: any[] = []
-    
-    let from = 0
-    const pageSize = 1000
-    let hasMore = true
-
-    while (hasMore) {
-      const { data, error } = await supabase
-        .from('category_mappings')
-        .select(`
-          id,
-          description_pattern,
-          category_id,
-          categories (
-            id,
-            name
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('description_pattern')
-        .range(from, from + pageSize - 1)
-
-      if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
-      }
-
-      if (data && data.length > 0) {
-        allData.push(...data)
-        from += pageSize
-        hasMore = data.length === pageSize
-      } else {
-        hasMore = false
-      }
-    }
+    type MappingRow = { id: string; description_pattern: string; category_id: string; categories: { id: string; name: string } | null }
+    const allData = await fetchAllRows<MappingRow>(
+      supabase,
+      'category_mappings',
+      'id, description_pattern, category_id, categories (id, name)',
+      [{ column: 'user_id', value: user.id }],
+      { column: 'description_pattern', ascending: true }
+    )
 
     // Transform to include category name for backward compatibility
     const mappings = allData.map(m => ({
