@@ -10,33 +10,50 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Join with categories to get category name - fetch all (no limit)
-    const { data, error } = await supabase
-      .from('category_mappings')
-      .select(`
-        id,
-        description_pattern,
-        category_id,
-        categories (
-          id,
-          name
-        )
-      `, { count: 'exact' })
-      .eq('user_id', user.id)
-      .order('description_pattern')
-      .range(0, 10000)
+    // Fetch all mappings using pagination to bypass 1000 row limit
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allData: any[] = []
+    
+    let from = 0
+    const pageSize = 1000
+    let hasMore = true
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from('category_mappings')
+        .select(`
+          id,
+          description_pattern,
+          category_id,
+          categories (
+            id,
+            name
+          )
+        `)
+        .eq('user_id', user.id)
+        .order('description_pattern')
+        .range(from, from + pageSize - 1)
+
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 })
+      }
+
+      if (data && data.length > 0) {
+        allData.push(...data)
+        from += pageSize
+        hasMore = data.length === pageSize
+      } else {
+        hasMore = false
+      }
     }
 
     // Transform to include category name for backward compatibility
-    const mappings = data?.map(m => ({
+    const mappings = allData.map(m => ({
       id: m.id,
       description_pattern: m.description_pattern,
       category_id: m.category_id,
       category: (m.categories as unknown as { id: string; name: string } | null)?.name || ''
-    })) || []
+    }))
 
     return NextResponse.json({ mappings, count: mappings.length })
   } catch (error) {
