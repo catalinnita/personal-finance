@@ -2,11 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Settings, LogOut, Menu, X, Sun, Moon, TrendingUp } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Menu, X, TrendingUp } from 'lucide-react'
 import { useSidebar } from '@/context/SidebarContext'
-import { useTheme } from '@/context/ThemeContext'
 
 const navItems = [
   { href: '/upload', label: 'Upload Statements', icon: Upload },
@@ -16,20 +13,11 @@ const navItems = [
   { href: '/timeline', label: 'Timeline', icon: TrendingUp },
   { href: '/manage-categories', label: 'Manage Categories', icon: Tags },
   { href: '/mappings', label: 'Mappings', icon: ArrowRightLeft },
-  { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
-  const router = useRouter()
-  const supabase = createClient()
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } = useSidebar()
-  const { theme, toggleTheme } = useTheme()
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/login')
-  }
 
   const showFull = isExpanded || isHovered || isMobileOpen
 
@@ -79,31 +67,6 @@ export default function Sidebar() {
             })}
           </div>
         </nav>
-
-        {/* Bottom section */}
-        <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-800 space-y-1">
-          {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className={`menu-item menu-item-inactive ${!showFull ? 'justify-center' : ''}`}
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            ) : (
-              <Moon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            )}
-            {showFull && <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
-          </button>
-          
-          {/* Logout */}
-          <button
-            onClick={handleLogout}
-            className={`menu-item menu-item-inactive ${!showFull ? 'justify-center' : ''}`}
-          >
-            <LogOut className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            {showFull && <span>Logout</span>}
-          </button>
-        </div>
       </aside>
     </>
   )
