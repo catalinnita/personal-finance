@@ -128,7 +128,7 @@ export default function ManageCategoriesPage() {
         </div>
 
         {/* Categories list */}
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {categories.map((category) => (
             <div key={category.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
               {editingCategory?.id === category.id ? (
