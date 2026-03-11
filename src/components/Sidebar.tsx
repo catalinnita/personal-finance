@@ -67,7 +67,7 @@ export default function Sidebar() {
         </div>
         
         {/* Navigation */}
-        <nav className="flex-1 px-4 overflow-y-auto no-scrollbar">
+        <nav className="flex-1 px-4 overflow-y-auto overflow-x-visible">
           <div className="flex flex-col gap-4">
             {navSections.map((section) => (
               <div key={section.title}>
