@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Loader2, Trash2, AlertTriangle, Calendar, Copy, Database } from 'lucide-react'
+import { Loader2, Trash2, AlertTriangle, Calendar, Copy, Database, Tags } from 'lucide-react'
 
 type Transaction = {
   id: string
@@ -17,12 +17,30 @@ export default function CleanupPage() {
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState<string>('')
-  const [confirmAction, setConfirmAction] = useState<'duplicates' | 'month' | 'all' | null>(null)
+  const [confirmAction, setConfirmAction] = useState<'duplicates' | 'month' | 'all' | 'categories' | null>(null)
+  const [categoriesCount, setCategoriesCount] = useState(0)
+  const [mappingsCount, setMappingsCount] = useState(0)
   const [result, setResult] = useState<{ type: 'success' | 'error', message: string } | null>(null)
 
   useEffect(() => {
     fetchTransactions()
+    fetchCategoriesAndMappings()
   }, [])
+
+  const fetchCategoriesAndMappings = async () => {
+    try {
+      const [categoriesRes, mappingsRes] = await Promise.all([
+        fetch('/api/categories'),
+        fetch('/api/category-mappings')
+      ])
+      const categoriesData = await categoriesRes.json()
+      const mappingsData = await mappingsRes.json()
+      setCategoriesCount(categoriesData.categories?.length || 0)
+      setMappingsCount(mappingsData.mappings?.length || 0)
+    } catch (error) {
+      console.error('Error fetching categories/mappings:', error)
+    }
+  }
 
   const fetchTransactions = async () => {
     try {
@@ -134,10 +152,44 @@ export default function CleanupPage() {
         fetch(`/api/transactions/${t.id}`, { method: 'DELETE' })
       )
       await Promise.all(deletePromises)
-      setResult({ type: 'success', message: `Successfully deleted all ${transactions.length} transactions.` })
+      setResult({ type: 'success', message: `Successfully deleted all ${transactions.length} transactions. Categories and mappings have been preserved.` })
       await fetchTransactions()
     } catch (error) {
       setResult({ type: 'error', message: 'Failed to delete transactions. Please try again.' })
+    } finally {
+      setDeleting(false)
+      setConfirmAction(null)
+    }
+  }
+
+  const handleDeleteCategoriesAndMappings = async () => {
+    if (categoriesCount === 0 && mappingsCount === 0) return
+    setDeleting(true)
+    setResult(null)
+    
+    try {
+      // Delete all mappings first (they depend on categories)
+      const mappingsRes = await fetch('/api/category-mappings')
+      const mappingsData = await mappingsRes.json()
+      const mappings = mappingsData.mappings || []
+      
+      for (const mapping of mappings) {
+        await fetch(`/api/category-mappings/${mapping.id}`, { method: 'DELETE' })
+      }
+      
+      // Then delete all categories
+      const categoriesRes = await fetch('/api/categories')
+      const categoriesData = await categoriesRes.json()
+      const categories = categoriesData.categories || []
+      
+      for (const category of categories) {
+        await fetch(`/api/categories/${category.id}`, { method: 'DELETE' })
+      }
+      
+      setResult({ type: 'success', message: `Successfully deleted ${categories.length} categories and ${mappings.length} mappings.` })
+      await fetchCategoriesAndMappings()
+    } catch (error) {
+      setResult({ type: 'error', message: 'Failed to delete categories and mappings. Please try again.' })
     } finally {
       setDeleting(false)
       setConfirmAction(null)
@@ -299,16 +351,16 @@ export default function CleanupPage() {
           </div>
         </div>
 
-        {/* Delete All Data */}
+        {/* Delete All Transactions */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-error-200 dark:border-error-500/30 shadow-theme-sm">
           <div className="flex items-start gap-4">
             <div className="p-3 bg-error-100 dark:bg-error-500/20 rounded-lg">
               <Database className="w-6 h-6 text-error-600 dark:text-error-400" />
             </div>
             <div className="flex-1">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Delete All Data</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Delete All Transactions</h2>
               <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
-                Permanently remove all your transaction data.
+                Permanently remove all your transaction data. Categories and mappings will be preserved.
               </p>
               
               <div className="bg-error-50 dark:bg-error-500/10 rounded-lg p-4 mb-4 border border-error-200 dark:border-error-500/30">
@@ -318,7 +370,7 @@ export default function CleanupPage() {
                 <div className="flex items-start gap-2 text-sm text-error-600 dark:text-error-400">
                   <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <p>
-                    <strong>Warning:</strong> This is a destructive action that will permanently delete ALL your transaction data. You will lose your entire financial history. This action cannot be undone. Make sure you have exported or backed up your data before proceeding.
+                    <strong>Warning:</strong> This will permanently delete ALL your transaction data. Your categories and mappings will be kept so you can re-upload statements. This action cannot be undone.
                   </p>
                 </div>
               </div>
@@ -331,7 +383,7 @@ export default function CleanupPage() {
                     className="px-4 py-2 bg-error-500 hover:bg-error-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                    Yes, Delete Everything
+                    Yes, Delete All Transactions
                   </button>
                   <button
                     onClick={() => setConfirmAction(null)}
@@ -348,7 +400,63 @@ export default function CleanupPage() {
                   className="px-4 py-2 bg-error-500 hover:bg-error-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Delete All Data
+                  Delete All Transactions
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Delete Categories and Mappings */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-purple-200 dark:border-purple-500/30 shadow-theme-sm">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-purple-100 dark:bg-purple-500/20 rounded-lg">
+              <Tags className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Delete Categories and Mappings</h2>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
+                Remove all custom categories and description-to-category mappings. Transactions will not be affected.
+              </p>
+              
+              <div className="bg-purple-50 dark:bg-purple-500/10 rounded-lg p-4 mb-4 border border-purple-200 dark:border-purple-500/30">
+                <p className="text-sm font-medium text-purple-700 dark:text-purple-400 mb-2">
+                  Categories: <span className="font-bold">{categoriesCount}</span> · Mappings: <span className="font-bold">{mappingsCount}</span>
+                </p>
+                <div className="flex items-start gap-2 text-sm text-purple-600 dark:text-purple-400">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <p>
+                    <strong>Note:</strong> This will delete all your custom categories and the mappings that link descriptions to categories. Your transactions will remain but may need to be re-categorized. This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+
+              {confirmAction === 'categories' ? (
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleDeleteCategoriesAndMappings}
+                    disabled={deleting || (categoriesCount === 0 && mappingsCount === 0)}
+                    className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    Yes, Delete Categories & Mappings
+                  </button>
+                  <button
+                    onClick={() => setConfirmAction(null)}
+                    disabled={deleting}
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setConfirmAction('categories')}
+                  disabled={categoriesCount === 0 && mappingsCount === 0}
+                  className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Categories & Mappings
                 </button>
               )}
             </div>
