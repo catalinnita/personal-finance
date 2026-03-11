@@ -62,7 +62,7 @@ export default function DashboardLayout({
       </header>
       
       {/* Main content */}
-      <main className={`p-4 md:p-6 transition-all duration-300 relative z-0 ${mainMargin}`}>
+      <main className={`p-4 md:p-6 transition-all duration-300 ${mainMargin}`} style={{ isolation: 'isolate' }}>
         <div className="max-w-7xl mx-auto">
           {children}
         </div>
