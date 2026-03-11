@@ -55,26 +55,57 @@ export async function POST(request: NextRequest) {
 
     const { description_pattern, category_id } = await request.json()
 
-    // Upsert the mapping
-    const { data, error } = await supabase
+    // Check if mapping already exists
+    const { data: existing } = await supabase
       .from('category_mappings')
-      .upsert(
-        { description_pattern, category_id, user_id: user.id },
-        { onConflict: 'user_id,description_pattern' }
-      )
-      .select(`
-        id,
-        description_pattern,
-        category_id,
-        categories (
-          id,
-          name
-        )
-      `)
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('description_pattern', description_pattern)
       .single()
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    let data
+    let error
+
+    if (existing) {
+      // Update existing mapping
+      const result = await supabase
+        .from('category_mappings')
+        .update({ category_id })
+        .eq('id', existing.id)
+        .select(`
+          id,
+          description_pattern,
+          category_id,
+          categories (
+            id,
+            name
+          )
+        `)
+        .single()
+      data = result.data
+      error = result.error
+    } else {
+      // Insert new mapping
+      const result = await supabase
+        .from('category_mappings')
+        .insert({ description_pattern, category_id, user_id: user.id })
+        .select(`
+          id,
+          description_pattern,
+          category_id,
+          categories (
+            id,
+            name
+          )
+        `)
+        .single()
+      data = result.data
+      error = result.error
+    }
+
+    if (error || !data) {
+      console.error('Error saving mapping:', error)
+      return NextResponse.json({ error: error?.message || 'Failed to save mapping' }, { status: 500 })
     }
 
     // Transform response
