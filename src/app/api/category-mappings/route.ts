@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Join with categories to get category name
+    // Join with categories to get category name - fetch all (no limit)
     const { data, error } = await supabase
       .from('category_mappings')
       .select(`
@@ -21,9 +21,10 @@ export async function GET() {
           id,
           name
         )
-      `)
+      `, { count: 'exact' })
       .eq('user_id', user.id)
       .order('description_pattern')
+      .range(0, 9999)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
