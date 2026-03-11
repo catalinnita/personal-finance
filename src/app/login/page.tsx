@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Chrome } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const supabase = createClient()
@@ -44,7 +45,13 @@ export default function LoginPage() {
       <div className="w-full max-w-md p-8">
         <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-200">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Personal Finance</h1>
+            <Image 
+              src="/kentic.png" 
+              alt="Kentic" 
+              width={280} 
+              height={80}
+              className="w-full h-auto object-contain mb-4"
+            />
             <p className="text-gray-500">Track your income and expenses</p>
           </div>
           

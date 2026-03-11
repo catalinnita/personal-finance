@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Menu, X, TrendingUp, Trash2 } from 'lucide-react'
 import { useSidebar } from '@/context/SidebarContext'
@@ -58,12 +59,14 @@ export default function Sidebar() {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Logo */}
-        <div className={`py-6 px-5 flex items-center ${!showFull ? 'justify-center' : ''}`}>
-          {showFull ? (
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Personal Finance</h1>
-          ) : (
-            <span className="text-xl font-bold text-brand-500">PF</span>
-          )}
+        <div className="pt-4 pb-8 px-4 flex items-center justify-center">
+          <Image 
+            src="/kentic.png" 
+            alt="Kentic" 
+            width={280} 
+            height={80}
+            className="w-full h-auto object-contain"
+          />
         </div>
         
         {/* Navigation */}
