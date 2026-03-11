@@ -1,7 +1,6 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Menu, X, TrendingUp, Trash2 } from 'lucide-react'
 import { useSidebar } from '@/context/SidebarContext'
 
@@ -33,6 +32,7 @@ const navSections = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } = useSidebar()
 
   const showFull = isExpanded || isHovered || isMobileOpen
@@ -80,9 +80,10 @@ export default function Sidebar() {
                   {section.items.map((item) => {
                     const isActive = pathname === item.href
                     return (
-                      <Link
+                      <button
                         key={item.href}
-                        href={item.href}
+                        type="button"
+                        onClick={() => router.push(item.href)}
                         className={`relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-sm cursor-pointer ${
                           isActive 
                             ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400' 
@@ -91,7 +92,7 @@ export default function Sidebar() {
                       >
                         <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}`} />
                         {showFull && <span>{item.label}</span>}
-                      </Link>
+                      </button>
                     )
                   })}
                 </div>
