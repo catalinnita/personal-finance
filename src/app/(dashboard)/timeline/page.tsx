@@ -24,6 +24,7 @@ export default function TimelinePage() {
   const [loading, setLoading] = useState(true)
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [scaleMode, setScaleMode] = useState<'relative' | 'absolute'>('relative')
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -105,9 +106,14 @@ export default function TimelinePage() {
     )
   }
 
-  const getBarHeight = (value: number) => {
-    if (maxValue === 0) return 0
-    return (value / maxValue) * 100
+  const getBarHeight = (value: number, categoryMax: number) => {
+    if (scaleMode === 'absolute') {
+      if (maxValue === 0) return 0
+      return (value / maxValue) * 100
+    } else {
+      if (categoryMax === 0) return 0
+      return (value / categoryMax) * 100
+    }
   }
 
   const getCategoryColor = (index: number) => {
@@ -194,7 +200,32 @@ export default function TimelinePage() {
         <>
           {/* Category Filter */}
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Select categories to display:</p>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Select categories to display:</p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400">Scale:</span>
+                <button
+                  onClick={() => setScaleMode('relative')}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                    scaleMode === 'relative'
+                      ? 'bg-brand-500 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  Relative
+                </button>
+                <button
+                  onClick={() => setScaleMode('absolute')}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                    scaleMode === 'absolute'
+                      ? 'bg-brand-500 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  Absolute
+                </button>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-2">
               {categories.map((category, index) => (
                 <button
@@ -218,6 +249,7 @@ export default function TimelinePage() {
               const data = categoryData[category] || {}
               const trend = getTrend(category)
               const total = Object.values(data).reduce((sum, val) => sum + val, 0)
+              const categoryMax = Math.max(...Object.values(data), 0)
               const colorIndex = categories.indexOf(category)
 
               return (
@@ -255,7 +287,7 @@ export default function TimelinePage() {
                   <div className="flex items-end gap-1" style={{ height: '160px' }}>
                     {months.map((month) => {
                       const value = data[month] || 0
-                      const height = getBarHeight(value)
+                      const height = getBarHeight(value, categoryMax)
                       const barHeight = value > 0 ? Math.max(height, 5) : 2
                       
                       return (
