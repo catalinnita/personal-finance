@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Settings, LogOut, Menu, X, Sun, Moon } from 'lucide-react'
+import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Settings, LogOut, Menu, X, Sun, Moon, TrendingUp } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useSidebar } from '@/context/SidebarContext'
@@ -13,6 +13,7 @@ const navItems = [
   { href: '/transactions', label: 'Transactions', icon: List },
   { href: '/balance', label: 'Balance', icon: BarChart3 },
   { href: '/categories', label: 'Categories', icon: PieChart },
+  { href: '/timeline', label: 'Timeline', icon: TrendingUp },
   { href: '/manage-categories', label: 'Manage Categories', icon: Tags },
   { href: '/mappings', label: 'Mappings', icon: ArrowRightLeft },
   { href: '/settings', label: 'Settings', icon: Settings },
