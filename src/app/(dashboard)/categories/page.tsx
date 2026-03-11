@@ -36,6 +36,7 @@ export default function CategoriesPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -88,6 +89,20 @@ export default function CategoriesPage() {
   // Get all unique categories
   const allCategories = [...new Set(yearExpenses.map(t => t.category))].sort()
 
+  // Get months that have data
+  const availableMonths = months.filter(month => monthlyCategories[month])
+
+  // Set default selected month to the most recent one with data
+  if (availableMonths.length > 0 && !selectedMonth) {
+    // Find the most recent month with data
+    const currentMonth = new Date().toLocaleString('default', { month: 'long' })
+    if (availableMonths.includes(currentMonth)) {
+      setSelectedMonth(currentMonth)
+    } else {
+      setSelectedMonth(availableMonths[availableMonths.length - 1])
+    }
+  }
+
   if (loading || currencyLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -119,52 +134,75 @@ export default function CategoriesPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {months.map(month => {
-            const categoryData = monthlyCategories[month]
-            if (!categoryData) return null
-
-            const total = Object.values(categoryData).reduce((sum, val) => sum + val, 0)
-            const sortedCategories = Object.entries(categoryData).sort((a, b) => b[1] - a[1])
-
-            return (
-              <div key={month} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <PieChart className="w-5 h-5 text-brand-500" />
-                    {month}
-                  </h2>
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Total: <span className="text-error-500 font-medium">{formatAmount(total)}</span>
-                  </span>
-                </div>
-
-                {/* Category bars */}
-                <div className="space-y-3">
-                  {sortedCategories.map(([category, amount]) => {
-                    const percentage = (amount / total) * 100
-                    const colorClass = CATEGORY_COLORS[category] || 'bg-gray-500'
-
-                    return (
-                      <div key={category}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm text-gray-700 dark:text-gray-300">{category}</span>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {formatAmount(amount)} ({percentage.toFixed(1)}%)
-                          </span>
-                        </div>
-                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full ${colorClass} rounded-full transition-all duration-300`}
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+          {/* Month Tabs */}
+          {availableMonths.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-theme-sm overflow-hidden">
+              <div className="flex overflow-x-auto border-b border-gray-200 dark:border-gray-700">
+                {availableMonths.map(month => {
+                  const monthTotal = Object.values(monthlyCategories[month] || {}).reduce((sum, val) => sum + val, 0)
+                  return (
+                    <button
+                      key={month}
+                      onClick={() => setSelectedMonth(month)}
+                      className={`flex-shrink-0 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                        selectedMonth === month
+                          ? 'border-brand-500 text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/10'
+                          : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      }`}
+                    >
+                      <span>{month.substring(0, 3)}</span>
+                      <span className="ml-2 text-xs opacity-70">{formatAmount(monthTotal)}</span>
+                    </button>
+                  )
+                })}
               </div>
-            )
-          })}
+
+              {/* Selected Month Content */}
+              {selectedMonth && monthlyCategories[selectedMonth] && (
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                      <PieChart className="w-5 h-5 text-brand-500" />
+                      {selectedMonth}
+                    </h2>
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Total: <span className="text-error-500 font-medium">
+                        {formatAmount(Object.values(monthlyCategories[selectedMonth]).reduce((sum, val) => sum + val, 0))}
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Category bars */}
+                  <div className="space-y-3">
+                    {Object.entries(monthlyCategories[selectedMonth])
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([category, amount]) => {
+                        const total = Object.values(monthlyCategories[selectedMonth]).reduce((sum, val) => sum + val, 0)
+                        const percentage = (amount / total) * 100
+                        const colorClass = CATEGORY_COLORS[category] || 'bg-gray-500'
+
+                        return (
+                          <div key={category}>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{category}</span>
+                              <span className="text-sm text-gray-500 dark:text-gray-400">
+                                {formatAmount(amount)} ({percentage.toFixed(1)}%)
+                              </span>
+                            </div>
+                            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full ${colorClass} rounded-full transition-all duration-300`}
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        )
+                      })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Summary table */}
           {allCategories.length > 0 && (
