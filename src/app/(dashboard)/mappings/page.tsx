@@ -31,6 +31,7 @@ export default function MappingsPage() {
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [showUnmapped, setShowUnmapped] = useState(true)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
   useEffect(() => {
     fetchData()
@@ -146,20 +147,58 @@ export default function MappingsPage() {
     mappingsByCategory[cat] = mappings.filter(m => m.category === cat)
   })
 
-  // Filter categories based on search
-  const filteredCategories = searchTerm
-    ? allCategoryNames.filter(cat => 
-        cat.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        mappingsByCategory[cat]?.some(m => 
-          m.description_pattern.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+  // Filter categories based on search and selection
+  const filteredCategories = allCategoryNames.filter(cat => {
+    const matchesSearch = !searchTerm || 
+      cat.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mappingsByCategory[cat]?.some(m => 
+        m.description_pattern.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    : allCategoryNames
+    const matchesSelection = selectedCategories.length === 0 || selectedCategories.includes(cat)
+    return matchesSearch && matchesSelection
+  })
 
-  // Show all categories (for drag-drop targets), filter by search if active
-  const categoriesToShow = searchTerm
-    ? filteredCategories
-    : allCategoryNames
+  const categoriesToShow = filteredCategories
+
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    )
+  }
+
+  const getCategoryColor = (index: number) => {
+    const colors = [
+      'bg-brand-500',
+      'bg-success-500',
+      'bg-error-500',
+      'bg-warning-500',
+      'bg-purple-500',
+      'bg-pink-500',
+      'bg-cyan-500',
+      'bg-orange-500',
+      'bg-teal-500',
+      'bg-indigo-500',
+    ]
+    return colors[index % colors.length]
+  }
+
+  const getCategoryBorderColor = (index: number) => {
+    const colors = [
+      'border-brand-500',
+      'border-success-500',
+      'border-error-500',
+      'border-warning-500',
+      'border-purple-500',
+      'border-pink-500',
+      'border-cyan-500',
+      'border-orange-500',
+      'border-teal-500',
+      'border-indigo-500',
+    ]
+    return colors[index % colors.length]
+  }
 
   if (loading) {
     return (
@@ -237,6 +276,37 @@ export default function MappingsPage() {
           Show {unmappedDescriptions.length} unmapped descriptions
         </button>
       )}
+
+      {/* Category Filter */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Filter by category:</p>
+        <div className="flex flex-wrap gap-2">
+          {allCategoryNames.map((category, index) => (
+            <button
+              key={category}
+              onClick={() => toggleCategory(category)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border-2 ${
+                selectedCategories.includes(category)
+                  ? `${getCategoryColor(index)} text-white border-transparent`
+                  : selectedCategories.length === 0
+                    ? `bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-transparent`
+                    : `bg-transparent ${getCategoryBorderColor(index)} text-gray-700 dark:text-gray-300`
+              }`}
+            >
+              {category}
+              <span className="ml-1.5 text-xs opacity-70">({mappingsByCategory[category]?.length || 0})</span>
+            </button>
+          ))}
+        </div>
+        {selectedCategories.length > 0 && (
+          <button
+            onClick={() => setSelectedCategories([])}
+            className="mt-3 text-sm text-brand-500 hover:text-brand-600"
+          >
+            Clear filter
+          </button>
+        )}
+      </div>
 
       {mappings.length === 0 && unmappedDescriptions.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
