@@ -16,17 +16,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
       <div className="w-full max-w-md p-8">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
+        <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-200">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Personal Finance</h1>
-            <p className="text-slate-300">Track your income and expenses</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Personal Finance</h1>
+            <p className="text-gray-500">Track your income and expenses</p>
           </div>
           
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           >
             <Chrome className="w-5 h-5" />
             Continue with Google
