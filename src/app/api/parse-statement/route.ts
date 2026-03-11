@@ -16,7 +16,7 @@ function buildParsePrompt(categories: string[], mappings: { description_pattern:
   let prompt = `Parse this bank statement and extract all transactions. For each transaction:
 - date: YYYY-MM-DD format
 - amount: number (positive=income, negative=expense)
-- description: short description (max 50 chars)
+- description: short description (max 50 chars). IMPORTANT: Remove any hashes, reference numbers, transaction IDs, or alphanumeric codes that aren't actual words (e.g., remove "ABC123XYZ", "REF-98765", "TXN#12345"). Keep only meaningful merchant names and descriptions.
 - category: one of: ${categories.join(', ')}
 - type: "income" or "expense"
 
