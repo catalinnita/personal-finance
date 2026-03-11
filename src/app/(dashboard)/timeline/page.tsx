@@ -312,18 +312,17 @@ export default function TimelinePage() {
                   </p>
 
                   {/* Bar Chart */}
-                  <div className="flex items-end gap-1 overflow-x-auto" style={{ height: '160px' }}>
+                  <div className="flex items-end gap-1 overflow-x-auto pt-8" style={{ height: '180px' }}>
                     {availablePeriods.map((period) => {
                       const value = data[period] || 0
                       const height = getBarHeight(value, categoryMax)
                       const barHeight = value > 0 ? Math.max(height, 5) : 2
-                      const label = useMonthYear ? period.replace(' ', '\n') : period
                       
                       return (
                         <div key={period} className="flex-1 min-w-[40px] flex flex-col items-center group h-full">
                           <div className="w-full h-full relative flex flex-col justify-end items-center">
-                            {/* Tooltip */}
-                            <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                            {/* Tooltip - positioned inside container */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none">
                               {period}: {formatAmount(value)}
                             </div>
                             {/* Bar */}

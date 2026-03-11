@@ -183,9 +183,9 @@ export default function BalancePage() {
                   <span className="text-sm text-gray-500 dark:text-gray-400">Expenses</span>
                 </div>
               </div>
-              <div className="relative">
+              <div className="relative pt-8 pb-8">
                 {/* Chart area */}
-                <div className="flex gap-2 overflow-x-auto pb-6">
+                <div className="flex gap-2 overflow-x-auto">
                   {availableMonths.map(period => {
                     const data = monthlyData[period]
                     if (!data) return null
@@ -201,8 +201,8 @@ export default function BalancePage() {
                       <div key={period} className="flex-1 min-w-[60px] flex flex-col items-center group">
                         {/* Income bar (top) */}
                         <div className="h-[120px] w-full flex flex-col justify-end items-center relative">
-                          {/* Tooltip */}
-                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                          {/* Tooltip - inside the bar area */}
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none">
                             +{formatAmount(data.income)}
                           </div>
                           <div 
@@ -220,8 +220,8 @@ export default function BalancePage() {
                             className="w-8 bg-error-500 rounded-b transition-all duration-300"
                             style={{ height: `${expenseHeight}%`, minHeight: data.expenses > 0 ? '4px' : '0' }}
                           />
-                          {/* Tooltip */}
-                          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                          {/* Tooltip - inside the bar area */}
+                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none">
                             -{formatAmount(data.expenses)}
                           </div>
                         </div>
