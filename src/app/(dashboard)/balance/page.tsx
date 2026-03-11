@@ -253,7 +253,7 @@ export default function BalancePage() {
                 
                 <div className="relative">
                   <svg 
-                    viewBox={`0 0 ${chartWidth} ${chartHeight + 30}`}
+                    viewBox={`0 0 ${chartWidth} ${chartHeight + 60}`}
                     className="w-full h-auto"
                     preserveAspectRatio="xMidYMid meet"
                   >
