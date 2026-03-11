@@ -27,14 +27,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No descriptions provided' }, { status: 400 })
     }
 
-    // Fetch user's custom categories
-    const categoriesRes = await supabase.from('categories').select('name').eq('user_id', user.id)
-    const customCategories = categoriesRes.data?.map(c => c.name) || []
-    const allCategories = [...new Set([...DEFAULT_CATEGORIES, ...customCategories])].sort()
+    // Fetch user's categories with IDs
+    const categoriesRes = await supabase.from('categories').select('id, name').eq('user_id', user.id)
+    const userCategories = categoriesRes.data || []
+    const categoryNames = userCategories.map(c => c.name)
 
     const prompt = `You are a financial transaction categorizer. For each transaction description below, determine the most appropriate category.
 
-Available categories: ${allCategories.join(', ')}
+Available categories: ${categoryNames.join(', ')}
 
 Transaction descriptions to categorize:
 ${descriptions.map((d: string, i: number) => `${i + 1}. "${d}"`).join('\n')}
@@ -42,7 +42,7 @@ ${descriptions.map((d: string, i: number) => `${i + 1}. "${d}"`).join('\n')}
 Return ONLY a JSON array with objects containing "description" and "category" for each item. Example:
 [{"description":"NETFLIX","category":"Subscriptions"},{"description":"TESCO","category":"Groceries"}]
 
-Be accurate and consistent. If unsure, use "Other".`
+Be accurate and consistent. Use one of the available categories only.`
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -71,7 +71,23 @@ Be accurate and consistent. If unsure, use "Other".`
       return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 })
     }
 
-    const results = JSON.parse(jsonMatch[0])
+    const aiResults = JSON.parse(jsonMatch[0])
+    
+    // Map category names to IDs
+    const categoryNameToId: Record<string, string> = {}
+    userCategories.forEach(c => {
+      categoryNameToId[c.name.toLowerCase()] = c.id
+    })
+    
+    // Transform results to include category_id
+    const results = aiResults.map((r: { description: string; category: string }) => {
+      const categoryId = categoryNameToId[r.category.toLowerCase()]
+      return {
+        description: r.description,
+        category: r.category,
+        category_id: categoryId || null
+      }
+    }).filter((r: { category_id: string | null }) => r.category_id !== null)
     
     return NextResponse.json({ results })
   } catch (error: unknown) {

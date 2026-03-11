@@ -75,13 +75,14 @@ CREATE TABLE category_mappings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   description_pattern TEXT NOT NULL,
-  category TEXT NOT NULL,
+  category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, description_pattern)
 );
 
 -- Create index for category_mappings
 CREATE INDEX idx_category_mappings_user_id ON category_mappings(user_id);
+CREATE INDEX idx_category_mappings_category_id ON category_mappings(category_id);
 
 -- Enable Row Level Security for category_mappings
 ALTER TABLE category_mappings ENABLE ROW LEVEL SECURITY;

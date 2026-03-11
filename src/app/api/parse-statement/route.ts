@@ -49,15 +49,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Fetch user's custom categories and mappings
+    // Fetch user's custom categories and mappings (with joined category names)
     const [categoriesRes, mappingsRes] = await Promise.all([
       supabase.from('categories').select('name').eq('user_id', user.id),
-      supabase.from('category_mappings').select('description_pattern, category').eq('user_id', user.id)
+      supabase.from('category_mappings').select(`
+        description_pattern,
+        category_id,
+        categories (name)
+      `).eq('user_id', user.id)
     ])
 
     const customCategories = categoriesRes.data?.map(c => c.name) || []
     const allCategories = [...new Set([...DEFAULT_CATEGORIES, ...customCategories])].sort()
-    const mappings = mappingsRes.data || []
+    
+    // Transform mappings to include category name
+    const mappings = (mappingsRes.data || []).map(m => ({
+      description_pattern: m.description_pattern,
+      category: (m.categories as unknown as { name: string } | null)?.name || ''
+    })).filter(m => m.category)
 
     const parsePrompt = buildParsePrompt(allCategories, mappings)
 

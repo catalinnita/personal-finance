@@ -49,24 +49,8 @@ export async function DELETE(
 
     const { id } = await params
 
-    // First, get the category name before deleting
-    const { data: category } = await supabase
-      .from('categories')
-      .select('name')
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .single()
-
-    if (category) {
-      // Delete all mappings that use this category
-      await supabase
-        .from('category_mappings')
-        .delete()
-        .eq('category', category.name)
-        .eq('user_id', user.id)
-    }
-
-    // Then delete the category
+    // Mappings will be automatically deleted due to ON DELETE CASCADE on category_id foreign key
+    // Delete the category
     const { error } = await supabase
       .from('categories')
       .delete()

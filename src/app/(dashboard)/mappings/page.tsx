@@ -12,6 +12,7 @@ type Category = {
 type CategoryMapping = {
   id: string
   description_pattern: string
+  category_id: string
   category: string
 }
 
@@ -68,14 +69,14 @@ export default function MappingsPage() {
     }
   }
 
-  const handleUpdateMapping = async (descriptionPattern: string, newCategory: string) => {
+  const handleUpdateMapping = async (descriptionPattern: string, categoryId: string) => {
     try {
       const response = await fetch('/api/category-mappings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           description_pattern: descriptionPattern, 
-          category: newCategory 
+          category_id: categoryId 
         }),
       })
 
@@ -129,8 +130,8 @@ export default function MappingsPage() {
           
           // Create mappings for each identified category
           for (const result of data.results) {
-            if (result.description && result.category) {
-              await handleUpdateMapping(result.description, result.category)
+            if (result.description && result.category_id) {
+              await handleUpdateMapping(result.description, result.category_id)
             }
           }
         }
@@ -159,12 +160,12 @@ export default function MappingsPage() {
     setDragOverCategory(null)
   }
 
-  const handleDrop = async (e: DragEvent<HTMLDivElement>, targetCategory: string) => {
+  const handleDrop = async (e: DragEvent<HTMLDivElement>, targetCategoryId: string) => {
     e.preventDefault()
     setDragOverCategory(null)
     
-    if (draggedItem && targetCategory) {
-      await handleUpdateMapping(draggedItem, targetCategory)
+    if (draggedItem && targetCategoryId) {
+      await handleUpdateMapping(draggedItem, targetCategoryId)
     }
     setDraggedItem(null)
   }
@@ -174,33 +175,25 @@ export default function MappingsPage() {
     setDragOverCategory(null)
   }
 
-  // Get all category names (custom + default)
-  const allCategoryNames = [
-    ...new Set([
-      ...categories.map(c => c.name),
-      ...DEFAULT_CATEGORIES
-    ])
-  ].sort()
-
-  // Group mappings by category
-  const mappingsByCategory: Record<string, CategoryMapping[]> = {}
-  allCategoryNames.forEach(cat => {
-    mappingsByCategory[cat] = mappings.filter(m => m.category === cat)
+  // Group mappings by category_id
+  const mappingsByCategoryId: Record<string, CategoryMapping[]> = {}
+  categories.forEach(cat => {
+    mappingsByCategoryId[cat.id] = mappings.filter(m => m.category_id === cat.id)
   })
 
   // Only show categories that have mappings
-  const categoriesWithMappings = allCategoryNames.filter(cat => 
-    mappingsByCategory[cat]?.length > 0
+  const categoriesWithMappings = categories.filter(cat => 
+    mappingsByCategoryId[cat.id]?.length > 0
   )
 
   // Filter categories based on search and selection
   const filteredCategories = categoriesWithMappings.filter(cat => {
     const matchesSearch = !searchTerm || 
-      cat.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mappingsByCategory[cat]?.some(m => 
+      cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mappingsByCategoryId[cat.id]?.some(m => 
         m.description_pattern.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    const matchesSelection = selectedCategories.length === 0 || selectedCategories.includes(cat)
+    const matchesSelection = selectedCategories.length === 0 || selectedCategories.includes(cat.id)
     return matchesSearch && matchesSelection
   })
 
@@ -278,18 +271,18 @@ export default function MappingsPage() {
         <div className="flex flex-wrap gap-2">
           {categoriesWithMappings.map((category, index) => (
             <button
-              key={category}
-              onClick={() => toggleCategory(category)}
+              key={category.id}
+              onClick={() => toggleCategory(category.id)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border-2 ${
-                selectedCategories.includes(category)
+                selectedCategories.includes(category.id)
                   ? `${getCategoryColor(index)} text-white border-transparent`
                   : selectedCategories.length === 0
                     ? `bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-transparent`
                     : `bg-transparent ${getCategoryBorderColor(index)} text-gray-700 dark:text-gray-300`
               }`}
             >
-              {category}
-              <span className="ml-1.5 text-xs opacity-70">({mappingsByCategory[category]?.length || 0})</span>
+              {category.name}
+              <span className="ml-1.5 text-xs opacity-70">({mappingsByCategoryId[category.id]?.length || 0})</span>
             </button>
           ))}
         </div>
@@ -381,22 +374,22 @@ export default function MappingsPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {categoriesToShow.map(category => (
             <div
-              key={category}
+              key={category.id}
               className={`bg-white dark:bg-gray-800 rounded-xl p-4 min-h-[200px] transition-colors border border-gray-200 dark:border-gray-700 shadow-theme-sm ${
-                dragOverCategory === category ? 'bg-brand-50 dark:bg-brand-500/20 ring-2 ring-brand-500' : ''
+                dragOverCategory === category.id ? 'bg-brand-50 dark:bg-brand-500/20 ring-2 ring-brand-500' : ''
               }`}
-              onDragOver={(e) => handleDragOver(e, category)}
+              onDragOver={(e) => handleDragOver(e, category.id)}
               onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, category)}
+              onDrop={(e) => handleDrop(e, category.id)}
             >
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{category}</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{category.name}</h3>
                 <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
-                  {mappingsByCategory[category]?.length || 0}
+                  {mappingsByCategoryId[category.id]?.length || 0}
                 </span>
               </div>
               <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                {mappingsByCategory[category]?.map(mapping => (
+                {mappingsByCategoryId[category.id]?.map((mapping: CategoryMapping) => (
                   <div
                     key={mapping.id}
                     draggable
