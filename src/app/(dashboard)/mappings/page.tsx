@@ -53,7 +53,10 @@ export default function MappingsPage() {
       const transactionsData = await transactionsRes.json()
       
       if (categoriesData.categories) setCategories(categoriesData.categories)
-      if (mappingsData.mappings) setMappings(mappingsData.mappings)
+      if (mappingsData.mappings) {
+        console.log('Total mappings from API:', mappingsData.mappings.length, mappingsData.count)
+        setMappings(mappingsData.mappings)
+      }
       
       // Find unmapped descriptions
       if (transactionsData.transactions && mappingsData.mappings) {
