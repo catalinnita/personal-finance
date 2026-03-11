@@ -183,12 +183,9 @@ export default function BalancePage() {
                   <span className="text-sm text-gray-500 dark:text-gray-400">Expenses</span>
                 </div>
               </div>
-              <div className="relative" style={{ height: '300px' }}>
-                {/* Y-axis center line */}
-                <div className="absolute left-0 right-0 top-1/2 border-t border-gray-300 dark:border-gray-600" />
-                
-                {/* Chart container */}
-                <div className="flex items-center h-full gap-1 overflow-x-auto">
+              <div className="relative">
+                {/* Chart area */}
+                <div className="flex gap-2 overflow-x-auto pb-6">
                   {availableMonths.map(period => {
                     const data = monthlyData[period]
                     if (!data) return null
@@ -197,38 +194,41 @@ export default function BalancePage() {
                       ...availableMonths.map(p => Math.max(monthlyData[p]?.income || 0, monthlyData[p]?.expenses || 0))
                     )
                     
-                    const incomeHeight = maxAmount > 0 ? (data.income / maxAmount) * 45 : 0
-                    const expenseHeight = maxAmount > 0 ? (data.expenses / maxAmount) * 45 : 0
+                    const incomeHeight = maxAmount > 0 ? (data.income / maxAmount) * 100 : 0
+                    const expenseHeight = maxAmount > 0 ? (data.expenses / maxAmount) * 100 : 0
                     
                     return (
-                      <div key={period} className="flex-1 min-w-[50px] flex flex-col items-center h-full group">
-                        {/* Top half - Income (positive) */}
-                        <div className="h-1/2 w-full flex flex-col justify-end items-center relative pb-1">
+                      <div key={period} className="flex-1 min-w-[60px] flex flex-col items-center group">
+                        {/* Income bar (top) */}
+                        <div className="h-[120px] w-full flex flex-col justify-end items-center relative">
                           {/* Tooltip */}
-                          <div className="absolute bottom-full mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
                             +{formatAmount(data.income)}
                           </div>
                           <div 
-                            className="w-3/4 bg-success-500 rounded-t transition-all duration-300"
-                            style={{ height: `${incomeHeight}%` }}
+                            className="w-8 bg-success-500 rounded-t transition-all duration-300"
+                            style={{ height: `${incomeHeight}%`, minHeight: data.income > 0 ? '4px' : '0' }}
                           />
                         </div>
                         
-                        {/* Bottom half - Expenses (negative) */}
-                        <div className="h-1/2 w-full flex flex-col justify-start items-center relative pt-1">
+                        {/* Center line / axis */}
+                        <div className="w-full h-[2px] bg-gray-300 dark:bg-gray-600 my-1" />
+                        
+                        {/* Expense bar (bottom) */}
+                        <div className="h-[120px] w-full flex flex-col justify-start items-center relative">
                           <div 
-                            className="w-3/4 bg-error-500 rounded-b transition-all duration-300"
-                            style={{ height: `${expenseHeight}%` }}
+                            className="w-8 bg-error-500 rounded-b transition-all duration-300"
+                            style={{ height: `${expenseHeight}%`, minHeight: data.expenses > 0 ? '4px' : '0' }}
                           />
                           {/* Tooltip */}
-                          <div className="absolute top-full mt-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
                             -{formatAmount(data.expenses)}
                           </div>
                         </div>
                         
                         {/* Label */}
-                        <span className="text-xs text-gray-400 mt-1 text-center whitespace-nowrap">
-                          {useMonthYear ? period.substring(0, 3) + ' ' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center whitespace-nowrap">
+                          {useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
                         </span>
                       </div>
                     )
