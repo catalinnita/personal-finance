@@ -242,6 +242,10 @@ const MIGRATIONS = [
     name: 'Create category_mappings category_id index',
     sql: `CREATE INDEX IF NOT EXISTS idx_category_mappings_category_id ON category_mappings(category_id);`
   },
+  {
+    name: 'Add highlight_threshold to user_settings',
+    sql: `ALTER TABLE user_settings ADD COLUMN IF NOT EXISTS highlight_threshold DECIMAL(12, 2) DEFAULT 500;`
+  },
 ]
 
 async function runMigrations() {

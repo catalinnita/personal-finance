@@ -29,10 +29,12 @@ export default function TransactionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedYear, setSelectedYear] = useState<number | null>(null)
   const [selectedMonth, setSelectedMonth] = useState<number>(0)
+  const [highlightThreshold, setHighlightThreshold] = useState<number>(500)
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
     fetchTransactions()
+    fetchSettings()
   }, [])
 
   const fetchTransactions = async () => {
@@ -46,6 +48,18 @@ export default function TransactionsPage() {
       console.error('Error fetching transactions:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings')
+      const data = await response.json()
+      if (data.settings?.highlight_threshold !== undefined) {
+        setHighlightThreshold(Number(data.settings.highlight_threshold))
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error)
     }
   }
 
@@ -166,7 +180,9 @@ export default function TransactionsPage() {
               </thead>
               <tbody>
                 {filteredTransactions.map((t) => (
-                  <tr key={t.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                  <tr key={t.id} className={`border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30 ${
+                      Math.abs(t.amount) >= highlightThreshold ? 'bg-warning-50 dark:bg-warning-500/10' : ''
+                    }`}>
                     <td className="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">{t.date}</td>
                     <td className="py-4 px-6 text-gray-900 dark:text-white text-sm">{t.description}</td>
                     <td className="py-4 px-6">

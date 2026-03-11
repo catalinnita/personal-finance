@@ -34,7 +34,7 @@ export async function GET() {
     }
 
     // Return default settings if none exist
-    const userSettings = settings || { currency: 'USD' }
+    const userSettings = settings || { currency: 'USD', highlight_threshold: 500 }
 
     return NextResponse.json({ 
       settings: userSettings,
@@ -56,11 +56,17 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { currency } = body
+    const { currency, highlight_threshold } = body
 
     // Validate currency
     if (currency && !CURRENCIES.find(c => c.code === currency)) {
       return NextResponse.json({ error: 'Invalid currency' }, { status: 400 })
+    }
+
+    // Validate highlight_threshold
+    const threshold = highlight_threshold !== undefined ? Number(highlight_threshold) : 500
+    if (isNaN(threshold) || threshold < 0) {
+      return NextResponse.json({ error: 'Invalid highlight threshold' }, { status: 400 })
     }
 
     // Upsert settings
@@ -69,6 +75,7 @@ export async function PUT(request: NextRequest) {
       .upsert({
         user_id: user.id,
         currency: currency || 'USD',
+        highlight_threshold: threshold,
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'user_id'

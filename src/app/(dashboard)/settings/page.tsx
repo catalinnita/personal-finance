@@ -11,6 +11,7 @@ type Currency = {
 
 type Settings = {
   currency: string
+  highlight_threshold: number
 }
 
 export default function SettingsPage() {
@@ -19,6 +20,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [thresholdInput, setThresholdInput] = useState('')
 
   useEffect(() => {
     fetchSettings()
@@ -30,6 +32,7 @@ export default function SettingsPage() {
       const data = await response.json()
       setSettings(data.settings)
       setCurrencies(data.currencies || [])
+      setThresholdInput(String(data.settings?.highlight_threshold || 500))
     } catch (error) {
       console.error('Error fetching settings:', error)
     } finally {
@@ -37,7 +40,7 @@ export default function SettingsPage() {
     }
   }
 
-  const handleCurrencyChange = async (currency: string) => {
+  const saveSettings = async (updates: Partial<Settings>) => {
     setSaving(true)
     setSaved(false)
     
@@ -45,7 +48,11 @@ export default function SettingsPage() {
       const response = await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currency }),
+        body: JSON.stringify({
+          currency: settings?.currency || 'USD',
+          highlight_threshold: settings?.highlight_threshold || 500,
+          ...updates
+        }),
       })
       
       if (response.ok) {
@@ -58,6 +65,17 @@ export default function SettingsPage() {
       console.error('Error saving settings:', error)
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleCurrencyChange = async (currency: string) => {
+    await saveSettings({ currency })
+  }
+
+  const handleThresholdChange = async () => {
+    const threshold = parseFloat(thresholdInput)
+    if (!isNaN(threshold) && threshold >= 0) {
+      await saveSettings({ highlight_threshold: threshold })
     }
   }
 
@@ -107,6 +125,43 @@ export default function SettingsPage() {
                   </svg>
                 )}
               </div>
+            </div>
+          </div>
+
+          {/* Highlight Threshold Setting */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Highlight Threshold
+            </label>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+              Transactions above this amount will be highlighted in the transactions list
+            </p>
+            <div className="flex gap-3">
+              <input
+                type="number"
+                min="0"
+                step="50"
+                value={thresholdInput}
+                onChange={(e) => setThresholdInput(e.target.value)}
+                onBlur={handleThresholdChange}
+                onKeyDown={(e) => e.key === 'Enter' && handleThresholdChange()}
+                disabled={saving}
+                className="flex-1 px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 disabled:opacity-50"
+                placeholder="500"
+              />
+              <button
+                onClick={handleThresholdChange}
+                disabled={saving}
+                className="px-4 py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+              >
+                {saving ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : saved ? (
+                  <Check className="w-5 h-5" />
+                ) : (
+                  'Save'
+                )}
+              </button>
             </div>
           </div>
         </div>
