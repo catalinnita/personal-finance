@@ -1,15 +1,22 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 const STORAGE_KEY = 'personal-finance-selected-years'
 
 export function useSelectedYears(availableYears: number[]) {
   const [selectedYears, setSelectedYears] = useState<number[]>([])
   const [initialized, setInitialized] = useState(false)
+  const availableYearsRef = useRef<string>('')
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount - only run once when availableYears actually changes
   useEffect(() => {
+    const yearsKey = availableYears.join(',')
+    if (yearsKey === availableYearsRef.current || availableYears.length === 0) {
+      return
+    }
+    availableYearsRef.current = yearsKey
+
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
@@ -30,11 +37,9 @@ export function useSelectedYears(availableYears: number[]) {
       }
       
       // Default to current year if available, otherwise most recent
-      if (availableYears.length > 0) {
-        const currentYear = new Date().getFullYear()
-        const defaultYears = availableYears.includes(currentYear) ? [currentYear] : [availableYears[0]]
-        setSelectedYears(defaultYears)
-      }
+      const currentYear = new Date().getFullYear()
+      const defaultYears = availableYears.includes(currentYear) ? [currentYear] : [availableYears[0]]
+      setSelectedYears(defaultYears)
       setInitialized(true)
     }
   }, [availableYears])
