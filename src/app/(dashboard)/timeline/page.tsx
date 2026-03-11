@@ -22,7 +22,7 @@ type CategoryMonthlyData = {
 export default function TimelinePage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
+  const [selectedYears, setSelectedYears] = useState<number[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [scaleMode, setScaleMode] = useState<'relative' | 'absolute'>('relative')
   const { formatAmount, loading: currencyLoading } = useCurrency()
@@ -55,10 +55,26 @@ export default function TimelinePage() {
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ]
 
+  const toggleYear = (year: number) => {
+    setSelectedYears(prev => 
+      prev.includes(year)
+        ? prev.filter(y => y !== year)
+        : [...prev, year].sort((a, b) => b - a)
+    )
+  }
+
+  // Set default to current year if available
+  useEffect(() => {
+    if (years.length > 0 && selectedYears.length === 0) {
+      const currentYear = new Date().getFullYear()
+      setSelectedYears(years.includes(currentYear) ? [currentYear] : [years[0]])
+    }
+  }, [years])
+
   const { categoryData, categories, maxValue } = useMemo(() => {
     const yearTransactions = transactions.filter(t => {
       const year = new Date(t.date).getFullYear()
-      return year === selectedYear && t.type === 'expense'
+      return selectedYears.includes(year) && t.type === 'expense'
     })
 
     const data: CategoryMonthlyData = {}
@@ -90,7 +106,7 @@ export default function TimelinePage() {
     })
 
     return { categoryData: data, categories: cats, maxValue: max }
-  }, [transactions, selectedYear])
+  }, [transactions, selectedYears])
 
   useEffect(() => {
     if (categories.length > 0 && selectedCategories.length === 0) {
@@ -180,15 +196,21 @@ export default function TimelinePage() {
           </p>
         </div>
         {years.length > 0 && (
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-          >
+          <div className="flex flex-wrap gap-2">
             {years.map(year => (
-              <option key={year} value={year}>{year}</option>
+              <button
+                key={year}
+                onClick={() => toggleYear(year)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  selectedYears.includes(year)
+                    ? 'bg-brand-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {year}
+              </button>
             ))}
-          </select>
+          </div>
         )}
       </div>
 
@@ -279,7 +301,7 @@ export default function TimelinePage() {
                   <p className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                     {formatAmount(total)}
                     <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
-                      total in {selectedYear}
+                      total in {selectedYears.join(', ')}
                     </span>
                   </p>
 

@@ -35,7 +35,7 @@ const CATEGORY_COLORS: { [key: string]: string } = {
 export default function CategoriesPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [selectedYears, setSelectedYears] = useState<number[]>([])
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
   const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
@@ -60,13 +60,23 @@ export default function CategoriesPage() {
 
   const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort((a, b) => b - a)
   
-  if (years.length > 0 && !years.includes(selectedYear)) {
-    setSelectedYear(years[0])
+  // Set default to current year if available, otherwise most recent
+  if (years.length > 0 && selectedYears.length === 0) {
+    const currentYear = new Date().getFullYear()
+    setSelectedYears(years.includes(currentYear) ? [currentYear] : [years[0]])
   }
 
-  // Filter expenses only for selected year
+  const toggleYear = (year: number) => {
+    setSelectedYears(prev => 
+      prev.includes(year)
+        ? prev.filter(y => y !== year)
+        : [...prev, year].sort((a, b) => b - a)
+    )
+  }
+
+  // Filter expenses only for selected years
   const yearExpenses = transactions.filter(t => 
-    t.type === 'expense' && new Date(t.date).getFullYear() === selectedYear
+    t.type === 'expense' && selectedYears.includes(new Date(t.date).getFullYear())
   )
 
   // Group by month and category
@@ -117,15 +127,21 @@ export default function CategoriesPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Expenses by Category</h1>
         {years.length > 0 && (
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-          >
+          <div className="flex flex-wrap gap-2">
             {years.map(year => (
-              <option key={year} value={year}>{year}</option>
+              <button
+                key={year}
+                onClick={() => toggleYear(year)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  selectedYears.includes(year)
+                    ? 'bg-brand-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {year}
+              </button>
             ))}
-          </select>
+          </div>
         )}
       </div>
 
