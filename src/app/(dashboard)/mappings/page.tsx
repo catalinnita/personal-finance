@@ -57,9 +57,12 @@ export default function MappingsPage() {
       
       // Find unmapped descriptions
       if (transactionsData.transactions && mappingsData.mappings) {
-        const mappedPatterns = new Set(mappingsData.mappings.map((m: CategoryMapping) => m.description_pattern))
+        const mappedPatterns: string[] = mappingsData.mappings.map((m: CategoryMapping) => m.description_pattern.toLowerCase())
         const allDescriptions = [...new Set(transactionsData.transactions.map((t: { description: string }) => t.description))] as string[]
-        const unmapped = allDescriptions.filter(d => !mappedPatterns.has(d))
+        // Check if description matches any pattern (case-insensitive)
+        const unmapped = allDescriptions.filter(d => 
+          !mappedPatterns.some(pattern => d.toLowerCase() === pattern.toLowerCase())
+        )
         setUnmappedDescriptions(unmapped.sort())
       }
     } catch (error) {
