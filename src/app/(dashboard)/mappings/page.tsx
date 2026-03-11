@@ -389,28 +389,31 @@ export default function MappingsPage() {
                 </span>
               </div>
               <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                {mappingsByCategoryId[category.id]?.map((mapping: CategoryMapping) => (
-                  <div
-                    key={mapping.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, mapping.description_pattern)}
-                    onDragEnd={handleDragEnd}
-                    className={`group flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-grab active:cursor-grabbing transition-all ${
-                      draggedItem === mapping.description_pattern ? 'opacity-50 scale-95' : ''
-                    }`}
-                  >
-                    <GripVertical className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1" title={mapping.description_pattern}>
-                      {mapping.description_pattern}
-                    </span>
-                    <button
-                      onClick={() => handleDeleteMapping(mapping.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-error-500 transition-opacity"
+                {mappingsByCategoryId[category.id]?.map((mapping: CategoryMapping) => {
+                  const matchesSearch = !searchTerm || mapping.description_pattern.toLowerCase().includes(searchTerm.toLowerCase())
+                  return (
+                    <div
+                      key={mapping.id}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, mapping.description_pattern)}
+                      onDragEnd={handleDragEnd}
+                      className={`group flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-grab active:cursor-grabbing transition-all ${
+                        draggedItem === mapping.description_pattern ? 'opacity-50 scale-95' : ''
+                      } ${searchTerm && !matchesSearch ? 'opacity-40' : ''}`}
                     >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))}
+                      <GripVertical className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1" title={mapping.description_pattern}>
+                        {mapping.description_pattern}
+                      </span>
+                      <button
+                        onClick={() => handleDeleteMapping(mapping.id)}
+                        className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-error-500 transition-opacity"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           ))}
