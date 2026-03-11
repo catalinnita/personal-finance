@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Loader2, PieChart, ChevronDown } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
+import { useSelectedYears } from '@/hooks/useSelectedYears'
 
 type CategoryData = {
   [category: string]: number
@@ -35,7 +36,6 @@ const CATEGORY_COLORS: { [key: string]: string } = {
 export default function CategoriesPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedYears, setSelectedYears] = useState<number[]>([])
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
   const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
@@ -59,20 +59,7 @@ export default function CategoriesPage() {
   }
 
   const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort((a, b) => b - a)
-  
-  // Set default to current year if available, otherwise most recent
-  if (years.length > 0 && selectedYears.length === 0) {
-    const currentYear = new Date().getFullYear()
-    setSelectedYears(years.includes(currentYear) ? [currentYear] : [years[0]])
-  }
-
-  const toggleYear = (year: number) => {
-    setSelectedYears(prev => 
-      prev.includes(year)
-        ? prev.filter(y => y !== year)
-        : [...prev, year].sort((a, b) => b - a)
-    )
-  }
+  const { selectedYears, toggleYear } = useSelectedYears(years)
 
   // Filter expenses only for selected years
   const yearExpenses = transactions.filter(t => 

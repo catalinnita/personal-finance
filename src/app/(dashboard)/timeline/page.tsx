@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Loader2, TrendingUp, TrendingDown } from 'lucide-react'
 import { useCurrency } from '@/hooks/useCurrency'
+import { useSelectedYears } from '@/hooks/useSelectedYears'
 
 type Transaction = {
   id: string
@@ -22,7 +23,6 @@ type CategoryMonthlyData = {
 export default function TimelinePage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedYears, setSelectedYears] = useState<number[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [scaleMode, setScaleMode] = useState<'relative' | 'absolute'>('relative')
   const { formatAmount, loading: currencyLoading } = useCurrency()
@@ -50,26 +50,12 @@ export default function TimelinePage() {
     return Array.from(yearSet).sort((a, b) => b - a)
   }, [transactions])
 
+  const { selectedYears, toggleYear } = useSelectedYears(years)
+
   const months = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ]
-
-  const toggleYear = (year: number) => {
-    setSelectedYears(prev => 
-      prev.includes(year)
-        ? prev.filter(y => y !== year)
-        : [...prev, year].sort((a, b) => b - a)
-    )
-  }
-
-  // Set default to current year if available
-  useEffect(() => {
-    if (years.length > 0 && selectedYears.length === 0) {
-      const currentYear = new Date().getFullYear()
-      setSelectedYears(years.includes(currentYear) ? [currentYear] : [years[0]])
-    }
-  }, [years])
 
   // Use month-year keys when multiple years selected
   const useMonthYear = selectedYears.length > 1

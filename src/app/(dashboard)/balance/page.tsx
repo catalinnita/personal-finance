@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, PiggyBank, Loader2 } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
+import { useSelectedYears } from '@/hooks/useSelectedYears'
 
 type BalanceData = {
   income: number
@@ -18,7 +19,6 @@ type MonthlyData = {
 export default function BalancePage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedYears, setSelectedYears] = useState<number[]>([])
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -40,20 +40,7 @@ export default function BalancePage() {
   }
 
   const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort((a, b) => b - a)
-  
-  // Set default to current year if available, otherwise most recent
-  if (years.length > 0 && selectedYears.length === 0) {
-    const currentYear = new Date().getFullYear()
-    setSelectedYears(years.includes(currentYear) ? [currentYear] : [years[0]])
-  }
-
-  const toggleYear = (year: number) => {
-    setSelectedYears(prev => 
-      prev.includes(year)
-        ? prev.filter(y => y !== year)
-        : [...prev, year].sort((a, b) => b - a)
-    )
-  }
+  const { selectedYears, toggleYear } = useSelectedYears(years)
 
   const yearTransactions = transactions.filter(t => 
     selectedYears.includes(new Date(t.date).getFullYear())
