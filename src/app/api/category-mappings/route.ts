@@ -24,7 +24,7 @@ export async function GET() {
       `, { count: 'exact' })
       .eq('user_id', user.id)
       .order('description_pattern')
-      .range(0, 9999)
+      .range(0, 10000)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
