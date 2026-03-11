@@ -37,6 +37,7 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
+  const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -134,6 +135,115 @@ export default function CategoriesPage() {
         </div>
       ) : (
         <div className="space-y-6">
+          {/* Summary table - moved above month tabs */}
+          {allCategories.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Category Summary</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Category</th>
+                      {months.map(month => (
+                        monthlyCategories[month] && (
+                          <th key={month} className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">
+                            {month.substring(0, 3)}
+                          </th>
+                        )
+                      ))}
+                      <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allCategories.map(category => {
+                      const categoryTotal = Object.values(monthlyCategories).reduce(
+                        (sum, monthData) => sum + (monthData[category] || 0), 0
+                      )
+                      return (
+                        <>
+                          <tr key={category} className="border-b border-gray-100 dark:border-gray-700/50">
+                            <td className="py-3 px-2 text-gray-900 dark:text-white">{category}</td>
+                            {months.map(month => (
+                              monthlyCategories[month] && (
+                                <td key={month} className="py-3 px-2 text-right">
+                                  {monthlyCategories[month][category] ? (
+                                    <button
+                                      onClick={() => setExpandedCell(
+                                        expandedCell?.category === category && expandedCell?.month === month
+                                          ? null
+                                          : { category, month }
+                                      )}
+                                      className={`text-gray-600 dark:text-gray-300 hover:text-brand-500 dark:hover:text-brand-400 hover:underline transition-colors ${
+                                        expandedCell?.category === category && expandedCell?.month === month
+                                          ? 'text-brand-500 dark:text-brand-400 font-medium'
+                                          : ''
+                                      }`}
+                                    >
+                                      {formatAmount(monthlyCategories[month][category])}
+                                    </button>
+                                  ) : (
+                                    <span className="text-gray-400">-</span>
+                                  )}
+                                </td>
+                              )
+                            ))}
+                            <td className="py-3 px-2 text-right text-error-500 font-medium">
+                              {formatAmount(categoryTotal)}
+                            </td>
+                          </tr>
+                          {/* Expanded transactions row */}
+                          {expandedCell?.category === category && (
+                            <tr key={`${category}-expanded`}>
+                              <td colSpan={availableMonths.length + 2} className="p-0">
+                                <div className="bg-gray-50 dark:bg-gray-700/30 p-4 border-b border-gray-200 dark:border-gray-700">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                      {category} - {expandedCell.month} Transactions
+                                    </h4>
+                                    <button
+                                      onClick={() => setExpandedCell(null)}
+                                      className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                    >
+                                      Close
+                                    </button>
+                                  </div>
+                                  <div className="space-y-1 max-h-[300px] overflow-y-auto">
+                                    {yearExpenses
+                                      .filter(t => 
+                                        t.category === category && 
+                                        new Date(t.date).toLocaleString('default', { month: 'long' }) === expandedCell.month
+                                      )
+                                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                                      .map(t => (
+                                        <div 
+                                          key={t.id} 
+                                          className="flex items-center justify-between py-2 px-3 bg-white dark:bg-gray-800 rounded-lg text-sm"
+                                        >
+                                          <div className="flex items-center gap-3">
+                                            <span className="text-gray-400 dark:text-gray-500 text-xs w-20">
+                                              {new Date(t.date).toLocaleDateString()}
+                                            </span>
+                                            <span className="text-gray-700 dark:text-gray-300">{t.description}</span>
+                                          </div>
+                                          <span className="text-error-500 font-medium">
+                                            {formatAmount(Math.abs(t.amount))}
+                                          </span>
+                                        </div>
+                                      ))}
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
           {/* Month Tabs */}
           {availableMonths.length > 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-theme-sm overflow-hidden">
@@ -201,55 +311,6 @@ export default function CategoriesPage() {
                   </div>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* Summary table */}
-          {allCategories.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Category Summary</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-700">
-                      <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Category</th>
-                      {months.map(month => (
-                        monthlyCategories[month] && (
-                          <th key={month} className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">
-                            {month.substring(0, 3)}
-                          </th>
-                        )
-                      ))}
-                      <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allCategories.map(category => {
-                      const categoryTotal = Object.values(monthlyCategories).reduce(
-                        (sum, monthData) => sum + (monthData[category] || 0), 0
-                      )
-                      return (
-                        <tr key={category} className="border-b border-gray-100 dark:border-gray-700/50">
-                          <td className="py-3 px-2 text-gray-900 dark:text-white">{category}</td>
-                          {months.map(month => (
-                            monthlyCategories[month] && (
-                              <td key={month} className="py-3 px-2 text-right text-gray-600 dark:text-gray-300">
-                                {monthlyCategories[month][category] 
-                                  ? formatAmount(monthlyCategories[month][category])
-                                  : '-'
-                                }
-                              </td>
-                            )
-                          ))}
-                          <td className="py-3 px-2 text-right text-error-500 font-medium">
-                            {formatAmount(categoryTotal)}
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
             </div>
           )}
         </div>
