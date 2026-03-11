@@ -63,28 +63,17 @@ export async function GET() {
       mappingFrom += mappingBatchSize
     }
 
-    // Create a lookup array for categories (for partial matching)
-    const mappingsList = allMappings.map(m => ({
-      pattern: m.description_pattern.toLowerCase(),
-      category: (m.categories as unknown as { name: string } | null)?.name || 'Other'
-    }))
-
-    // Function to find category by partial match
-    const findCategory = (description: string): string => {
-      const descLower = description.toLowerCase()
-      // First try exact match
-      const exactMatch = mappingsList.find(m => m.pattern === descLower)
-      if (exactMatch) return exactMatch.category
-      // Then try contains match
-      const containsMatch = mappingsList.find(m => descLower.includes(m.pattern))
-      if (containsMatch) return containsMatch.category
-      return 'Other'
-    }
+    // Create a lookup map for categories
+    const categoryMap = new Map<string, string>()
+    allMappings.forEach(m => {
+      const categoryName = (m.categories as unknown as { name: string } | null)?.name || 'Other'
+      categoryMap.set(m.description_pattern, categoryName)
+    })
 
     // Add category to each transaction based on description mapping
     const transactionsWithCategory = transactions?.map(t => ({
       ...t,
-      category: findCategory(t.description)
+      category: categoryMap.get(t.description) || 'Other'
     }))
 
     return NextResponse.json({ transactions: transactionsWithCategory })
