@@ -181,10 +181,8 @@ export default function MappingsPage() {
     mappingsByCategoryId[cat.id] = mappings.filter(m => m.category_id === cat.id)
   })
 
-  // Only show categories that have mappings
-  const categoriesWithMappings = categories.filter(cat => 
-    mappingsByCategoryId[cat.id]?.length > 0
-  )
+  // Show all categories (including empty ones)
+  const categoriesWithMappings = categories
 
   // Filter categories based on search and selection
   const filteredCategories = categoriesWithMappings.filter(cat => {
