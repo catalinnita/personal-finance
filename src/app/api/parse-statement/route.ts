@@ -49,21 +49,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Fetch user's custom categories and mappings (with joined category names)
-    const [categoriesRes, mappingsRes] = await Promise.all([
-      supabase.from('categories').select('name').eq('user_id', user.id),
-      supabase.from('category_mappings').select(`
-        description_pattern,
-        category_id,
-        categories (name)
-      `).eq('user_id', user.id)
-    ])
-
+    // Fetch user's custom categories
+    const categoriesRes = await supabase.from('categories').select('name').eq('user_id', user.id)
     const customCategories = categoriesRes.data?.map(c => c.name) || []
     const allCategories = [...new Set([...DEFAULT_CATEGORIES, ...customCategories])].sort()
     
+    // Fetch all mappings with pagination to bypass 1000 row limit
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let allMappingsData: any[] = []
+    let mappingFrom = 0
+    const mappingBatchSize = 1000
+    
+    while (true) {
+      const { data: mappingBatch } = await supabase
+        .from('category_mappings')
+        .select(`
+          description_pattern,
+          category_id,
+          categories (name)
+        `)
+        .eq('user_id', user.id)
+        .range(mappingFrom, mappingFrom + mappingBatchSize - 1)
+      
+      if (!mappingBatch || mappingBatch.length === 0) break
+      
+      allMappingsData = [...allMappingsData, ...mappingBatch]
+      
+      if (mappingBatch.length < mappingBatchSize) break
+      mappingFrom += mappingBatchSize
+    }
+    
     // Transform mappings to include category name
-    const mappings = (mappingsRes.data || []).map(m => ({
+    const mappings = allMappingsData.map(m => ({
       description_pattern: m.description_pattern,
       category: (m.categories as unknown as { name: string } | null)?.name || ''
     })).filter(m => m.category)
