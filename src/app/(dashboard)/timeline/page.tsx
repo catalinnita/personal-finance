@@ -184,6 +184,22 @@ export default function TimelinePage() {
     return { diff, percent, increasing: diff > 0 }
   }
 
+  // Calculate 6-month moving average for a category
+  const getMovingAverage = (category: string, periods: string[]) => {
+    const data = categoryData[category] || {}
+    const values = periods.map(p => data[p] || 0)
+    const movingAvg: number[] = []
+    
+    for (let i = 0; i < values.length; i++) {
+      const start = Math.max(0, i - 5)
+      const window = values.slice(start, i + 1)
+      const avg = window.reduce((sum, v) => sum + v, 0) / window.length
+      movingAvg.push(avg)
+    }
+    
+    return movingAvg
+  }
+
   if (loading || currencyLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -311,47 +327,62 @@ export default function TimelinePage() {
                     </span>
                   </p>
 
-                  {/* Bar Chart */}
-                  <div className="flex items-end gap-1 overflow-x-auto pt-8" style={{ height: '180px' }}>
-                    {availablePeriods.map((period) => {
-                      const value = data[period] || 0
-                      const height = getBarHeight(value, categoryMax)
-                      const barHeight = value > 0 ? Math.max(height, 5) : 2
-                      
-                      return (
-                        <div key={period} className="flex-1 min-w-[10px] flex flex-col items-center group">
-                          <div className="w-full relative flex flex-col justify-end items-center" style={{ height: '140px' }}>
-                            {/* Tooltip - positioned inside container */}
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none">
-                              {period}: {formatAmount(value)}
+                {/* Bar Chart */}
+                {(() => {
+                  const movingAvg = getMovingAverage(category, availablePeriods)
+                  const avgMax = scaleMode === 'absolute' ? maxValue : categoryMax
+                  
+                  return (
+                    <div className="flex items-end gap-1 overflow-x-auto" style={{ height: '200px' }}>
+                      {availablePeriods.map((period, idx) => {
+                        const value = data[period] || 0
+                        const height = getBarHeight(value, categoryMax)
+                        const barHeight = value > 0 ? Math.max(height, 5) : 2
+                        const avgHeight = avgMax > 0 ? (movingAvg[idx] / avgMax) * 100 : 0
+                        
+                        return (
+                          <div key={period} className="flex-1 min-w-[10px] flex flex-col items-center group">
+                            <div className="w-full relative flex flex-col justify-end items-center" style={{ height: '150px' }}>
+                              {/* Tooltip */}
+                              <div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none">
+                                {period}: {formatAmount(value)} (avg: {formatAmount(movingAvg[idx])})
+                              </div>
+                              {/* Moving Average Line Marker */}
+                              <div 
+                                className="absolute w-full flex justify-center z-10"
+                                style={{ bottom: `${Math.min(avgHeight, 100)}%` }}
+                              >
+                                <div className="w-3 h-1 bg-gray-900 dark:bg-white rounded-full" />
+                              </div>
+                              {/* Bar */}
+                              <div
+                                className={`w-full rounded-t transition-all duration-300 ${
+                                  value > 0 ? getCategoryColor(colorIndex) : 'bg-gray-200 dark:bg-gray-700'
+                                }`}
+                                style={{ height: `${Math.min(barHeight, 100)}%` }}
+                              />
                             </div>
-                            {/* Bar */}
-                            <div
-                              className={`w-full rounded-t transition-all duration-300 ${
-                                value > 0 ? getCategoryColor(colorIndex) : 'bg-gray-200 dark:bg-gray-700'
-                              }`}
-                              style={{ height: `${barHeight}%` }}
-                            />
+                            <div className="h-[40px] flex items-start justify-center mt-1">
+                              <span className="text-xs text-gray-400" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>{useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}</span>
+                            </div>
                           </div>
-                          <div className="h-[40px] flex items-start justify-center mt-1">
-                            <span className="text-xs text-gray-400" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>{useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}</span>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })()}
+              </div>
+            )
+          })}
+        </div>
 
-          {selectedCategories.length === 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-              <p className="text-gray-500 dark:text-gray-400">Select at least one category to view the timeline.</p>
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  )
+        {selectedCategories.length === 0 && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+            <p className="text-gray-500 dark:text-gray-400">Select at least one category to view the timeline.</p>
+          </div>
+        )}
+      </>
+    )}
+  </div>
+)
 }
