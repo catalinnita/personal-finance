@@ -391,7 +391,7 @@ export default function TimelinePage() {
                           d={pathD}
                           fill={fillColor}
                           fillOpacity={0.7}
-                          stroke={fillColor}
+                          stroke="white"
                           strokeWidth={1}
                           vectorEffect="non-scaling-stroke"
                         />
