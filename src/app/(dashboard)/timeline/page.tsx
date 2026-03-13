@@ -399,31 +399,13 @@ export default function TimelinePage() {
                     })}
                   </svg>
                   {/* Hover zones for tooltips */}
-                  <div className="absolute inset-0 flex">
+                  <div className="absolute inset-0 flex overflow-visible">
                     {stackedData.map((d, i) => (
                       <div 
                         key={i} 
-                        className="flex-1 group relative"
+                        className="flex-1 group relative overflow-visible"
+                        title={`${d.period}: ${selectedCategories.map(cat => `${cat}: ${formatAmount(d[cat] as number)}`).join(', ')} - Total: ${formatAmount(d.total as number)}`}
                       >
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1.5 rounded whitespace-nowrap z-50 pointer-events-none">
-                          <div className="font-medium mb-1">{d.period}</div>
-                          {selectedCategories.map(cat => {
-                            const val = d[cat] as number
-                            if (val > 0) {
-                              const colorIndex = categories.indexOf(cat)
-                              return (
-                                <div key={cat} className="flex items-center gap-1.5">
-                                  <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: getCategoryFillColor(colorIndex) }} />
-                                  <span>{cat}: {formatAmount(val)}</span>
-                                </div>
-                              )
-                            }
-                            return null
-                          })}
-                          <div className="border-t border-gray-600 mt-1 pt-1 font-medium">
-                            Total: {formatAmount(d.total as number)}
-                          </div>
-                        </div>
                       </div>
                     ))}
                   </div>
