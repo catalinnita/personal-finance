@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Loader2, TrendingUp, TrendingDown } from 'lucide-react'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
+import { useSelectedCategories } from '@/hooks/useSelectedCategories'
 
 type Transaction = {
   id: string
@@ -23,7 +24,6 @@ type CategoryMonthlyData = {
 export default function TimelinePage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [scaleMode, setScaleMode] = useState<'relative' | 'absolute'>('relative')
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null)
   const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
@@ -124,38 +124,7 @@ export default function TimelinePage() {
     return { categoryData: data, categories: cats, maxValue: max, availablePeriods: available }
   }, [transactions, selectedYears, useMonthYear, periodKeys])
 
-  useEffect(() => {
-    if (categories.length > 0 && selectedCategories.length === 0) {
-      const saved = localStorage.getItem('timeline-selected-categories')
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved)
-          const validCategories = parsed.filter((c: string) => categories.includes(c))
-          if (validCategories.length > 0) {
-            setSelectedCategories(validCategories)
-            return
-          }
-        } catch {
-          // ignore
-        }
-      }
-      setSelectedCategories(categories.slice(0, 5))
-    }
-  }, [categories])
-
-  useEffect(() => {
-    if (selectedCategories.length > 0) {
-      localStorage.setItem('timeline-selected-categories', JSON.stringify(selectedCategories))
-    }
-  }, [selectedCategories])
-
-  const toggleCategory = (category: string) => {
-    setSelectedCategories(prev => 
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    )
-  }
+  const { selectedCategories, toggleCategory } = useSelectedCategories(categories)
 
   const getBarHeight = (value: number, categoryMax: number) => {
     if (scaleMode === 'absolute') {

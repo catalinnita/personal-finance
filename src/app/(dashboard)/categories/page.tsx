@@ -5,6 +5,7 @@ import { Loader2, PieChart, X } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
+import { useSelectedCategories } from '@/hooks/useSelectedCategories'
 
 type CategoryData = {
   [category: string]: number
@@ -38,7 +39,6 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true)
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
   const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
@@ -106,20 +106,7 @@ export default function CategoriesPage() {
   // Get all unique categories
   const allCategories = [...new Set(yearExpenses.map(t => t.category))].sort()
 
-  // Initialize selected categories when allCategories changes
-  useEffect(() => {
-    if (allCategories.length > 0 && selectedCategories.length === 0) {
-      setSelectedCategories(allCategories)
-    }
-  }, [allCategories.join(',')])
-
-  const toggleCategory = (category: string) => {
-    setSelectedCategories(prev => 
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    )
-  }
+  const { selectedCategories, toggleCategory } = useSelectedCategories(allCategories)
 
   const getCategoryColor = (index: number) => {
     const colors = [
