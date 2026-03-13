@@ -26,21 +26,30 @@ export default function TimelinePage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [scaleMode, setScaleMode] = useState<'relative' | 'absolute'>('relative')
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null)
+  const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
-    fetchTransactions()
+    fetchData()
   }, [])
 
-  const fetchTransactions = async () => {
+  const fetchData = async () => {
     try {
-      const response = await fetch('/api/transactions')
-      const data = await response.json()
-      if (data.transactions) {
-        setTransactions(data.transactions)
+      const [transRes, settingsRes] = await Promise.all([
+        fetch('/api/transactions'),
+        fetch('/api/settings')
+      ])
+      const transData = await transRes.json()
+      const settingsData = await settingsRes.json()
+      
+      if (transData.transactions) {
+        setTransactions(transData.transactions)
+      }
+      if (settingsData.settings?.moving_average_period) {
+        setMovingAvgPeriod(settingsData.settings.moving_average_period)
       }
     } catch (error) {
-      console.error('Error fetching transactions:', error)
+      console.error('Error fetching data:', error)
     } finally {
       setLoading(false)
     }
@@ -241,16 +250,16 @@ export default function TimelinePage() {
     return { diff, percent, increasing: diff > 0 }
   }
 
-  // Calculate 6-month moving average for a category
+  // Calculate moving average for a category using the configured period
   const getMovingAverage = (category: string, periods: string[]) => {
     const data = categoryData[category] || {}
     const values = periods.map(p => data[p] || 0)
     const movingAvg: number[] = []
     
     for (let i = 0; i < values.length; i++) {
-      const start = Math.max(0, i - 5)
-      const window = values.slice(start, i + 1)
-      const avg = window.reduce((sum, v) => sum + v, 0) / window.length
+      const start = Math.max(0, i - (movingAvgPeriod - 1))
+      const windowSlice = values.slice(start, i + 1)
+      const avg = windowSlice.reduce((sum, v) => sum + v, 0) / windowSlice.length
       movingAvg.push(avg)
     }
     
@@ -411,14 +420,14 @@ export default function TimelinePage() {
                         />
                       )
                     })}
-                    {/* 6-month moving average line */}
+                    {/* Moving average line */}
                     {(() => {
                       const totals = stackedData.map(d => d.total as number)
                       const movingAvg: number[] = []
                       for (let i = 0; i < totals.length; i++) {
-                        const start = Math.max(0, i - 5)
-                        const window = totals.slice(start, i + 1)
-                        movingAvg.push(window.reduce((sum, v) => sum + v, 0) / window.length)
+                        const start = Math.max(0, i - (movingAvgPeriod - 1))
+                        const windowSlice = totals.slice(start, i + 1)
+                        movingAvg.push(windowSlice.reduce((sum, v) => sum + v, 0) / windowSlice.length)
                       }
                       const n = stackedData.length
                       const avgPoints = movingAvg.map((avg, i) => {
@@ -443,7 +452,7 @@ export default function TimelinePage() {
                   <div className="absolute inset-0 flex z-10">
                     {stackedData.map((d, i) => {
                       const totals = stackedData.map(dd => dd.total as number)
-                      const start = Math.max(0, i - 5)
+                      const start = Math.max(0, i - (movingAvgPeriod - 1))
                       const windowSlice = totals.slice(start, i + 1)
                       const avg = windowSlice.reduce((sum, v) => sum + v, 0) / windowSlice.length
                       return (

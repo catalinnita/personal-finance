@@ -34,7 +34,7 @@ export async function GET() {
     }
 
     // Return default settings if none exist
-    const userSettings = settings || { currency: 'USD', highlight_threshold: 500 }
+    const userSettings = settings || { currency: 'USD', highlight_threshold: 500, moving_average_period: 6 }
 
     return NextResponse.json({ 
       settings: userSettings,
@@ -56,7 +56,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { currency, highlight_threshold } = body
+    const { currency, highlight_threshold, moving_average_period } = body
 
     // Validate currency
     if (currency && !CURRENCIES.find(c => c.code === currency)) {
@@ -69,6 +69,12 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid highlight threshold' }, { status: 400 })
     }
 
+    // Validate moving_average_period
+    const avgPeriod = moving_average_period !== undefined ? Number(moving_average_period) : 6
+    if (isNaN(avgPeriod) || avgPeriod < 1 || avgPeriod > 24) {
+      return NextResponse.json({ error: 'Moving average period must be between 1 and 24' }, { status: 400 })
+    }
+
     // Upsert settings
     const { data, error } = await supabase
       .from('user_settings')
@@ -76,6 +82,7 @@ export async function PUT(request: NextRequest) {
         user_id: user.id,
         currency: currency || 'USD',
         highlight_threshold: threshold,
+        moving_average_period: avgPeriod,
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'user_id'

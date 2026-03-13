@@ -12,6 +12,7 @@ type Currency = {
 type Settings = {
   currency: string
   highlight_threshold: number
+  moving_average_period: number
 }
 
 export default function SettingsPage() {
@@ -21,6 +22,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [thresholdInput, setThresholdInput] = useState('')
+  const [movingAvgInput, setMovingAvgInput] = useState('')
 
   useEffect(() => {
     fetchSettings()
@@ -33,6 +35,7 @@ export default function SettingsPage() {
       setSettings(data.settings)
       setCurrencies(data.currencies || [])
       setThresholdInput(String(data.settings?.highlight_threshold || 500))
+      setMovingAvgInput(String(data.settings?.moving_average_period || 6))
     } catch (error) {
       console.error('Error fetching settings:', error)
     } finally {
@@ -76,6 +79,13 @@ export default function SettingsPage() {
     const threshold = parseFloat(thresholdInput)
     if (!isNaN(threshold) && threshold >= 0) {
       await saveSettings({ highlight_threshold: threshold })
+    }
+  }
+
+  const handleMovingAvgChange = async () => {
+    const period = parseInt(movingAvgInput)
+    if (!isNaN(period) && period >= 1 && period <= 24) {
+      await saveSettings({ moving_average_period: period })
     }
   }
 
@@ -151,6 +161,44 @@ export default function SettingsPage() {
               />
               <button
                 onClick={handleThresholdChange}
+                disabled={saving}
+                className="px-4 py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+              >
+                {saving ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : saved ? (
+                  <Check className="w-5 h-5" />
+                ) : (
+                  'Save'
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Moving Average Period Setting */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Moving Average Period
+            </label>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+              Number of months to use for calculating the moving average on timeline charts (1-24)
+            </p>
+            <div className="flex gap-3">
+              <input
+                type="number"
+                min="1"
+                max="24"
+                step="1"
+                value={movingAvgInput}
+                onChange={(e) => setMovingAvgInput(e.target.value)}
+                onBlur={handleMovingAvgChange}
+                onKeyDown={(e) => e.key === 'Enter' && handleMovingAvgChange()}
+                disabled={saving}
+                className="flex-1 px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 disabled:opacity-50"
+                placeholder="6"
+              />
+              <button
+                onClick={handleMovingAvgChange}
                 disabled={saving}
                 className="px-4 py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
               >
