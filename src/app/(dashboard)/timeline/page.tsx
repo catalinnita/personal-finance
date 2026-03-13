@@ -426,15 +426,20 @@ export default function TimelinePage() {
                     })()}
                   </svg>
                   {/* Hover zones for tooltips */}
-                  <div className="absolute inset-0 flex overflow-visible">
-                    {stackedData.map((d, i) => (
-                      <div 
-                        key={i} 
-                        className="flex-1 group relative overflow-visible"
-                        title={`${d.period}: ${selectedCategories.map(cat => `${cat}: ${formatAmount(d[cat] as number)}`).join(', ')} - Total: ${formatAmount(d.total as number)}`}
-                      >
-                      </div>
-                    ))}
+                  <div className="absolute inset-0 flex z-10">
+                    {stackedData.map((d, i) => {
+                      const totals = stackedData.map(dd => dd.total as number)
+                      const start = Math.max(0, i - 5)
+                      const window = totals.slice(start, i + 1)
+                      const avg = window.reduce((sum, v) => sum + v, 0) / window.length
+                      return (
+                        <div 
+                          key={i} 
+                          className="flex-1 cursor-pointer"
+                          title={`${d.period}: ${selectedCategories.map(cat => `${cat}: ${formatAmount(d[cat] as number)}`).join(', ')} - Total: ${formatAmount(d.total as number)} (avg: ${formatAmount(avg)})`}
+                        />
+                      )
+                    })}
                   </div>
                 </div>
                 {/* X-axis labels */}
