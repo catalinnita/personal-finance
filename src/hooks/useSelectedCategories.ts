@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 const STORAGE_KEY = 'selected-categories'
 
 export function useSelectedCategories(availableCategories: string[]) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [initialized, setInitialized] = useState(false)
+  const prevAvailableRef = useRef<string[]>([])
 
   // Load from localStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined' && !initialized) {
+    if (typeof window !== 'undefined' && !initialized && availableCategories.length > 0) {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
         try {
@@ -20,6 +21,7 @@ export function useSelectedCategories(availableCategories: string[]) {
           if (validCategories.length > 0) {
             setSelectedCategories(validCategories)
             setInitialized(true)
+            prevAvailableRef.current = availableCategories
             return
           }
         } catch {
@@ -27,10 +29,24 @@ export function useSelectedCategories(availableCategories: string[]) {
         }
       }
       // Default to all categories if nothing saved or no valid saved categories
-      if (availableCategories.length > 0) {
-        setSelectedCategories(availableCategories)
-        setInitialized(true)
+      setSelectedCategories(availableCategories)
+      setInitialized(true)
+      prevAvailableRef.current = availableCategories
+    }
+  }, [availableCategories, initialized])
+
+  // Add new categories automatically when they appear
+  useEffect(() => {
+    if (initialized && availableCategories.length > 0) {
+      const prevAvailable = prevAvailableRef.current
+      const newCategories = availableCategories.filter(c => !prevAvailable.includes(c))
+      
+      if (newCategories.length > 0) {
+        // Add new categories to selection
+        setSelectedCategories(prev => [...prev, ...newCategories.filter(c => !prev.includes(c))])
       }
+      
+      prevAvailableRef.current = availableCategories
     }
   }, [availableCategories, initialized])
 
