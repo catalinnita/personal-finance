@@ -360,56 +360,93 @@ export default function TimelinePage() {
                   })}
                 </div>
               </div>
-              <div className="relative" style={{ height: '250px' }}>
-                <svg width="100%" height="100%" viewBox={`0 0 ${stackedData.length * 40} 200`} preserveAspectRatio="none">
-                  {/* Render areas in reverse order so first category is on top visually */}
-                  {[...selectedCategories].reverse().map((cat) => {
-                    const colorIndex = categories.indexOf(cat)
-                    const fillColor = getCategoryFillColor(colorIndex)
-                    
-                    const points = stackedData.map((d, i) => {
-                      const y0 = stackedMax > 0 ? 200 - ((d[`${cat}_y0`] as number) / stackedMax) * 180 : 200
-                      const y1 = stackedMax > 0 ? 200 - ((d[`${cat}_y1`] as number) / stackedMax) * 180 : 200
-                      return { x: i * 40 + 20, y0, y1 }
-                    })
-                    
-                    const pathD = `
-                      M ${points[0].x} ${points[0].y1}
-                      ${points.map(p => `L ${p.x} ${p.y1}`).join(' ')}
-                      L ${points[points.length - 1].x} ${points[points.length - 1].y0}
-                      ${[...points].reverse().map(p => `L ${p.x} ${p.y0}`).join(' ')}
-                      Z
-                    `
-                    
-                    return (
-                      <path
-                        key={cat}
-                        d={pathD}
-                        fill={fillColor}
-                        fillOpacity={0.7}
-                        stroke={fillColor}
-                        strokeWidth={1}
-                      />
-                    )
-                  })}
-                </svg>
+              <div className="relative" style={{ height: '280px' }}>
+                {/* Chart area */}
+                <div className="absolute inset-0 bottom-8">
+                  <svg width="100%" height="100%" preserveAspectRatio="none">
+                    {/* Render areas in reverse order so first category is on top visually */}
+                    {[...selectedCategories].reverse().map((cat) => {
+                      const colorIndex = categories.indexOf(cat)
+                      const fillColor = getCategoryFillColor(colorIndex)
+                      const n = stackedData.length
+                      
+                      const points = stackedData.map((d, i) => {
+                        const y0 = stackedMax > 0 ? 100 - ((d[`${cat}_y0`] as number) / stackedMax) * 95 : 100
+                        const y1 = stackedMax > 0 ? 100 - ((d[`${cat}_y1`] as number) / stackedMax) * 95 : 100
+                        const x = (i / (n - 1 || 1)) * 100
+                        return { x, y0, y1 }
+                      })
+                      
+                      const pathD = `
+                        M ${points[0].x} ${points[0].y1}
+                        ${points.map(p => `L ${p.x} ${p.y1}`).join(' ')}
+                        L ${points[points.length - 1].x} ${points[points.length - 1].y0}
+                        ${[...points].reverse().map(p => `L ${p.x} ${p.y0}`).join(' ')}
+                        Z
+                      `
+                      
+                      return (
+                        <path
+                          key={cat}
+                          d={pathD}
+                          fill={fillColor}
+                          fillOpacity={0.7}
+                          stroke={fillColor}
+                          strokeWidth={1}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      )
+                    })}
+                  </svg>
+                  {/* Hover zones for tooltips */}
+                  <div className="absolute inset-0 flex">
+                    {stackedData.map((d, i) => (
+                      <div 
+                        key={i} 
+                        className="flex-1 group relative"
+                      >
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1.5 rounded whitespace-nowrap z-50 pointer-events-none">
+                          <div className="font-medium mb-1">{d.period}</div>
+                          {selectedCategories.map(cat => {
+                            const val = d[cat] as number
+                            if (val > 0) {
+                              const colorIndex = categories.indexOf(cat)
+                              return (
+                                <div key={cat} className="flex items-center gap-1.5">
+                                  <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: getCategoryFillColor(colorIndex) }} />
+                                  <span>{cat}: {formatAmount(val)}</span>
+                                </div>
+                              )
+                            }
+                            return null
+                          })}
+                          <div className="border-t border-gray-600 mt-1 pt-1 font-medium">
+                            Total: {formatAmount(d.total as number)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 {/* X-axis labels */}
-                <div className="absolute bottom-0 left-0 right-0 flex justify-between px-2">
+                <div className="absolute bottom-0 left-0 right-0 h-8 flex">
                   {stackedData.map((d, i) => (
-                    <span 
+                    <div 
                       key={i} 
-                      className="text-xs text-gray-400"
-                      style={{ 
-                        width: `${100 / stackedData.length}%`, 
-                        textAlign: 'center',
-                        fontSize: stackedData.length > 24 ? '8px' : '10px'
-                      }}
+                      className="flex-1 flex items-center justify-center"
                     >
-                      {stackedData.length > 24 
-                        ? (i % 3 === 0 ? (useMonthYear ? `${(d.period as string).substring(0, 1)}'${(d.period as string).split(' ')[1]?.substring(2)}` : (d.period as string).substring(0, 1)) : '')
-                        : (useMonthYear ? `${(d.period as string).substring(0, 3)}'${(d.period as string).split(' ')[1]?.substring(2)}` : (d.period as string).substring(0, 3))
-                      }
-                    </span>
+                      <span 
+                        className="text-xs text-gray-400"
+                        style={{ fontSize: stackedData.length > 36 ? '7px' : stackedData.length > 24 ? '8px' : '10px' }}
+                      >
+                        {stackedData.length > 36
+                          ? (i % 6 === 0 ? (useMonthYear ? `${(d.period as string).substring(0, 1)}'${(d.period as string).split(' ')[1]?.substring(2)}` : (d.period as string).substring(0, 1)) : '')
+                          : stackedData.length > 24 
+                            ? (i % 3 === 0 ? (useMonthYear ? `${(d.period as string).substring(0, 1)}'${(d.period as string).split(' ')[1]?.substring(2)}` : (d.period as string).substring(0, 1)) : '')
+                            : (useMonthYear ? `${(d.period as string).substring(0, 3)}'${(d.period as string).split(' ')[1]?.substring(2)}` : (d.period as string).substring(0, 3))
+                        }
+                      </span>
+                    </div>
                   ))}
                 </div>
               </div>
