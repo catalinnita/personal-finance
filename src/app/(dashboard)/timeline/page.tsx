@@ -363,7 +363,7 @@ export default function TimelinePage() {
               <div className="relative" style={{ height: '280px' }}>
                 {/* Chart area */}
                 <div className="absolute inset-0 bottom-8">
-                  <svg width="100%" height="100%" preserveAspectRatio="none">
+                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
                     {/* Render areas in reverse order so first category is on top visually */}
                     {[...selectedCategories].reverse().map((cat) => {
                       const colorIndex = categories.indexOf(cat)
