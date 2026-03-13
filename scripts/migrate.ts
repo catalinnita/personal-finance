@@ -250,6 +250,10 @@ const MIGRATIONS = [
     name: 'Add moving_average_period to user_settings',
     sql: `ALTER TABLE user_settings ADD COLUMN IF NOT EXISTS moving_average_period INTEGER DEFAULT 6;`
   },
+  {
+    name: 'Add expense_type to categories',
+    sql: `ALTER TABLE categories ADD COLUMN IF NOT EXISTS expense_type VARCHAR(20) DEFAULT 'variable';`
+  },
 ]
 
 async function runMigrations() {

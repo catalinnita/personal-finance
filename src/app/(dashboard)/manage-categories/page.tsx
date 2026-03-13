@@ -7,6 +7,7 @@ type Category = {
   id: string
   name: string
   type: 'income' | 'expense'
+  expense_type: 'fixed' | 'variable'
 }
 
 export default function ManageCategoriesPage() {
@@ -163,6 +164,34 @@ export default function ManageCategoriesPage() {
                     }`}>
                       {category.type}
                     </span>
+                    {category.type === 'expense' && (
+                      <button
+                        onClick={async () => {
+                          const newExpenseType = category.expense_type === 'fixed' ? 'variable' : 'fixed'
+                          try {
+                            const response = await fetch('/api/categories', {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ id: category.id, expense_type: newExpenseType }),
+                            })
+                            if (response.ok) {
+                              setCategories(categories.map(c => 
+                                c.id === category.id ? { ...c, expense_type: newExpenseType } : c
+                              ))
+                            }
+                          } catch (error) {
+                            console.error('Error updating expense type:', error)
+                          }
+                        }}
+                        className={`text-xs px-2 py-0.5 rounded cursor-pointer transition-colors ${
+                          category.expense_type === 'fixed' 
+                            ? 'bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-500/30' 
+                            : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-500'
+                        }`}
+                      >
+                        {category.expense_type || 'variable'}
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <button

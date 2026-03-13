@@ -41,6 +41,7 @@ export default function CategoriesPage() {
   const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
   const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
   const [allUserCategories, setAllUserCategories] = useState<string[]>([])
+  const [categoryExpenseTypes, setCategoryExpenseTypes] = useState<{ [name: string]: 'fixed' | 'variable' }>({})
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -66,12 +67,14 @@ export default function CategoriesPage() {
       }
       if (categoriesData.categories) {
         // Only include expense categories
-        setAllUserCategories(
-          categoriesData.categories
-            .filter((c: { type: string }) => c.type === 'expense')
-            .map((c: { name: string }) => c.name)
-            .sort()
-        )
+        const expenseCategories = categoriesData.categories.filter((c: { type: string }) => c.type === 'expense')
+        setAllUserCategories(expenseCategories.map((c: { name: string }) => c.name).sort())
+        // Store expense_type mapping
+        const expenseTypeMap: { [name: string]: 'fixed' | 'variable' } = {}
+        expenseCategories.forEach((c: { name: string; expense_type?: 'fixed' | 'variable' }) => {
+          expenseTypeMap[c.name] = c.expense_type || 'variable'
+        })
+        setCategoryExpenseTypes(expenseTypeMap)
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -167,6 +170,22 @@ export default function CategoriesPage() {
     return windowSlice.reduce((sum, v) => sum + v, 0) / windowSlice.length
   }
 
+  // Get last month value for fixed categories
+  const getLastMonthValue = (category: string, periods: string[]) => {
+    if (periods.length === 0) return 0
+    const lastPeriod = periods[periods.length - 1]
+    return monthlyCategories[lastPeriod]?.[category] || 0
+  }
+
+  // Get the appropriate value based on category expense_type
+  const getCategoryAvgValue = (category: string, periods: string[]) => {
+    const expenseType = categoryExpenseTypes[category] || 'variable'
+    if (expenseType === 'fixed') {
+      return getLastMonthValue(category, periods)
+    }
+    return getMovingAverage(category, periods)
+  }
+
   // Get available period keys in chronological order
   const availableMonths = useMonthYear
     ? selectedYears.sort((a, b) => a - b).flatMap(year => 
@@ -250,7 +269,7 @@ export default function CategoriesPage() {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Category</th>
-                      <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">Avg ({movingAvgPeriod}m)</th>
+                      <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">Avg/Last</th>
                       {availableMonths.map(period => (
                         <th key={period} className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
                           {useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
@@ -264,13 +283,21 @@ export default function CategoriesPage() {
                       const categoryTotal = Object.values(monthlyCategories).reduce(
                         (sum, monthData) => sum + (monthData[category] || 0), 0
                       )
-                      const movingAvg = getMovingAverage(category, availableMonths)
+                      const avgValue = getCategoryAvgValue(category, availableMonths)
+                      const isFixed = categoryExpenseTypes[category] === 'fixed'
                       return (
                         <>
                           <tr key={category} className="border-b border-gray-100 dark:border-gray-700/50">
-                            <td className="py-3 px-2 text-gray-900 dark:text-white">{category}</td>
-                            <td className="py-3 px-2 text-right text-gray-500 dark:text-gray-400">
-                              {formatAmount(movingAvg)}
+                            <td className="py-3 px-2 text-gray-900 dark:text-white">
+                              <span className="flex items-center gap-2">
+                                {category}
+                                {isFixed && (
+                                  <span className="text-xs px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400">fixed</span>
+                                )}
+                              </span>
+                            </td>
+                            <td className="py-3 px-2 text-right text-gray-500 dark:text-gray-400" title={isFixed ? 'Last month' : `${movingAvgPeriod}-month average`}>
+                              {formatAmount(avgValue)}
                             </td>
                             {availableMonths.map(period => (
                               <td key={period} className="py-3 px-2 text-right">
@@ -299,7 +326,7 @@ export default function CategoriesPage() {
                       <td className="py-3 px-2 text-gray-900 dark:text-white">Total</td>
                       <td className="py-3 px-2 text-right text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-600/50">
                         {formatAmount(
-                          displayCategories.reduce((sum, cat) => sum + getMovingAverage(cat, availableMonths), 0)
+                          displayCategories.reduce((sum, cat) => sum + getCategoryAvgValue(cat, availableMonths), 0)
                         )}
                       </td>
                       {availableMonths.map(period => (
