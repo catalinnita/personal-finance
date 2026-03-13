@@ -477,7 +477,7 @@ export default function TimelinePage() {
                   const avgMax = scaleMode === 'absolute' ? maxValue : categoryMax
                   
                   return (
-                    <div className="flex items-end gap-1 overflow-x-auto pb-12" style={{ height: '220px' }}>
+                    <div className="flex items-end gap-1 overflow-x-auto overflow-y-visible pt-8" style={{ height: '220px' }}>
                       {availablePeriods.map((period, idx) => {
                         const value = data[period] || 0
                         const height = getBarHeight(value, categoryMax)
@@ -488,7 +488,7 @@ export default function TimelinePage() {
                           <div key={period} className="flex-1 min-w-[10px] flex flex-col items-center group">
                             <div className="w-full relative flex flex-col justify-end items-center" style={{ height: '150px' }}>
                               {/* Tooltip */}
-                              <div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none">
+                              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50 pointer-events-none">
                                 {period}: {formatAmount(value)} (avg: {formatAmount(movingAvg[idx])})
                               </div>
                               {/* Moving Average Line Marker */}
@@ -506,7 +506,7 @@ export default function TimelinePage() {
                                 style={{ height: `${Math.min(barHeight, 100)}%` }}
                               />
                             </div>
-                            <div className="h-[50px] flex items-start justify-center mt-1 overflow-visible">
+                            <div className="h-[40px] flex items-start justify-center mt-1">
                               <span className="text-xs text-gray-400" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>{useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}</span>
                             </div>
                           </div>
