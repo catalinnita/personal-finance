@@ -468,7 +468,7 @@ export default function TimelinePage() {
               return (
                 <div
                   key={category}
-                  className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm"
+                  className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm overflow-visible"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
