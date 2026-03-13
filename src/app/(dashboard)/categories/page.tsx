@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, PieChart, ChevronDown } from 'lucide-react'
+import { Loader2, PieChart, X } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
@@ -180,23 +180,10 @@ export default function CategoriesPage() {
                               <td key={period} className="py-3 px-2 text-right">
                                 {monthlyCategories[period]?.[category] ? (
                                   <button
-                                    onClick={() => setExpandedCell(
-                                      expandedCell?.category === category && expandedCell?.month === period
-                                        ? null
-                                        : { category, month: period }
-                                    )}
-                                    className={`inline-flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-brand-500 dark:hover:text-brand-400 transition-colors ${
-                                      expandedCell?.category === category && expandedCell?.month === period
-                                        ? 'text-brand-500 dark:text-brand-400 font-medium'
-                                        : ''
-                                    }`}
+                                    onClick={() => setExpandedCell({ category, month: period })}
+                                    className="px-2 py-1 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                                   >
                                     {formatAmount(monthlyCategories[period][category])}
-                                    <ChevronDown className={`w-3 h-3 transition-transform ${
-                                      expandedCell?.category === category && expandedCell?.month === period
-                                        ? 'rotate-180'
-                                        : ''
-                                    }`} />
                                   </button>
                                 ) : (
                                   <span className="text-gray-400">-</span>
@@ -207,57 +194,7 @@ export default function CategoriesPage() {
                               {formatAmount(categoryTotal)}
                             </td>
                           </tr>
-                          {/* Expanded transactions row */}
-                          {expandedCell?.category === category && (
-                            <tr key={`${category}-expanded`}>
-                              <td colSpan={availableMonths.length + 2} className="p-0">
-                                <div className="bg-gray-50 dark:bg-gray-700/30 p-4 border-b border-gray-200 dark:border-gray-700">
-                                  <div className="flex items-center justify-between mb-3">
-                                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                      {category} - {expandedCell.month} Transactions
-                                    </h4>
-                                    <button
-                                      onClick={() => setExpandedCell(null)}
-                                      className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                                    >
-                                      Close
-                                    </button>
-                                  </div>
-                                  <div className="space-y-1 max-h-[300px] overflow-y-auto">
-                                    {yearExpenses
-                                      .filter(t => {
-                                        if (t.category !== category) return false
-                                        const date = new Date(t.date)
-                                        if (useMonthYear) {
-                                          const key = `${shortMonths[date.getMonth()]} ${date.getFullYear()}`
-                                          return key === expandedCell.month
-                                        } else {
-                                          return date.toLocaleString('default', { month: 'long' }) === expandedCell.month
-                                        }
-                                      })
-                                      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                                      .map(t => (
-                                        <div 
-                                          key={t.id} 
-                                          className="flex items-center justify-between py-2 px-3 bg-white dark:bg-gray-800 rounded-lg text-sm"
-                                        >
-                                          <div className="flex items-center gap-3">
-                                            <span className="text-gray-400 dark:text-gray-500 text-xs w-20">
-                                              {new Date(t.date).toLocaleDateString()}
-                                            </span>
-                                            <span className="text-gray-700 dark:text-gray-300">{t.description}</span>
-                                          </div>
-                                          <span className="text-error-500 font-medium">
-                                            {formatAmount(Math.abs(t.amount))}
-                                          </span>
-                                        </div>
-                                      ))}
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </>
+                          </>
                       )
                     })}
                   </tbody>
@@ -335,6 +272,79 @@ export default function CategoriesPage() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Transactions Modal */}
+      {expandedCell && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setExpandedCell(null)}>
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {expandedCell.category} - {expandedCell.month}
+              </h3>
+              <button
+                onClick={() => setExpandedCell(null)}
+                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[60vh]">
+              <div className="space-y-2">
+                {yearExpenses
+                  .filter(t => {
+                    if (t.category !== expandedCell.category) return false
+                    const date = new Date(t.date)
+                    if (useMonthYear) {
+                      const key = `${shortMonths[date.getMonth()]} ${date.getFullYear()}`
+                      return key === expandedCell.month
+                    } else {
+                      return date.toLocaleString('default', { month: 'long' }) === expandedCell.month
+                    }
+                  })
+                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                  .map(t => (
+                    <div 
+                      key={t.id} 
+                      className="flex items-center justify-between py-3 px-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                    >
+                      <div className="flex items-center gap-4">
+                        <span className="text-gray-400 dark:text-gray-500 text-sm w-24">
+                          {new Date(t.date).toLocaleDateString()}
+                        </span>
+                        <span className="text-gray-700 dark:text-gray-300">{t.description}</span>
+                      </div>
+                      <span className="text-error-500 font-medium">
+                        {formatAmount(Math.abs(t.amount))}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {yearExpenses.filter(t => {
+                    if (t.category !== expandedCell.category) return false
+                    const date = new Date(t.date)
+                    if (useMonthYear) {
+                      const key = `${shortMonths[date.getMonth()]} ${date.getFullYear()}`
+                      return key === expandedCell.month
+                    } else {
+                      return date.toLocaleString('default', { month: 'long' }) === expandedCell.month
+                    }
+                  }).length} transactions
+                </span>
+                <span className="font-semibold text-error-500">
+                  Total: {formatAmount(monthlyCategories[expandedCell.month]?.[expandedCell.category] || 0)}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
