@@ -29,6 +29,7 @@ const navSections = [
       { href: '/categories', label: 'Expenses by Category', icon: PieChart },
       { href: '/income', label: 'Income by Source', icon: PieChart },
       { href: '/timeline', label: 'Spending Timeline', icon: TrendingUp },
+      { href: '/income-timeline', label: 'Income Timeline', icon: TrendingUp },
     ]
   },
 ]
