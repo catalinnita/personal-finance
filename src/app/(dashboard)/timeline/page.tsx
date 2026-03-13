@@ -333,7 +333,7 @@ export default function TimelinePage() {
                   const avgMax = scaleMode === 'absolute' ? maxValue : categoryMax
                   
                   return (
-                    <div className="flex items-end gap-1 overflow-x-auto" style={{ height: '200px' }}>
+                    <div className="flex items-end gap-1 overflow-x-auto pb-12" style={{ height: '220px' }}>
                       {availablePeriods.map((period, idx) => {
                         const value = data[period] || 0
                         const height = getBarHeight(value, categoryMax)
@@ -362,7 +362,7 @@ export default function TimelinePage() {
                                 style={{ height: `${Math.min(barHeight, 100)}%` }}
                               />
                             </div>
-                            <div className="h-[40px] flex items-start justify-center mt-1">
+                            <div className="h-[50px] flex items-start justify-center mt-1 overflow-visible">
                               <span className="text-xs text-gray-400" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>{useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}</span>
                             </div>
                           </div>
