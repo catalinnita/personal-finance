@@ -39,21 +39,30 @@ export default function CategoriesPage() {
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
   const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
-    fetchTransactions()
+    fetchData()
   }, [])
 
-  const fetchTransactions = async () => {
+  const fetchData = async () => {
     try {
-      const response = await fetch('/api/transactions')
-      const data = await response.json()
-      if (data.transactions) {
-        setTransactions(data.transactions)
+      const [transRes, settingsRes] = await Promise.all([
+        fetch('/api/transactions'),
+        fetch('/api/settings')
+      ])
+      const transData = await transRes.json()
+      const settingsData = await settingsRes.json()
+      
+      if (transData.transactions) {
+        setTransactions(transData.transactions)
+      }
+      if (settingsData.settings?.moving_average_period) {
+        setMovingAvgPeriod(settingsData.settings.moving_average_period)
       }
     } catch (error) {
-      console.error('Error fetching transactions:', error)
+      console.error('Error fetching data:', error)
     } finally {
       setLoading(false)
     }
@@ -147,6 +156,17 @@ export default function CategoriesPage() {
   // Filter categories to display
   const displayCategories = allCategories.filter(c => selectedCategories.includes(c))
 
+  // Calculate moving average for a category
+  const getMovingAverage = (category: string, periods: string[]) => {
+    const values = periods.map(p => monthlyCategories[p]?.[category] || 0)
+    if (values.length === 0) return 0
+    
+    // Use the last N periods for the average
+    const start = Math.max(0, values.length - movingAvgPeriod)
+    const windowSlice = values.slice(start)
+    return windowSlice.reduce((sum, v) => sum + v, 0) / windowSlice.length
+  }
+
   // Get available period keys in chronological order
   const availableMonths = useMonthYear
     ? selectedYears.sort((a, b) => a - b).flatMap(year => 
@@ -230,6 +250,7 @@ export default function CategoriesPage() {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Category</th>
+                      <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">Avg ({movingAvgPeriod}m)</th>
                       {availableMonths.map(period => (
                         <th key={period} className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
                           {useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}
@@ -243,10 +264,14 @@ export default function CategoriesPage() {
                       const categoryTotal = Object.values(monthlyCategories).reduce(
                         (sum, monthData) => sum + (monthData[category] || 0), 0
                       )
+                      const movingAvg = getMovingAverage(category, availableMonths)
                       return (
                         <>
                           <tr key={category} className="border-b border-gray-100 dark:border-gray-700/50">
                             <td className="py-3 px-2 text-gray-900 dark:text-white">{category}</td>
+                            <td className="py-3 px-2 text-right text-gray-500 dark:text-gray-400">
+                              {formatAmount(movingAvg)}
+                            </td>
                             {availableMonths.map(period => (
                               <td key={period} className="py-3 px-2 text-right">
                                 {monthlyCategories[period]?.[category] ? (
