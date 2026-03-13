@@ -170,6 +170,43 @@ export default function TimelinePage() {
     return colors[index % colors.length]
   }
 
+  const getCategoryFillColor = (index: number) => {
+    const colors = [
+      '#3b82f6', // brand-500
+      '#22c55e', // success-500
+      '#ef4444', // error-500
+      '#f59e0b', // warning-500
+      '#a855f7', // purple-500
+      '#ec4899', // pink-500
+      '#06b6d4', // cyan-500
+      '#f97316', // orange-500
+      '#14b8a6', // teal-500
+      '#6366f1', // indigo-500
+    ]
+    return colors[index % colors.length]
+  }
+
+  // Calculate stacked data for area chart
+  const stackedData = useMemo(() => {
+    return availablePeriods.map(period => {
+      const values: { [key: string]: number | string; period: string; total: number } = { period, total: 0 }
+      let cumulative = 0
+      selectedCategories.forEach(cat => {
+        const val = categoryData[cat]?.[period] || 0
+        values[cat] = val
+        values[`${cat}_y0`] = cumulative
+        values[`${cat}_y1`] = cumulative + val
+        cumulative += val
+      })
+      values.total = cumulative
+      return values
+    })
+  }, [availablePeriods, selectedCategories, categoryData])
+
+  const stackedMax = useMemo(() => {
+    return Math.max(...stackedData.map(d => d.total as number), 0)
+  }, [stackedData])
+
   const getTrend = (category: string) => {
     const data = categoryData[category]
     if (!data) return null
@@ -286,6 +323,82 @@ export default function TimelinePage() {
               ))}
             </div>
           </div>
+
+          {/* Stacked Area Chart - All Categories */}
+          {selectedCategories.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-gray-900 dark:text-white">Combined Spending Overview</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedCategories.map((cat) => {
+                    const colorIndex = categories.indexOf(cat)
+                    return (
+                      <div key={cat} className="flex items-center gap-1.5 text-xs">
+                        <div className={`w-2.5 h-2.5 rounded-sm ${getCategoryColor(colorIndex)}`} />
+                        <span className="text-gray-600 dark:text-gray-400">{cat}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+              <div className="relative" style={{ height: '250px' }}>
+                <svg width="100%" height="100%" viewBox={`0 0 ${stackedData.length * 40} 200`} preserveAspectRatio="none">
+                  {/* Render areas in reverse order so first category is on top visually */}
+                  {[...selectedCategories].reverse().map((cat) => {
+                    const colorIndex = categories.indexOf(cat)
+                    const fillColor = getCategoryFillColor(colorIndex)
+                    
+                    const points = stackedData.map((d, i) => {
+                      const y0 = stackedMax > 0 ? 200 - ((d[`${cat}_y0`] as number) / stackedMax) * 180 : 200
+                      const y1 = stackedMax > 0 ? 200 - ((d[`${cat}_y1`] as number) / stackedMax) * 180 : 200
+                      return { x: i * 40 + 20, y0, y1 }
+                    })
+                    
+                    const pathD = `
+                      M ${points[0].x} ${points[0].y1}
+                      ${points.map(p => `L ${p.x} ${p.y1}`).join(' ')}
+                      L ${points[points.length - 1].x} ${points[points.length - 1].y0}
+                      ${[...points].reverse().map(p => `L ${p.x} ${p.y0}`).join(' ')}
+                      Z
+                    `
+                    
+                    return (
+                      <path
+                        key={cat}
+                        d={pathD}
+                        fill={fillColor}
+                        fillOpacity={0.7}
+                        stroke={fillColor}
+                        strokeWidth={1}
+                      />
+                    )
+                  })}
+                </svg>
+                {/* X-axis labels */}
+                <div className="absolute bottom-0 left-0 right-0 flex justify-between px-2">
+                  {stackedData.map((d, i) => (
+                    <span 
+                      key={i} 
+                      className="text-xs text-gray-400"
+                      style={{ 
+                        width: `${100 / stackedData.length}%`, 
+                        textAlign: 'center',
+                        fontSize: stackedData.length > 24 ? '8px' : '10px'
+                      }}
+                    >
+                      {stackedData.length > 24 
+                        ? (i % 3 === 0 ? (useMonthYear ? `${(d.period as string).substring(0, 1)}'${(d.period as string).split(' ')[1]?.substring(2)}` : (d.period as string).substring(0, 1)) : '')
+                        : (useMonthYear ? `${(d.period as string).substring(0, 3)}'${(d.period as string).split(' ')[1]?.substring(2)}` : (d.period as string).substring(0, 3))
+                      }
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 text-center">
+                Total: {formatAmount(stackedData.reduce((sum, d) => sum + (d.total as number), 0))} across {selectedYears.join(', ')}
+              </p>
+            </div>
+          )}
 
           {/* Charts Grid */}
           <div className={`grid grid-cols-1 ${selectedYears.length <= 2 ? 'lg:grid-cols-2' : ''} gap-6`}>
