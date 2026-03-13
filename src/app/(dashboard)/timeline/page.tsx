@@ -25,6 +25,7 @@ export default function TimelinePage() {
   const [loading, setLoading] = useState(true)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [scaleMode, setScaleMode] = useState<'relative' | 'absolute'>('relative')
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -265,7 +266,20 @@ export default function TimelinePage() {
   }
 
   return (
-    <div>
+    <div className="relative">
+      {/* Global Tooltip */}
+      {tooltip && (
+        <div 
+          className="fixed bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-lg z-[9999] pointer-events-none"
+          style={{ 
+            left: tooltip.x, 
+            top: tooltip.y - 10,
+            transform: 'translate(-50%, -100%)'
+          }}
+        >
+          {tooltip.content}
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Spending Timeline</h1>
@@ -430,13 +444,39 @@ export default function TimelinePage() {
                     {stackedData.map((d, i) => {
                       const totals = stackedData.map(dd => dd.total as number)
                       const start = Math.max(0, i - 5)
-                      const window = totals.slice(start, i + 1)
-                      const avg = window.reduce((sum, v) => sum + v, 0) / window.length
+                      const windowSlice = totals.slice(start, i + 1)
+                      const avg = windowSlice.reduce((sum, v) => sum + v, 0) / windowSlice.length
                       return (
                         <div 
                           key={i} 
-                          className="flex-1 cursor-pointer"
-                          title={`${d.period}: ${selectedCategories.map(cat => `${cat}: ${formatAmount(d[cat] as number)}`).join(', ')} - Total: ${formatAmount(d.total as number)} (avg: ${formatAmount(avg)})`}
+                          className="flex-1 cursor-crosshair"
+                          onMouseEnter={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect()
+                            setTooltip({
+                              x: rect.left + rect.width / 2,
+                              y: rect.top,
+                              content: (
+                                <div>
+                                  <div className="font-medium mb-1">{d.period}</div>
+                                  {selectedCategories.map(cat => {
+                                    const val = d[cat] as number
+                                    const colorIndex = categories.indexOf(cat)
+                                    return (
+                                      <div key={cat} className="flex items-center gap-1.5">
+                                        <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: getCategoryFillColor(colorIndex) }} />
+                                        <span>{cat}: {formatAmount(val)}</span>
+                                      </div>
+                                    )
+                                  })}
+                                  <div className="border-t border-gray-600 mt-1 pt-1">
+                                    Total: {formatAmount(d.total as number)}
+                                  </div>
+                                  <div className="text-gray-400">Avg: {formatAmount(avg)}</div>
+                                </div>
+                              )
+                            })
+                          }}
+                          onMouseLeave={() => setTooltip(null)}
                         />
                       )
                     })}
@@ -524,7 +564,25 @@ export default function TimelinePage() {
                         const avgHeight = avgMax > 0 ? (movingAvg[idx] / avgMax) * 100 : 0
                         
                         return (
-                          <div key={period} className="flex-1 min-w-[10px] flex flex-col items-center group" title={`${period}: ${formatAmount(value)} (avg: ${formatAmount(movingAvg[idx])})`}>
+                          <div 
+                          key={period} 
+                          className="flex-1 min-w-[10px] flex flex-col items-center cursor-crosshair"
+                          onMouseEnter={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect()
+                            setTooltip({
+                              x: rect.left + rect.width / 2,
+                              y: rect.top,
+                              content: (
+                                <div>
+                                  <div className="font-medium">{period}</div>
+                                  <div>Value: {formatAmount(value)}</div>
+                                  <div className="text-gray-400">Avg: {formatAmount(movingAvg[idx])}</div>
+                                </div>
+                              )
+                            })
+                          }}
+                          onMouseLeave={() => setTooltip(null)}
+                        >
                             <div className="w-full relative flex flex-col justify-end items-center" style={{ height: '150px' }}>
                               {/* Moving Average Line Marker */}
                               <div 
