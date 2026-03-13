@@ -52,7 +52,13 @@ export default function TimelinePage() {
         setMovingAvgPeriod(settingsData.settings.moving_average_period)
       }
       if (categoriesData.categories) {
-        setAllUserCategories(categoriesData.categories.map((c: { name: string }) => c.name).sort())
+        // Only include expense categories
+        setAllUserCategories(
+          categoriesData.categories
+            .filter((c: { type: string }) => c.type === 'expense')
+            .map((c: { name: string }) => c.name)
+            .sort()
+        )
       }
     } catch (error) {
       console.error('Error fetching data:', error)
