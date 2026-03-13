@@ -38,6 +38,7 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true)
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
   const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -96,6 +97,56 @@ export default function CategoriesPage() {
   // Get all unique categories
   const allCategories = [...new Set(yearExpenses.map(t => t.category))].sort()
 
+  // Initialize selected categories when allCategories changes
+  useEffect(() => {
+    if (allCategories.length > 0 && selectedCategories.length === 0) {
+      setSelectedCategories(allCategories)
+    }
+  }, [allCategories.join(',')])
+
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    )
+  }
+
+  const getCategoryColor = (index: number) => {
+    const colors = [
+      'bg-brand-500',
+      'bg-success-500',
+      'bg-error-500',
+      'bg-warning-500',
+      'bg-purple-500',
+      'bg-pink-500',
+      'bg-cyan-500',
+      'bg-orange-500',
+      'bg-teal-500',
+      'bg-indigo-500',
+    ]
+    return colors[index % colors.length]
+  }
+
+  const getCategoryBorderColor = (index: number) => {
+    const colors = [
+      'border-brand-500',
+      'border-success-500',
+      'border-error-500',
+      'border-warning-500',
+      'border-purple-500',
+      'border-pink-500',
+      'border-cyan-500',
+      'border-orange-500',
+      'border-teal-500',
+      'border-indigo-500',
+    ]
+    return colors[index % colors.length]
+  }
+
+  // Filter categories to display
+  const displayCategories = allCategories.filter(c => selectedCategories.includes(c))
+
   // Get available period keys in chronological order
   const availableMonths = useMonthYear
     ? selectedYears.sort((a, b) => a - b).flatMap(year => 
@@ -150,8 +201,28 @@ export default function CategoriesPage() {
         </div>
       ) : (
         <div className="space-y-6">
+          {/* Category Filter */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Select categories to display:</p>
+            <div className="flex flex-wrap gap-2">
+              {allCategories.map((category, index) => (
+                <button
+                  key={category}
+                  onClick={() => toggleCategory(category)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border-2 ${
+                    selectedCategories.includes(category)
+                      ? `${getCategoryColor(index)} text-white border-transparent`
+                      : `bg-transparent ${getCategoryBorderColor(index)} text-gray-700 dark:text-gray-300`
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Summary table - moved above month tabs */}
-          {allCategories.length > 0 && (
+          {displayCategories.length > 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Category Summary</h2>
               <div className="overflow-x-auto">
@@ -168,7 +239,7 @@ export default function CategoriesPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {allCategories.map(category => {
+                    {displayCategories.map(category => {
                       const categoryTotal = Object.values(monthlyCategories).reduce(
                         (sum, monthData) => sum + (monthData[category] || 0), 0
                       )
@@ -236,7 +307,9 @@ export default function CategoriesPage() {
                     </h2>
                     <span className="text-gray-500 dark:text-gray-400">
                       Total: <span className="text-error-500 font-medium">
-                        {formatAmount(Object.values(monthlyCategories[selectedMonth]).reduce((sum, val) => sum + val, 0))}
+                        {formatAmount(Object.entries(monthlyCategories[selectedMonth])
+                          .filter(([cat]) => selectedCategories.includes(cat))
+                          .reduce((sum, [, val]) => sum + val, 0))}
                       </span>
                     </span>
                   </div>
@@ -244,10 +317,13 @@ export default function CategoriesPage() {
                   {/* Category bars */}
                   <div className="space-y-3">
                     {Object.entries(monthlyCategories[selectedMonth])
+                      .filter(([category]) => selectedCategories.includes(category))
                       .sort((a, b) => b[1] - a[1])
                       .map(([category, amount]) => {
-                        const total = Object.values(monthlyCategories[selectedMonth]).reduce((sum, val) => sum + val, 0)
-                        const percentage = (amount / total) * 100
+                        const filteredTotal = Object.entries(monthlyCategories[selectedMonth])
+                          .filter(([cat]) => selectedCategories.includes(cat))
+                          .reduce((sum, [, val]) => sum + val, 0)
+                        const percentage = filteredTotal > 0 ? (amount / filteredTotal) * 100 : 0
                         const colorClass = CATEGORY_COLORS[category] || 'bg-gray-500'
 
                         return (
