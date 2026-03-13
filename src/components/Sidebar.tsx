@@ -27,6 +27,7 @@ const navSections = [
     items: [
       { href: '/balance', label: 'Balance', icon: BarChart3 },
       { href: '/categories', label: 'Expenses by Category', icon: PieChart },
+      { href: '/income', label: 'Income by Source', icon: PieChart },
       { href: '/timeline', label: 'Spending Timeline', icon: TrendingUp },
     ]
   },
