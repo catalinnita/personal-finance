@@ -246,6 +246,10 @@ const MIGRATIONS = [
     name: 'Add highlight_threshold to user_settings',
     sql: `ALTER TABLE user_settings ADD COLUMN IF NOT EXISTS highlight_threshold DECIMAL(12, 2) DEFAULT 500;`
   },
+  {
+    name: 'Add moving_average_period to user_settings',
+    sql: `ALTER TABLE user_settings ADD COLUMN IF NOT EXISTS moving_average_period INTEGER DEFAULT 6;`
+  },
 ]
 
 async function runMigrations() {
