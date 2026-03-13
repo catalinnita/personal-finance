@@ -502,41 +502,69 @@ export default function TimelinePage() {
                   const avgMax = scaleMode === 'absolute' ? maxValue : categoryMax
                   
                   return (
-                    <div className="flex items-end gap-1 overflow-x-auto overflow-y-visible pt-8" style={{ height: '220px' }}>
-                      {availablePeriods.map((period, idx) => {
-                        const value = data[period] || 0
-                        const height = getBarHeight(value, categoryMax)
-                        const barHeight = value > 0 ? Math.max(height, 5) : 2
-                        const avgHeight = avgMax > 0 ? (movingAvg[idx] / avgMax) * 100 : 0
-                        
-                        return (
-                          <div key={period} className="flex-1 min-w-[10px] flex flex-col items-center group">
-                            <div className="w-full relative flex flex-col justify-end items-center" style={{ height: '150px' }}>
-                              {/* Tooltip */}
-                              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50 pointer-events-none">
+                    <div className="relative" style={{ height: '220px' }}>
+                      {/* Tooltip layer - outside scroll container */}
+                      <div className="absolute inset-x-0 top-0 h-8 flex z-50 pointer-events-none">
+                        {availablePeriods.map((period, idx) => {
+                          const value = data[period] || 0
+                          return (
+                            <div key={`tooltip-${period}`} className="flex-1 min-w-[10px] flex justify-center" id={`tooltip-zone-${category}-${idx}`}>
+                              <div className="hidden group-hover:block absolute top-0 bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
                                 {period}: {formatAmount(value)} (avg: {formatAmount(movingAvg[idx])})
                               </div>
-                              {/* Moving Average Line Marker */}
-                              <div 
-                                className="absolute w-full flex justify-center z-10"
-                                style={{ bottom: `${Math.min(avgHeight, 100)}%` }}
-                              >
-                                <div className="w-3 h-1 bg-gray-900 dark:bg-white rounded-full" />
+                            </div>
+                          )
+                        })}
+                      </div>
+                      {/* Scrollable bar area */}
+                      <div className="flex items-end gap-1 overflow-x-auto pt-8 h-full">
+                        {availablePeriods.map((period, idx) => {
+                          const value = data[period] || 0
+                          const height = getBarHeight(value, categoryMax)
+                          const barHeight = value > 0 ? Math.max(height, 5) : 2
+                          const avgHeight = avgMax > 0 ? (movingAvg[idx] / avgMax) * 100 : 0
+                          
+                          return (
+                            <div key={period} className="flex-1 min-w-[10px] flex flex-col items-center group/bar">
+                              <div className="w-full relative flex flex-col justify-end items-center" style={{ height: '150px' }}>
+                                {/* Tooltip - using fixed positioning */}
+                                <div className="fixed opacity-0 group-hover/bar:opacity-100 transition-opacity bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-[100] pointer-events-none -translate-x-1/2 -translate-y-full"
+                                  style={{ top: 'var(--tooltip-top, 0)', left: 'var(--tooltip-left, 0)' }}
+                                  ref={(el) => {
+                                    if (el) {
+                                      const parent = el.parentElement
+                                      if (parent) {
+                                        const rect = parent.getBoundingClientRect()
+                                        el.style.setProperty('--tooltip-top', `${rect.top - 8}px`)
+                                        el.style.setProperty('--tooltip-left', `${rect.left + rect.width / 2}px`)
+                                      }
+                                    }
+                                  }}
+                                >
+                                  {period}: {formatAmount(value)} (avg: {formatAmount(movingAvg[idx])})
+                                </div>
+                                {/* Moving Average Line Marker */}
+                                <div 
+                                  className="absolute w-full flex justify-center z-10"
+                                  style={{ bottom: `${Math.min(avgHeight, 100)}%` }}
+                                >
+                                  <div className="w-3 h-1 bg-gray-900 dark:bg-white rounded-full" />
+                                </div>
+                                {/* Bar */}
+                                <div
+                                  className={`w-full rounded-t transition-all duration-300 ${
+                                    value > 0 ? getCategoryColor(colorIndex) : 'bg-gray-200 dark:bg-gray-700'
+                                  }`}
+                                  style={{ height: `${Math.min(barHeight, 100)}%` }}
+                                />
                               </div>
-                              {/* Bar */}
-                              <div
-                                className={`w-full rounded-t transition-all duration-300 ${
-                                  value > 0 ? getCategoryColor(colorIndex) : 'bg-gray-200 dark:bg-gray-700'
-                                }`}
-                                style={{ height: `${Math.min(barHeight, 100)}%` }}
-                              />
+                              <div className="h-[40px] flex items-start justify-center mt-1">
+                                <span className="text-xs text-gray-400" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>{useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}</span>
+                              </div>
                             </div>
-                            <div className="h-[40px] flex items-start justify-center mt-1">
-                              <span className="text-xs text-gray-400" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>{useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}</span>
-                            </div>
-                          </div>
-                        )
-                      })}
+                          )
+                        })}
+                      </div>
                     </div>
                   )
                 })()}
