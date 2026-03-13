@@ -27,6 +27,7 @@ export default function TimelinePage() {
   const [scaleMode, setScaleMode] = useState<'relative' | 'absolute'>('relative')
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null)
   const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
+  const [allUserCategories, setAllUserCategories] = useState<string[]>([])
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -35,18 +36,23 @@ export default function TimelinePage() {
 
   const fetchData = async () => {
     try {
-      const [transRes, settingsRes] = await Promise.all([
+      const [transRes, settingsRes, categoriesRes] = await Promise.all([
         fetch('/api/transactions'),
-        fetch('/api/settings')
+        fetch('/api/settings'),
+        fetch('/api/categories')
       ])
       const transData = await transRes.json()
       const settingsData = await settingsRes.json()
+      const categoriesData = await categoriesRes.json()
       
       if (transData.transactions) {
         setTransactions(transData.transactions)
       }
       if (settingsData.settings?.moving_average_period) {
         setMovingAvgPeriod(settingsData.settings.moving_average_period)
+      }
+      if (categoriesData.categories) {
+        setAllUserCategories(categoriesData.categories.map((c: { name: string }) => c.name).sort())
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -124,7 +130,12 @@ export default function TimelinePage() {
     return { categoryData: data, categories: cats, maxValue: max, availablePeriods: available }
   }, [transactions, selectedYears, useMonthYear, periodKeys])
 
-  const { selectedCategories, toggleCategory } = useSelectedCategories(categories)
+  // Merge transaction categories with all user categories
+  const allCategories = useMemo(() => {
+    return [...new Set([...allUserCategories, ...categories])].sort()
+  }, [allUserCategories, categories])
+
+  const { selectedCategories, toggleCategory } = useSelectedCategories(allCategories)
 
   const getBarHeight = (value: number, categoryMax: number) => {
     if (scaleMode === 'absolute') {
@@ -319,7 +330,7 @@ export default function TimelinePage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {categories.map((category, index) => (
+              {allCategories.map((category, index) => (
                 <button
                   key={category}
                   onClick={() => toggleCategory(category)}

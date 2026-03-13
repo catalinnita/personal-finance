@@ -40,6 +40,7 @@ export default function CategoriesPage() {
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
   const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
   const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
+  const [allUserCategories, setAllUserCategories] = useState<string[]>([])
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -48,18 +49,23 @@ export default function CategoriesPage() {
 
   const fetchData = async () => {
     try {
-      const [transRes, settingsRes] = await Promise.all([
+      const [transRes, settingsRes, categoriesRes] = await Promise.all([
         fetch('/api/transactions'),
-        fetch('/api/settings')
+        fetch('/api/settings'),
+        fetch('/api/categories')
       ])
       const transData = await transRes.json()
       const settingsData = await settingsRes.json()
+      const categoriesData = await categoriesRes.json()
       
       if (transData.transactions) {
         setTransactions(transData.transactions)
       }
       if (settingsData.settings?.moving_average_period) {
         setMovingAvgPeriod(settingsData.settings.moving_average_period)
+      }
+      if (categoriesData.categories) {
+        setAllUserCategories(categoriesData.categories.map((c: { name: string }) => c.name).sort())
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -103,8 +109,9 @@ export default function CategoriesPage() {
     return acc
   }, {} as MonthlyCategories)
 
-  // Get all unique categories
-  const allCategories = [...new Set(yearExpenses.map(t => t.category))].sort()
+  // Get all unique categories - merge from transactions and user's category list
+  const transactionCategories = [...new Set(yearExpenses.map(t => t.category))]
+  const allCategories = [...new Set([...allUserCategories, ...transactionCategories])].sort()
 
   const { selectedCategories, toggleCategory } = useSelectedCategories(allCategories)
 
