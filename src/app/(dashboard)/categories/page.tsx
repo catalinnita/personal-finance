@@ -281,6 +281,30 @@ export default function CategoriesPage() {
                       )
                     })}
                   </tbody>
+                  <tfoot>
+                    <tr className="bg-gray-100 dark:bg-gray-700/50 font-bold">
+                      <td className="py-3 px-2 text-gray-900 dark:text-white">Total</td>
+                      <td className="py-3 px-2 text-right text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-600/50">
+                        {formatAmount(
+                          displayCategories.reduce((sum, cat) => sum + getMovingAverage(cat, availableMonths), 0)
+                        )}
+                      </td>
+                      {availableMonths.map(period => (
+                        <td key={period} className="py-3 px-2 text-right text-gray-600 dark:text-gray-300">
+                          {formatAmount(
+                            displayCategories.reduce((sum, cat) => sum + (monthlyCategories[period]?.[cat] || 0), 0)
+                          )}
+                        </td>
+                      ))}
+                      <td className="py-3 px-2 text-right text-error-500 bg-gray-200 dark:bg-gray-600/50">
+                        {formatAmount(
+                          displayCategories.reduce((sum, cat) => 
+                            sum + Object.values(monthlyCategories).reduce((s, m) => s + (m[cat] || 0), 0), 0
+                          )
+                        )}
+                      </td>
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
             </div>
