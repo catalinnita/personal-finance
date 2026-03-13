@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 
-const STORAGE_KEY = 'selected-categories'
+const DEFAULT_STORAGE_KEY = 'selected-categories'
 
-export function useSelectedCategories(availableCategories: string[]) {
+export function useSelectedCategories(availableCategories: string[], storageKey: string = DEFAULT_STORAGE_KEY) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [initialized, setInitialized] = useState(false)
   const prevAvailableRef = useRef<string[]>([])
@@ -12,7 +12,7 @@ export function useSelectedCategories(availableCategories: string[]) {
   // Load from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined' && !initialized && availableCategories.length > 0) {
-      const saved = localStorage.getItem(STORAGE_KEY)
+      const saved = localStorage.getItem(storageKey)
       if (saved) {
         try {
           const parsed = JSON.parse(saved)
@@ -53,9 +53,9 @@ export function useSelectedCategories(availableCategories: string[]) {
   // Save to localStorage when selection changes
   useEffect(() => {
     if (initialized && selectedCategories.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedCategories))
+      localStorage.setItem(storageKey, JSON.stringify(selectedCategories))
     }
-  }, [selectedCategories, initialized])
+  }, [selectedCategories, initialized, storageKey])
 
   const toggleCategory = useCallback((category: string) => {
     setSelectedCategories(prev => 

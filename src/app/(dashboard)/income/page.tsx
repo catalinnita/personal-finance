@@ -116,7 +116,7 @@ export default function IncomePage() {
   const transactionCategories = [...new Set(yearIncome.map(t => t.category))]
   const allCategories = [...new Set([...allUserCategories, ...transactionCategories])].sort()
 
-  const { selectedCategories, toggleCategory } = useSelectedCategories(allCategories)
+  const { selectedCategories, toggleCategory } = useSelectedCategories(allCategories, 'selected-income-sources')
 
   const getCategoryColor = (index: number) => {
     const colors = [
