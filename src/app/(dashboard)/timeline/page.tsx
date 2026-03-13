@@ -397,6 +397,33 @@ export default function TimelinePage() {
                         />
                       )
                     })}
+                    {/* 6-month moving average line */}
+                    {(() => {
+                      const totals = stackedData.map(d => d.total as number)
+                      const movingAvg: number[] = []
+                      for (let i = 0; i < totals.length; i++) {
+                        const start = Math.max(0, i - 5)
+                        const window = totals.slice(start, i + 1)
+                        movingAvg.push(window.reduce((sum, v) => sum + v, 0) / window.length)
+                      }
+                      const n = stackedData.length
+                      const avgPoints = movingAvg.map((avg, i) => {
+                        const y = stackedMax > 0 ? 100 - (avg / stackedMax) * 95 : 100
+                        const x = (i / (n - 1 || 1)) * 100
+                        return { x, y }
+                      })
+                      const linePath = `M ${avgPoints.map(p => `${p.x} ${p.y}`).join(' L ')}`
+                      return (
+                        <path
+                          d={linePath}
+                          fill="none"
+                          stroke="#1f2937"
+                          strokeWidth={2}
+                          strokeDasharray="4 2"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      )
+                    })()}
                   </svg>
                   {/* Hover zones for tooltips */}
                   <div className="absolute inset-0 flex overflow-visible">
