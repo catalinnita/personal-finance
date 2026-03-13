@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Menu, X, TrendingUp, Trash2 } from 'lucide-react'
+import { Upload, List, BarChart3, PieChart, Tags, ArrowRightLeft, Menu, X, TrendingUp, Trash2, Wallet, LineChart } from 'lucide-react'
 import { useSidebar } from '@/context/SidebarContext'
 
 const navSections = [
@@ -26,10 +26,10 @@ const navSections = [
     title: 'Reporting',
     items: [
       { href: '/balance', label: 'Balance', icon: BarChart3 },
+      { href: '/income', label: 'Income by Source', icon: Wallet },
+      { href: '/income-timeline', label: 'Income Timeline', icon: LineChart },
       { href: '/categories', label: 'Expenses by Category', icon: PieChart },
-      { href: '/income', label: 'Income by Source', icon: PieChart },
       { href: '/timeline', label: 'Spending Timeline', icon: TrendingUp },
-      { href: '/income-timeline', label: 'Income Timeline', icon: TrendingUp },
     ]
   },
 ]
