@@ -23,19 +23,7 @@ type CategoryMonthlyData = {
 export default function TimelinePage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('timeline-selected-categories')
-      if (saved) {
-        try {
-          return JSON.parse(saved)
-        } catch {
-          return []
-        }
-      }
-    }
-    return []
-  })
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [scaleMode, setScaleMode] = useState<'relative' | 'absolute'>('relative')
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
