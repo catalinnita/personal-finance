@@ -43,10 +43,6 @@ export default function BudgetsPage() {
   const [budgets, setBudgets] = useState<Budget[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<string>('')
-  const [budgetAmount, setBudgetAmount] = useState<string>('')
-  const [effectiveFrom, setEffectiveFrom] = useState<string>(new Date().toISOString().split('T')[0])
-  const [saving, setSaving] = useState(false)
   const [editingBudgets, setEditingBudgets] = useState<Record<string, string>>({})
   const [savingBudget, setSavingBudget] = useState<string | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
@@ -84,34 +80,6 @@ export default function BudgetsPage() {
     }
   }
 
-  const handleAddBudget = async () => {
-    if (!selectedCategory || !budgetAmount) return
-    
-    setSaving(true)
-    try {
-      const response = await fetch('/api/budgets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          category_id: selectedCategory,
-          amount: parseFloat(budgetAmount),
-          effective_from: effectiveFrom
-        })
-      })
-      
-      if (response.ok) {
-        await fetchData()
-        setSelectedCategory('')
-        setBudgetAmount('')
-        setEffectiveFrom(new Date().toISOString().split('T')[0])
-      }
-    } catch (error) {
-      console.error('Error adding budget:', error)
-    } finally {
-      setSaving(false)
-    }
-  }
-
   const handleDeleteBudget = async (id: string) => {
     try {
       const response = await fetch(`/api/budgets?id=${id}`, {
@@ -130,12 +98,24 @@ export default function BudgetsPage() {
     setEditingBudgets(prev => ({ ...prev, [categoryId]: value }))
   }
 
-  const handleInlineBudgetSave = async (categoryId: string, categoryName: string) => {
+  const handleInlineBudgetSave = async (categoryId: string, currentSpending: number, currentBudget: number | null) => {
     const value = editingBudgets[categoryId]
-    if (value === undefined || value === '') return
+    // If not editing, nothing to save
+    if (value === undefined) return
     
-    const amount = parseFloat(value)
+    // Parse the value, default to spending if empty
+    const amount = value === '' ? currentSpending : parseFloat(value)
     if (isNaN(amount) || amount < 0) return
+    
+    // Don't save if value hasn't changed from current budget
+    if (currentBudget !== null && amount === currentBudget) {
+      setEditingBudgets(prev => {
+        const next = { ...prev }
+        delete next[categoryId]
+        return next
+      })
+      return
+    }
 
     setSavingBudget(categoryId)
     try {
@@ -273,59 +253,6 @@ export default function BudgetsPage() {
     <div className="max-w-6xl">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Budgets</h1>
 
-      {/* Add Budget Form */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Set Budget</h2>
-        <div className="flex flex-wrap gap-4 items-end">
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="">Select category...</option>
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="w-40">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Amount
-            </label>
-            <input
-              type="number"
-              value={budgetAmount}
-              onChange={(e) => setBudgetAmount(e.target.value)}
-              placeholder="0.00"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
-          <div className="w-40">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Effective From
-            </label>
-            <input
-              type="date"
-              value={effectiveFrom}
-              onChange={(e) => setEffectiveFrom(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-          </div>
-          <button
-            onClick={handleAddBudget}
-            disabled={!selectedCategory || !budgetAmount || saving}
-            className="flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            {saving ? 'Saving...' : 'Add Budget'}
-          </button>
-        </div>
-      </div>
-
       {/* Budget vs Spending Table */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Budget vs Spending</h2>
@@ -365,12 +292,12 @@ export default function BudgetsPage() {
                   <td className="py-3 px-4 text-right">
                     <input
                       type="number"
-                      value={editingBudgets[row.categoryId] ?? (row.budget ?? '')}
+                      value={editingBudgets[row.categoryId] ?? (row.budget ?? Math.round(row.spending))}
                       onChange={(e) => handleInlineBudgetChange(row.categoryId, e.target.value)}
-                      onBlur={() => handleInlineBudgetSave(row.categoryId, row.category)}
+                      onBlur={() => handleInlineBudgetSave(row.categoryId, row.spending, row.budget)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleInlineBudgetSave(row.categoryId, row.category)
+                          handleInlineBudgetSave(row.categoryId, row.spending, row.budget)
                         }
                       }}
                       disabled={savingBudget === row.categoryId}
