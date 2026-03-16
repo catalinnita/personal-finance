@@ -174,6 +174,14 @@ export async function POST(request: NextRequest) {
       }, { status: 500 })
     }
     
+    // Log first few transactions to see their structure
+    console.log('First 3 parsed transactions:', JSON.stringify(transactions.slice(0, 3), null, 2))
+    
+    // Check if transactions have categories
+    const withCategory = transactions.filter((t: { category?: string }) => t.category)
+    const withoutCategory = transactions.filter((t: { category?: string }) => !t.category)
+    console.log(`Transactions with category: ${withCategory.length}, without: ${withoutCategory.length}`)
+    
     if (!Array.isArray(transactions) || transactions.length === 0) {
       return NextResponse.json({ 
         error: 'No transactions found in the statement' 
