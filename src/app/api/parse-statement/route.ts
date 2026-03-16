@@ -15,15 +15,19 @@ const DEFAULT_CATEGORIES = [
 ]
 
 function buildParsePrompt(categories: string[], mappings: { description_pattern: string; category: string }[]) {
-  let prompt = `Parse this bank statement and extract all transactions. For each transaction:
+  let prompt = `Parse this bank statement and extract ALL transactions. EVERY transaction MUST have a category assigned.
+
+For each transaction provide:
 - date: YYYY-MM-DD format
 - amount: number (positive=income, negative=expense)
-- description: short description (max 50 chars). IMPORTANT: Remove any hashes, reference numbers, transaction IDs, or alphanumeric codes that aren't actual words (e.g., remove "ABC123XYZ", "REF-98765", "TXN#12345"). Keep only meaningful merchant names and descriptions.
-- category: Use one of these existing categories if it fits: ${categories.join(', ')}. If none of these categories fit the transaction well, create a NEW relevant category name (short, 1-2 words, capitalized like "Pet Care" or "Childcare").
+- description: short description (max 50 chars). Remove any hashes, reference numbers, transaction IDs, or alphanumeric codes. Keep only meaningful merchant names.
+- category: REQUIRED for every transaction. Use one of these existing categories if it fits: ${categories.join(', ')}. If NONE of these categories fit well, create a NEW relevant category name (short, 1-2 words, capitalized like "Pet Care" or "Childcare" or "Bank Fees").
 - type: "income" or "expense"
 
-Return ONLY a JSON array, no explanation. Be concise with descriptions. Example:
-[{"date":"2024-01-15","amount":2500,"description":"Monthly Salary","category":"Salary","type":"income"}]`
+IMPORTANT: Do NOT leave any transaction without a category. Every single transaction must be categorized either with an existing category or a new one you create.
+
+Return ONLY a JSON array, no explanation. Example:
+[{"date":"2024-01-15","amount":2500,"description":"Monthly Salary","category":"Salary","type":"income"},{"date":"2024-01-16","amount":-45,"description":"Pet Store Purchase","category":"Pet Care","type":"expense"}]`
 
   if (mappings.length > 0) {
     prompt += `\n\nIMPORTANT: Use these known description-to-category mappings when you see similar descriptions:\n`
