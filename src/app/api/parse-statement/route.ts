@@ -180,12 +180,13 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Find new categories that don't exist yet and create them
-    const existingCategoryNames = new Set(allCategories.map(c => c.toLowerCase()))
+    // Find new categories that don't exist in user's DB and create them
+    // Note: we check against customCategories (actual DB categories), not allCategories (which includes defaults)
+    const existingDbCategoryNames = new Set(customCategories.map(c => c.toLowerCase()))
     const newCategories = new Set<string>()
     
     for (const t of transactions) {
-      if (t.category && !existingCategoryNames.has(t.category.toLowerCase())) {
+      if (t.category && !existingDbCategoryNames.has(t.category.toLowerCase())) {
         newCategories.add(t.category)
       }
     }
