@@ -574,10 +574,10 @@ export default function TimelinePage() {
                   return (
                     <div className="relative">
                       {/* Budget Line - spans full width */}
-                      {budgetHeight !== null && (
+                      {budgetHeight !== null && budget !== null && budget > 0 && (
                         <div 
-                          className="absolute left-0 right-0 border-t-2 border-dashed border-error-400 dark:border-error-500 z-20 pointer-events-none"
-                          style={{ bottom: `calc(40px + ${Math.min(budgetHeight, 100) * 1.5}px)` }}
+                          className="absolute left-0 right-0 border-t-2 border-dashed border-black dark:border-white z-20 pointer-events-none"
+                          style={{ bottom: `calc(40px + ${Math.min(budgetHeight, 100) * 1.5}px)`, opacity: 0.75 }}
                         />
                       )}
                       <div className="flex items-end gap-1 overflow-x-auto" style={{ height: '200px' }}>
