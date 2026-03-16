@@ -21,6 +21,11 @@ type CategoryMonthlyData = {
   }
 }
 
+type Budget = {
+  category_name: string
+  amount: number
+}
+
 export default function TimelinePage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
@@ -28,6 +33,7 @@ export default function TimelinePage() {
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null)
   const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
   const [allUserCategories, setAllUserCategories] = useState<string[]>([])
+  const [budgets, setBudgets] = useState<Budget[]>([])
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -36,14 +42,16 @@ export default function TimelinePage() {
 
   const fetchData = async () => {
     try {
-      const [transRes, settingsRes, categoriesRes] = await Promise.all([
+      const [transRes, settingsRes, categoriesRes, budgetsRes] = await Promise.all([
         fetch('/api/transactions'),
         fetch('/api/settings'),
-        fetch('/api/categories')
+        fetch('/api/categories'),
+        fetch('/api/budgets')
       ])
       const transData = await transRes.json()
       const settingsData = await settingsRes.json()
       const categoriesData = await categoriesRes.json()
+      const budgetsData = await budgetsRes.json()
       
       if (transData.transactions) {
         setTransactions(transData.transactions)
@@ -59,6 +67,9 @@ export default function TimelinePage() {
             .map((c: { name: string }) => c.name)
             .sort()
         )
+      }
+      if (budgetsData.budgets) {
+        setBudgets(budgetsData.budgets)
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -250,6 +261,14 @@ export default function TimelinePage() {
     }
     
     return movingAvg
+  }
+
+  // Get budget for a category (most recent effective budget)
+  const getCategoryBudget = (categoryName: string): number | null => {
+    const categoryBudgets = budgets.filter(b => b.category_name === categoryName)
+    if (categoryBudgets.length === 0) return null
+    // Budgets are already sorted by effective_from desc, so first one is current
+    return categoryBudgets[0].amount
   }
 
   if (loading || currencyLoading) {
@@ -549,57 +568,69 @@ export default function TimelinePage() {
                 {(() => {
                   const movingAvg = getMovingAverage(category, availablePeriods)
                   const avgMax = scaleMode === 'absolute' ? maxValue : categoryMax
+                  const budget = getCategoryBudget(category)
+                  const budgetHeight = budget !== null && avgMax > 0 ? (budget / avgMax) * 100 : null
                   
                   return (
-                    <div className="flex items-end gap-1 overflow-x-auto" style={{ height: '200px' }}>
-                      {availablePeriods.map((period, idx) => {
-                        const value = data[period] || 0
-                        const height = getBarHeight(value, categoryMax)
-                        const barHeight = value > 0 ? Math.max(height, 5) : 2
-                        const avgHeight = avgMax > 0 ? (movingAvg[idx] / avgMax) * 100 : 0
-                        
-                        return (
-                          <div 
-                          key={period} 
-                          className="flex-1 min-w-[10px] flex flex-col items-center cursor-crosshair"
-                          onMouseEnter={(e) => {
-                            const rect = e.currentTarget.getBoundingClientRect()
-                            setTooltip({
-                              x: rect.left + rect.width / 2,
-                              y: rect.top,
-                              content: (
-                                <div>
-                                  <div className="font-medium">{period}</div>
-                                  <div>Value: {formatAmount(value)}</div>
-                                  <div className="text-gray-400">Avg: {formatAmount(movingAvg[idx])}</div>
+                    <div className="relative">
+                      {/* Budget Line - spans full width */}
+                      {budgetHeight !== null && (
+                        <div 
+                          className="absolute left-0 right-0 border-t-2 border-dashed border-error-400 dark:border-error-500 z-20 pointer-events-none"
+                          style={{ bottom: `calc(40px + ${Math.min(budgetHeight, 100) * 1.5}px)` }}
+                        />
+                      )}
+                      <div className="flex items-end gap-1 overflow-x-auto" style={{ height: '200px' }}>
+                        {availablePeriods.map((period, idx) => {
+                          const value = data[period] || 0
+                          const height = getBarHeight(value, categoryMax)
+                          const barHeight = value > 0 ? Math.max(height, 5) : 2
+                          const avgHeight = avgMax > 0 ? (movingAvg[idx] / avgMax) * 100 : 0
+                          
+                          return (
+                            <div 
+                            key={period} 
+                            className="flex-1 min-w-[10px] flex flex-col items-center cursor-crosshair"
+                            onMouseEnter={(e) => {
+                              const rect = e.currentTarget.getBoundingClientRect()
+                              setTooltip({
+                                x: rect.left + rect.width / 2,
+                                y: rect.top,
+                                content: (
+                                  <div>
+                                    <div className="font-medium">{period}</div>
+                                    <div>Value: {formatAmount(value)}</div>
+                                    <div className="text-gray-400">Avg: {formatAmount(movingAvg[idx])}</div>
+                                    {budget !== null && <div className="text-error-400">Budget: {formatAmount(budget)}</div>}
+                                  </div>
+                                )
+                              })
+                            }}
+                            onMouseLeave={() => setTooltip(null)}
+                          >
+                              <div className="w-full relative flex flex-col justify-end items-center" style={{ height: '150px' }}>
+                                {/* Moving Average Line Marker */}
+                                <div 
+                                  className="absolute w-full flex justify-center z-10"
+                                  style={{ bottom: `${Math.min(avgHeight, 100)}%` }}
+                                >
+                                  <div className="w-3 h-1 bg-gray-900 dark:bg-white rounded-full" />
                                 </div>
-                              )
-                            })
-                          }}
-                          onMouseLeave={() => setTooltip(null)}
-                        >
-                            <div className="w-full relative flex flex-col justify-end items-center" style={{ height: '150px' }}>
-                              {/* Moving Average Line Marker */}
-                              <div 
-                                className="absolute w-full flex justify-center z-10"
-                                style={{ bottom: `${Math.min(avgHeight, 100)}%` }}
-                              >
-                                <div className="w-3 h-1 bg-gray-900 dark:bg-white rounded-full" />
+                                {/* Bar */}
+                                <div
+                                  className={`w-full rounded-t transition-all duration-300 ${
+                                    value > 0 ? getCategoryColor(colorIndex) : 'bg-gray-200 dark:bg-gray-700'
+                                  }`}
+                                  style={{ height: `${Math.min(barHeight, 100)}%` }}
+                                />
                               </div>
-                              {/* Bar */}
-                              <div
-                                className={`w-full rounded-t transition-all duration-300 ${
-                                  value > 0 ? getCategoryColor(colorIndex) : 'bg-gray-200 dark:bg-gray-700'
-                                }`}
-                                style={{ height: `${Math.min(barHeight, 100)}%` }}
-                              />
+                              <div className="h-[40px] flex items-start justify-center mt-1">
+                                <span className="text-xs text-gray-400" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>{useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}</span>
+                              </div>
                             </div>
-                            <div className="h-[40px] flex items-start justify-center mt-1">
-                              <span className="text-xs text-gray-400" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>{useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)}</span>
-                            </div>
-                          </div>
-                        )
-                      })}
+                          )
+                        })}
+                      </div>
                     </div>
                   )
                 })()}
