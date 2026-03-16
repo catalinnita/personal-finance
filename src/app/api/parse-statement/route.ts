@@ -10,7 +10,8 @@ const anthropic = new Anthropic({
 const DEFAULT_CATEGORIES = [
   'Salary', 'Groceries', 'Utilities', 'Entertainment', 'Transportation',
   'Healthcare', 'Shopping', 'Dining', 'Subscriptions', 'Transfer',
-  'Investment', 'Rent', 'Insurance', 'Education', 'Travel', 'Other'
+  'Investment', 'Insurance', 'Education', 'Travel', 'Loans',
+  'AI', 'Theraphy', 'Housing', 'Taxes', 'Private School'
 ]
 
 function buildParsePrompt(categories: string[], mappings: { description_pattern: string; category: string }[]) {
