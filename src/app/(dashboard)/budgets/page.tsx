@@ -8,6 +8,7 @@ type Category = {
   id: string
   name: string
   type: string
+  expense_type: 'fixed' | 'variable'
 }
 
 type Budget = {
@@ -30,8 +31,8 @@ type Transaction = {
 type CategorySpending = {
   categoryId: string
   category: string
-  lastMonth: number
-  average: number
+  spending: number
+  isFixed: boolean
   budget: number | null
   difference: number | null
   overBudget: boolean
@@ -222,15 +223,18 @@ export default function BudgetsPage() {
       const lastMonth = spending?.lastMonth || 0
       const monthCount = spending?.months.size || 1
       const average = spending ? spending.total / Math.max(monthCount, 1) : 0
+      const isFixed = (category as Category & { expense_type?: string }).expense_type === 'fixed'
+      // Use last month for fixed, average for variable
+      const spendingValue = isFixed ? lastMonth : average
       
       result.push({
         categoryId: category.id,
         category: category.name,
-        lastMonth,
-        average,
+        spending: spendingValue,
+        isFixed,
         budget: budget ?? null,
-        difference: budget ? budget - lastMonth : null,
-        overBudget: budget ? lastMonth > budget : false
+        difference: budget ? budget - spendingValue : null,
+        overBudget: budget ? spendingValue > budget : false
       })
     }
 
@@ -330,8 +334,7 @@ export default function BudgetsPage() {
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Category</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Last Month</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">6-Month Avg</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Spending</th>
                 <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Budget</th>
                 <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Difference</th>
               </tr>
@@ -345,13 +348,19 @@ export default function BudgetsPage() {
                   }`}
                 >
                   <td className="py-3 px-4 text-gray-900 dark:text-white font-medium">
-                    {row.category}
+                    <div className="flex items-center gap-2">
+                      {row.category}
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${
+                        row.isFixed 
+                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400' 
+                          : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                      }`}>
+                        {row.isFixed ? 'Fixed' : 'Avg'}
+                      </span>
+                    </div>
                   </td>
                   <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
-                    {formatAmount(row.lastMonth)}
-                  </td>
-                  <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
-                    {formatAmount(row.average)}
+                    {formatAmount(row.spending)}
                   </td>
                   <td className="py-3 px-4 text-right">
                     <input
