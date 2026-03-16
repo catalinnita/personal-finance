@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
+import { X } from 'lucide-react'
 import { useCurrency } from '@/hooks/useCurrency'
 
 type Category = {
@@ -33,6 +34,7 @@ export default function BudgetRulePage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState<string | null>(null)
+  const [modalGroup, setModalGroup] = useState<keyof typeof BUDGET_GROUPS | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -153,6 +155,49 @@ export default function BudgetRulePage() {
     return grouped
   }, [categories])
 
+  // Calculate per-category spending (last month and 6-month average)
+  const categorySpending = useMemo(() => {
+    const now = new Date()
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
+    const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1)
+
+    const spending = new Map<string, { lastMonth: number; total: number; months: Set<string> }>()
+
+    for (const tx of transactions) {
+      if (tx.amount >= 0) continue
+      const txDate = new Date(tx.date)
+      const category = tx.category || 'Other'
+      const absAmount = Math.abs(tx.amount)
+
+      if (!spending.has(category)) {
+        spending.set(category, { lastMonth: 0, total: 0, months: new Set() })
+      }
+      const data = spending.get(category)!
+
+      if (txDate >= lastMonthStart && txDate <= lastMonthEnd) {
+        data.lastMonth += absAmount
+      }
+      if (txDate >= sixMonthsAgo) {
+        data.total += absAmount
+        data.months.add(`${txDate.getFullYear()}-${txDate.getMonth()}`)
+      }
+    }
+
+    return spending
+  }, [transactions])
+
+  // Get categories for modal with their spending data
+  const getModalCategories = (group: keyof typeof BUDGET_GROUPS) => {
+    return categoriesByGroup[group].map(cat => {
+      const data = categorySpending.get(cat.name)
+      const lastMonth = data?.lastMonth || 0
+      const monthCount = data?.months.size || 1
+      const average = data ? data.total / Math.max(monthCount, 1) : 0
+      return { ...cat, lastMonth, average }
+    }).sort((a, b) => b.lastMonth - a.lastMonth)
+  }
+
   if (loading || currencyLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -198,9 +243,12 @@ export default function BudgetRulePage() {
               }`}>
                 {isOver ? '+' : ''}{diff.toFixed(1)}% {isOver ? 'over' : 'under'}
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              <button
+                onClick={() => setModalGroup(key)}
+                className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 mt-2 hover:underline cursor-pointer"
+              >
                 {formatAmount(spendingData.totals[key])}
-              </div>
+              </button>
             </div>
           )
         })}
@@ -330,6 +378,79 @@ export default function BudgetRulePage() {
           </div>
         </div>
       </div>
+
+      {/* Category Breakdown Modal */}
+      {modalGroup && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setModalGroup(null)}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-xl max-w-lg w-full max-h-[80vh] overflow-hidden shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: BUDGET_GROUPS[modalGroup].color }}
+                />
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {BUDGET_GROUPS[modalGroup].label} Breakdown
+                </h2>
+              </div>
+              <button
+                onClick={() => setModalGroup(null)}
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[60vh]">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th className="text-left py-2 text-sm font-medium text-gray-500 dark:text-gray-400">Category</th>
+                    <th className="text-right py-2 text-sm font-medium text-gray-500 dark:text-gray-400">Last Month</th>
+                    <th className="text-right py-2 text-sm font-medium text-gray-500 dark:text-gray-400">6-Mo Avg</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getModalCategories(modalGroup).map(cat => (
+                    <tr key={cat.id} className="border-b border-gray-100 dark:border-gray-700/50">
+                      <td className="py-3 text-gray-900 dark:text-white">{cat.name}</td>
+                      <td className="py-3 text-right text-gray-700 dark:text-gray-300">
+                        {formatAmount(cat.lastMonth)}
+                      </td>
+                      <td className="py-3 text-right text-gray-500 dark:text-gray-400">
+                        {formatAmount(cat.average)}
+                      </td>
+                    </tr>
+                  ))}
+                  {getModalCategories(modalGroup).length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="py-4 text-center text-gray-400">
+                        No categories in this group
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t border-gray-200 dark:border-gray-700">
+                    <td className="py-3 font-semibold text-gray-900 dark:text-white">Total</td>
+                    <td className="py-3 text-right font-semibold text-gray-900 dark:text-white">
+                      {formatAmount(spendingData.totals[modalGroup])}
+                    </td>
+                    <td className="py-3 text-right text-gray-500 dark:text-gray-400">
+                      {formatAmount(getModalCategories(modalGroup).reduce((sum, c) => sum + c.average, 0))}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
