@@ -205,16 +205,21 @@ export async function POST(request: NextRequest) {
         }
       })
       
-      const { error: insertError } = await supabase
+      const { data: insertedCategories, error: insertError } = await supabase
         .from('categories')
         .insert(categoriesToInsert)
+        .select('id, name')
       
       if (insertError) {
         console.error('Error creating new categories:', insertError)
       } else {
-        console.log(`Created ${newCategories.size} new categories:`, Array.from(newCategories))
+        console.log(`Created ${newCategories.size} new categories:`, insertedCategories?.map(c => c.name))
       }
     }
+
+    // Log transaction categories for debugging
+    const txCategories = [...new Set(transactions.map((t: { category: string }) => t.category))]
+    console.log('Transaction categories:', txCategories)
 
     return NextResponse.json({ transactions, newCategories: Array.from(newCategories) })
   } catch (error: unknown) {
