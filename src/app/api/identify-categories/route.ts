@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/paginate'
 import { batchMatchDescriptions } from '@/lib/mapping-utils'
+import { logClaudeUsage } from '@/lib/claude-usage'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -96,6 +97,17 @@ Be accurate and consistent. Do NOT skip any description.`
         max_tokens: 4096,
         messages: [{ role: 'user', content: prompt }],
       })
+
+      // Log Claude usage
+      await logClaudeUsage(
+        supabase,
+        user.id,
+        'identify-categories',
+        message.model,
+        message.usage.input_tokens,
+        message.usage.output_tokens,
+        { descriptions_count: needsAI.length }
+      )
 
       const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
       

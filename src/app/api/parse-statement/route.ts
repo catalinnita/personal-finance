@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/paginate'
 import { batchMatchDescriptions } from '@/lib/mapping-utils'
+import { logClaudeUsage } from '@/lib/claude-usage'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -130,6 +131,17 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Log Claude usage for parsing
+    await logClaudeUsage(
+      supabase,
+      user.id,
+      'parse-statement',
+      message.model,
+      message.usage.input_tokens,
+      message.usage.output_tokens,
+      { file_name: file.name, file_type: file.type }
+    )
+
     const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
     
     console.log('Claude response:', responseText.substring(0, 500))
@@ -218,6 +230,17 @@ export async function POST(request: NextRequest) {
         max_tokens: 4096,
         messages: [{ role: 'user', content: categorizePrompt }],
       })
+
+      // Log Claude usage for categorization
+      await logClaudeUsage(
+        supabase,
+        user.id,
+        'parse-statement-categorize',
+        aiMessage.model,
+        aiMessage.usage.input_tokens,
+        aiMessage.usage.output_tokens,
+        { descriptions_count: needsAI.length }
+      )
       
       const aiResponseText = aiMessage.content[0].type === 'text' ? aiMessage.content[0].text : ''
       const aiJsonMatch = aiResponseText.match(/\[[\s\S]*\]/)
