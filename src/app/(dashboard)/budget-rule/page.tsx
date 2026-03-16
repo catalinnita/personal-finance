@@ -10,6 +10,7 @@ type Category = {
   name: string
   type: string
   budget_group: 'needs' | 'wants' | 'savings' | 'excluded'
+  expense_type: 'fixed' | 'variable'
 }
 
 type Transaction = {
@@ -85,78 +86,8 @@ export default function BudgetRulePage() {
     }
   }
 
-  // Calculate spending by budget group
-  const spendingData = useMemo(() => {
-    // Build category to budget_group map
-    const categoryToGroup = new Map<string, 'needs' | 'wants' | 'savings' | 'excluded'>()
-    for (const cat of categories) {
-      categoryToGroup.set(cat.name, cat.budget_group || 'needs')
-    }
-
-    // Calculate totals
-    const totals = { needs: 0, wants: 0, savings: 0 }
-    let totalIncome = 0
-    let totalExpenses = 0
-
-    // Get last month's data
-    const now = new Date()
-    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
-
-    for (const tx of transactions) {
-      const txDate = new Date(tx.date)
-      if (txDate < lastMonthStart || txDate > lastMonthEnd) continue
-
-      if (tx.amount > 0) {
-        totalIncome += tx.amount
-      } else {
-        const absAmount = Math.abs(tx.amount)
-        const group = categoryToGroup.get(tx.category) || 'needs'
-        // Skip excluded categories from calculations
-        if (group !== 'excluded') {
-          totalExpenses += absAmount
-          totals[group] += absAmount
-        }
-      }
-    }
-
-    const total = totals.needs + totals.wants + totals.savings
-
-    return {
-      totals,
-      totalIncome,
-      totalExpenses,
-      total,
-      percentages: {
-        needs: total > 0 ? (totals.needs / total) * 100 : 0,
-        wants: total > 0 ? (totals.wants / total) * 100 : 0,
-        savings: total > 0 ? (totals.savings / total) * 100 : 0
-      }
-    }
-  }, [categories, transactions])
-
-  const pieData = useMemo(() => {
-    return [
-      { name: 'Needs', value: spendingData.totals.needs, color: BUDGET_GROUPS.needs.color },
-      { name: 'Wants', value: spendingData.totals.wants, color: BUDGET_GROUPS.wants.color },
-      { name: 'Savings & Debt', value: spendingData.totals.savings, color: BUDGET_GROUPS.savings.color }
-    ].filter(d => d.value > 0)
-  }, [spendingData])
-
-  // Group categories by budget_group
-  const categoriesByGroup = useMemo(() => {
-    const grouped: Record<string, Category[]> = { needs: [], wants: [], savings: [], excluded: [] }
-    for (const cat of categories.filter(c => c.type === 'expense')) {
-      const group = cat.budget_group || 'needs'
-      if (grouped[group]) {
-        grouped[group].push(cat)
-      }
-    }
-    return grouped
-  }, [categories])
-
-  // Calculate per-category spending (last month and 6-month average)
-  const categorySpending = useMemo(() => {
+  // Calculate per-category spending data first (needed for spendingData)
+  const categorySpendingData = useMemo(() => {
     const now = new Date()
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
@@ -187,15 +118,84 @@ export default function BudgetRulePage() {
     return spending
   }, [transactions])
 
-  // Get categories for modal with their spending data
-  const getModalCategories = (group: keyof typeof BUDGET_GROUPS) => {
-    return categoriesByGroup[group].map(cat => {
-      const data = categorySpending.get(cat.name)
+  // Calculate spending by budget group using average for variable, last month for fixed
+  const spendingData = useMemo(() => {
+    // Build category maps
+    const categoryToGroup = new Map<string, 'needs' | 'wants' | 'savings' | 'excluded'>()
+    const categoryToExpenseType = new Map<string, 'fixed' | 'variable'>()
+    for (const cat of categories) {
+      categoryToGroup.set(cat.name, cat.budget_group || 'needs')
+      categoryToExpenseType.set(cat.name, cat.expense_type || 'variable')
+    }
+
+    // Calculate totals using appropriate value based on expense_type
+    const totals = { needs: 0, wants: 0, savings: 0 }
+    let totalExpenses = 0
+
+    for (const cat of categories) {
+      if (cat.type !== 'expense') continue
+      const group = cat.budget_group || 'needs'
+      if (group === 'excluded') continue
+
+      const data = categorySpendingData.get(cat.name)
       const lastMonth = data?.lastMonth || 0
       const monthCount = data?.months.size || 1
       const average = data ? data.total / Math.max(monthCount, 1) : 0
-      return { ...cat, lastMonth, average }
-    }).sort((a, b) => b.lastMonth - a.lastMonth)
+
+      // Use last month for fixed categories, average for variable
+      const expenseType = cat.expense_type || 'variable'
+      const amount = expenseType === 'fixed' ? lastMonth : average
+
+      totals[group] += amount
+      totalExpenses += amount
+    }
+
+    const total = totals.needs + totals.wants + totals.savings
+
+    return {
+      totals,
+      totalExpenses,
+      total,
+      percentages: {
+        needs: total > 0 ? (totals.needs / total) * 100 : 0,
+        wants: total > 0 ? (totals.wants / total) * 100 : 0,
+        savings: total > 0 ? (totals.savings / total) * 100 : 0
+      }
+    }
+  }, [categories, categorySpendingData])
+
+  const pieData = useMemo(() => {
+    return [
+      { name: 'Needs', value: spendingData.totals.needs, color: BUDGET_GROUPS.needs.color },
+      { name: 'Wants', value: spendingData.totals.wants, color: BUDGET_GROUPS.wants.color },
+      { name: 'Savings & Debt', value: spendingData.totals.savings, color: BUDGET_GROUPS.savings.color }
+    ].filter(d => d.value > 0)
+  }, [spendingData])
+
+  // Group categories by budget_group
+  const categoriesByGroup = useMemo(() => {
+    const grouped: Record<string, Category[]> = { needs: [], wants: [], savings: [], excluded: [] }
+    for (const cat of categories.filter(c => c.type === 'expense')) {
+      const group = cat.budget_group || 'needs'
+      if (grouped[group]) {
+        grouped[group].push(cat)
+      }
+    }
+    return grouped
+  }, [categories])
+
+  // Get categories for modal with their spending data
+  const getModalCategories = (group: keyof typeof BUDGET_GROUPS) => {
+    return categoriesByGroup[group].map(cat => {
+      const data = categorySpendingData.get(cat.name)
+      const lastMonth = data?.lastMonth || 0
+      const monthCount = data?.months.size || 1
+      const average = data ? data.total / Math.max(monthCount, 1) : 0
+      const expenseType = cat.expense_type || 'variable'
+      // Value used in calculation: last month for fixed, average for variable
+      const usedValue = expenseType === 'fixed' ? lastMonth : average
+      return { ...cat, lastMonth, average, usedValue, isFixed: expenseType === 'fixed' }
+    }).sort((a, b) => b.usedValue - a.usedValue)
   }
 
   if (loading || currencyLoading) {
@@ -407,23 +407,32 @@ export default function BudgetRulePage() {
               </button>
             </div>
             <div className="p-4 overflow-y-auto max-h-[60vh]">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                Fixed categories use last month&apos;s value. Variable categories use 6-month average.
+              </p>
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <th className="text-left py-2 text-sm font-medium text-gray-500 dark:text-gray-400">Category</th>
-                    <th className="text-right py-2 text-sm font-medium text-gray-500 dark:text-gray-400">Last Month</th>
-                    <th className="text-right py-2 text-sm font-medium text-gray-500 dark:text-gray-400">6-Mo Avg</th>
+                    <th className="text-right py-2 text-sm font-medium text-gray-500 dark:text-gray-400">Used Value</th>
+                    <th className="text-right py-2 text-sm font-medium text-gray-500 dark:text-gray-400">Type</th>
                   </tr>
                 </thead>
                 <tbody>
                   {getModalCategories(modalGroup).map(cat => (
                     <tr key={cat.id} className="border-b border-gray-100 dark:border-gray-700/50">
                       <td className="py-3 text-gray-900 dark:text-white">{cat.name}</td>
-                      <td className="py-3 text-right text-gray-700 dark:text-gray-300">
-                        {formatAmount(cat.lastMonth)}
+                      <td className="py-3 text-right font-medium text-gray-900 dark:text-white">
+                        {formatAmount(cat.usedValue)}
                       </td>
-                      <td className="py-3 text-right text-gray-500 dark:text-gray-400">
-                        {formatAmount(cat.average)}
+                      <td className="py-3 text-right">
+                        <span className={`text-xs px-2 py-0.5 rounded ${
+                          cat.isFixed 
+                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400' 
+                            : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                        }`}>
+                          {cat.isFixed ? 'Fixed' : 'Variable'}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -441,9 +450,7 @@ export default function BudgetRulePage() {
                     <td className="py-3 text-right font-semibold text-gray-900 dark:text-white">
                       {formatAmount(spendingData.totals[modalGroup])}
                     </td>
-                    <td className="py-3 text-right text-gray-500 dark:text-gray-400">
-                      {formatAmount(getModalCategories(modalGroup).reduce((sum, c) => sum + c.average, 0))}
-                    </td>
+                    <td></td>
                   </tr>
                 </tfoot>
               </table>
