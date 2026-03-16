@@ -104,12 +104,19 @@ export async function POST(request: NextRequest) {
       categoryNameToId[c.name.toLowerCase()] = c.id
     })
 
+    console.log('Available categories:', userCategories?.map(c => c.name))
+
     // Extract category from each new transaction and create/update mappings
     type MappingEntry = { user_id: string; description_pattern: string; category_id: string }
+    const unmappedCategories: string[] = []
     const mappingsToUpsert: MappingEntry[] = newTransactions
       .map((t: { description: string; category: string }): MappingEntry | null => {
+        if (!t.category) return null
         const categoryId = categoryNameToId[t.category.toLowerCase()]
-        if (!categoryId) return null
+        if (!categoryId) {
+          unmappedCategories.push(t.category)
+          return null
+        }
         return {
           user_id: user.id,
           description_pattern: t.description,
@@ -118,11 +125,22 @@ export async function POST(request: NextRequest) {
       })
       .filter((m: MappingEntry | null): m is MappingEntry => m !== null)
 
+    if (unmappedCategories.length > 0) {
+      console.log('Categories not found in DB:', [...new Set(unmappedCategories)])
+    }
+    console.log('Mappings to create:', mappingsToUpsert.length)
+
     // Upsert category mappings
     if (mappingsToUpsert.length > 0) {
-      await supabase
+      const { error: mappingError } = await supabase
         .from('category_mappings')
         .upsert(mappingsToUpsert, { onConflict: 'user_id,description_pattern' })
+      
+      if (mappingError) {
+        console.error('Error creating mappings:', mappingError)
+      } else {
+        console.log(`Created ${mappingsToUpsert.length} category mappings`)
+      }
     }
 
     // Insert transactions without category column
