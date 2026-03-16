@@ -109,21 +109,24 @@ export async function POST(request: NextRequest) {
     // Extract category from each new transaction and create/update mappings
     type MappingEntry = { user_id: string; description_pattern: string; category_id: string }
     const unmappedCategories: string[] = []
-    const mappingsToUpsert: MappingEntry[] = newTransactions
-      .map((t: { description: string; category: string }): MappingEntry | null => {
-        if (!t.category) return null
-        const categoryId = categoryNameToId[t.category.toLowerCase()]
-        if (!categoryId) {
-          unmappedCategories.push(t.category)
-          return null
-        }
-        return {
-          user_id: user.id,
-          description_pattern: t.description,
-          category_id: categoryId,
-        }
+    const mappingsMap = new Map<string, MappingEntry>()
+    
+    for (const t of newTransactions as { description: string; category: string }[]) {
+      if (!t.category) continue
+      const categoryId = categoryNameToId[t.category.toLowerCase()]
+      if (!categoryId) {
+        unmappedCategories.push(t.category)
+        continue
+      }
+      // Use description as key to deduplicate - last one wins
+      mappingsMap.set(t.description, {
+        user_id: user.id,
+        description_pattern: t.description,
+        category_id: categoryId,
       })
-      .filter((m: MappingEntry | null): m is MappingEntry => m !== null)
+    }
+    
+    const mappingsToUpsert = Array.from(mappingsMap.values())
 
     if (unmappedCategories.length > 0) {
       console.log('Categories not found in DB:', [...new Set(unmappedCategories)])
