@@ -49,18 +49,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'category_id and amount are required' }, { status: 400 })
     }
 
+    const effectiveDate = effective_from || new Date().toISOString().split('T')[0]
+
+    // Use upsert to handle both insert and update on same day
     const { data, error } = await supabase
       .from('budgets')
-      .insert({
+      .upsert({
         user_id: user.id,
         category_id,
         amount,
-        effective_from: effective_from || new Date().toISOString().split('T')[0]
+        effective_from: effectiveDate
+      }, {
+        onConflict: 'user_id,category_id,effective_from'
       })
       .select('id, category_id, amount, effective_from, created_at')
       .single()
 
     if (error) {
+      console.error('Budget upsert error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
