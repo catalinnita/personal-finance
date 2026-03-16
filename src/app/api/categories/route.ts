@@ -74,7 +74,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid expense_type' }, { status: 400 })
     }
 
-    if (budget_group && !['needs', 'wants', 'savings'].includes(budget_group)) {
+    if (budget_group && !['needs', 'wants', 'savings', 'excluded'].includes(budget_group)) {
       return NextResponse.json({ error: 'Invalid budget_group' }, { status: 400 })
     }
 

@@ -8,7 +8,7 @@ type Category = {
   id: string
   name: string
   type: string
-  budget_group: 'needs' | 'wants' | 'savings'
+  budget_group: 'needs' | 'wants' | 'savings' | 'excluded'
 }
 
 type Transaction = {
@@ -25,6 +25,8 @@ const BUDGET_GROUPS = {
   wants: { label: 'Wants', target: 30, color: '#8b5cf6', description: 'Entertainment, dining out, shopping' },
   savings: { label: 'Savings & Debt', target: 20, color: '#10b981', description: 'Savings, investments, debt repayment' }
 }
+
+const EXCLUDED_GROUP = { label: 'Excluded', color: '#6b7280', description: 'Categories not included in 50/30/20 calculations' }
 
 export default function BudgetRulePage() {
   const [categories, setCategories] = useState<Category[]>([])
@@ -71,7 +73,7 @@ export default function BudgetRulePage() {
       
       if (response.ok) {
         setCategories(categories.map(c => 
-          c.id === categoryId ? { ...c, budget_group: budgetGroup as 'needs' | 'wants' | 'savings' } : c
+          c.id === categoryId ? { ...c, budget_group: budgetGroup as 'needs' | 'wants' | 'savings' | 'excluded' } : c
         ))
       }
     } catch (error) {
@@ -84,7 +86,7 @@ export default function BudgetRulePage() {
   // Calculate spending by budget group
   const spendingData = useMemo(() => {
     // Build category to budget_group map
-    const categoryToGroup = new Map<string, 'needs' | 'wants' | 'savings'>()
+    const categoryToGroup = new Map<string, 'needs' | 'wants' | 'savings' | 'excluded'>()
     for (const cat of categories) {
       categoryToGroup.set(cat.name, cat.budget_group || 'needs')
     }
@@ -107,9 +109,12 @@ export default function BudgetRulePage() {
         totalIncome += tx.amount
       } else {
         const absAmount = Math.abs(tx.amount)
-        totalExpenses += absAmount
         const group = categoryToGroup.get(tx.category) || 'needs'
-        totals[group] += absAmount
+        // Skip excluded categories from calculations
+        if (group !== 'excluded') {
+          totalExpenses += absAmount
+          totals[group] += absAmount
+        }
       }
     }
 
@@ -138,10 +143,12 @@ export default function BudgetRulePage() {
 
   // Group categories by budget_group
   const categoriesByGroup = useMemo(() => {
-    const grouped: Record<string, Category[]> = { needs: [], wants: [], savings: [] }
+    const grouped: Record<string, Category[]> = { needs: [], wants: [], savings: [], excluded: [] }
     for (const cat of categories.filter(c => c.type === 'expense')) {
       const group = cat.budget_group || 'needs'
-      grouped[group].push(cat)
+      if (grouped[group]) {
+        grouped[group].push(cat)
+      }
     }
     return grouped
   }, [categories])
@@ -275,6 +282,7 @@ export default function BudgetRulePage() {
                       <option value="needs">Needs</option>
                       <option value="wants">Wants</option>
                       <option value="savings">Savings</option>
+                      <option value="excluded">Excluded</option>
                     </select>
                   </div>
                 ))}
@@ -284,6 +292,42 @@ export default function BudgetRulePage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Excluded Categories Section */}
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2 mb-3">
+            <div 
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: EXCLUDED_GROUP.color }}
+            />
+            <h3 className="font-medium text-gray-900 dark:text-white">{EXCLUDED_GROUP.label}</h3>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{EXCLUDED_GROUP.description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            {categoriesByGroup.excluded.map(cat => (
+              <div 
+                key={cat.id}
+                className="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-700/30 rounded-lg"
+              >
+                <span className="text-sm text-gray-600 dark:text-gray-400">{cat.name}</span>
+                <select
+                  value={cat.budget_group || 'needs'}
+                  onChange={(e) => handleUpdateBudgetGroup(cat.id, e.target.value)}
+                  disabled={saving === cat.id}
+                  className="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                >
+                  <option value="needs">Needs</option>
+                  <option value="wants">Wants</option>
+                  <option value="savings">Savings</option>
+                  <option value="excluded">Excluded</option>
+                </select>
+              </div>
+            ))}
+            {categoriesByGroup.excluded.length === 0 && (
+              <p className="text-sm text-gray-400 italic">No excluded categories</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

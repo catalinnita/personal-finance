@@ -259,6 +259,13 @@ const MIGRATIONS = [
     sql: `ALTER TABLE categories ADD COLUMN IF NOT EXISTS budget_group VARCHAR(20) DEFAULT 'needs' CHECK (budget_group IN ('needs', 'wants', 'savings'));`
   },
   {
+    name: 'Update budget_group constraint to include excluded',
+    sql: `
+      ALTER TABLE categories DROP CONSTRAINT IF EXISTS categories_budget_group_check;
+      ALTER TABLE categories ADD CONSTRAINT categories_budget_group_check CHECK (budget_group IN ('needs', 'wants', 'savings', 'excluded'));
+    `
+  },
+  {
     name: 'Create budgets table',
     sql: `
       CREATE TABLE IF NOT EXISTS budgets (
