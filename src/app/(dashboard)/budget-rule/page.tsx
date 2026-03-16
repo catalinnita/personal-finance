@@ -407,14 +407,11 @@ export default function BudgetRulePage() {
               </button>
             </div>
             <div className="p-4 overflow-y-auto max-h-[60vh]">
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                Fixed categories use last month&apos;s value. Variable categories use 6-month average.
-              </p>
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <th className="text-left py-2 text-sm font-medium text-gray-500 dark:text-gray-400">Category</th>
-                    <th className="text-right py-2 text-sm font-medium text-gray-500 dark:text-gray-400">Used Value</th>
+                    <th className="text-right py-2 text-sm font-medium text-gray-500 dark:text-gray-400">6m Avg / Last Month</th>
                     <th className="text-right py-2 text-sm font-medium text-gray-500 dark:text-gray-400">Type</th>
                   </tr>
                 </thead>
