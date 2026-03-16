@@ -139,6 +139,15 @@ export default function MappingsPage() {
         if (response.ok) {
           const data = await response.json()
           
+          // If new categories were created, refresh the categories list
+          if (data.newCategories && data.newCategories.length > 0) {
+            const categoriesRes = await fetch('/api/categories')
+            const categoriesData = await categoriesRes.json()
+            if (categoriesData.categories) {
+              setCategories(categoriesData.categories)
+            }
+          }
+          
           // Create mappings for each identified category
           for (const result of data.results) {
             if (result.description && result.category_id) {
