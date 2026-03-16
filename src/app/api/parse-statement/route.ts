@@ -19,7 +19,7 @@ function buildParsePrompt(categories: string[], mappings: { description_pattern:
 - date: YYYY-MM-DD format
 - amount: number (positive=income, negative=expense)
 - description: short description (max 50 chars). IMPORTANT: Remove any hashes, reference numbers, transaction IDs, or alphanumeric codes that aren't actual words (e.g., remove "ABC123XYZ", "REF-98765", "TXN#12345"). Keep only meaningful merchant names and descriptions.
-- category: one of: ${categories.join(', ')}
+- category: Use one of these existing categories if it fits: ${categories.join(', ')}. If none of these categories fit the transaction well, create a NEW relevant category name (short, 1-2 words, capitalized like "Pet Care" or "Childcare").
 - type: "income" or "expense"
 
 Return ONLY a JSON array, no explanation. Be concise with descriptions. Example:
@@ -176,7 +176,42 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    return NextResponse.json({ transactions })
+    // Find new categories that don't exist yet and create them
+    const existingCategoryNames = new Set(allCategories.map(c => c.toLowerCase()))
+    const newCategories = new Set<string>()
+    
+    for (const t of transactions) {
+      if (t.category && !existingCategoryNames.has(t.category.toLowerCase())) {
+        newCategories.add(t.category)
+      }
+    }
+    
+    // Create new categories in the database
+    if (newCategories.size > 0) {
+      const categoriesToInsert = Array.from(newCategories).map(name => {
+        // Determine type based on first transaction with this category
+        const firstTx = transactions.find((t: { category: string }) => t.category === name)
+        const type = firstTx?.type === 'income' ? 'income' : 'expense'
+        return {
+          name,
+          type,
+          user_id: user.id,
+          expense_type: 'variable'
+        }
+      })
+      
+      const { error: insertError } = await supabase
+        .from('categories')
+        .insert(categoriesToInsert)
+      
+      if (insertError) {
+        console.error('Error creating new categories:', insertError)
+      } else {
+        console.log(`Created ${newCategories.size} new categories:`, Array.from(newCategories))
+      }
+    }
+
+    return NextResponse.json({ transactions, newCategories: Array.from(newCategories) })
   } catch (error: unknown) {
     console.error('Error parsing statement:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
