@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/paginate'
+import { batchMatchDescriptions } from '@/lib/mapping-utils'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -14,29 +15,33 @@ const DEFAULT_CATEGORIES = [
   'AI', 'Theraphy', 'Housing', 'Taxes', 'Private School'
 ]
 
-function buildParsePrompt(categories: string[], mappings: { description_pattern: string; category: string }[]) {
-  let prompt = `Parse this bank statement and extract ALL transactions. EVERY transaction MUST have a category assigned.
+// Prompt for initial parsing - extracts transactions without categories
+function buildParsePrompt() {
+  return `Parse this bank statement and extract ALL transactions.
 
 For each transaction provide:
 - date: YYYY-MM-DD format
 - amount: number (positive=income, negative=expense)
 - description: short description (max 50 chars). Remove any hashes, reference numbers, transaction IDs, or alphanumeric codes. Keep only meaningful merchant names.
-- category: REQUIRED for every transaction. Use one of these existing categories if it fits: ${categories.join(', ')}. If NONE of these categories fit well, create a NEW relevant category name (short, 1-2 words, capitalized like "Pet Care" or "Childcare" or "Bank Fees").
 - type: "income" or "expense"
 
-IMPORTANT: Do NOT leave any transaction without a category. Every single transaction must be categorized either with an existing category or a new one you create.
-
 Return ONLY a JSON array, no explanation. Example:
-[{"date":"2024-01-15","amount":2500,"description":"Monthly Salary","category":"Salary","type":"income"},{"date":"2024-01-16","amount":-45,"description":"Pet Store Purchase","category":"Pet Care","type":"expense"}]`
+[{"date":"2024-01-15","amount":2500,"description":"Monthly Salary","type":"income"},{"date":"2024-01-16","amount":-45,"description":"Pet Store Purchase","type":"expense"}]`
+}
 
-  if (mappings.length > 0) {
-    prompt += `\n\nIMPORTANT: Use these known description-to-category mappings when you see similar descriptions:\n`
-    mappings.forEach(m => {
-      prompt += `- "${m.description_pattern}" → ${m.category}\n`
-    })
-  }
+// Prompt for categorizing unmapped descriptions
+function buildCategorizePrompt(categories: string[], descriptions: string[]) {
+  return `Categorize these transaction descriptions.
 
-  return prompt
+Available categories: ${categories.join(', ')}
+
+Descriptions to categorize:
+${descriptions.map((d, i) => `${i + 1}. "${d}"`).join('\n')}
+
+IMPORTANT: EVERY description MUST have a category. Use an existing category if it fits. If NONE fit well, create a NEW relevant category name (short, 1-2 words, capitalized like "Pet Care" or "Bank Fees").
+
+Return ONLY a JSON array with objects containing "description" and "category". Example:
+[{"description":"Monthly Salary","category":"Salary"},{"description":"Pet Store","category":"Pet Care"}]`
 }
 
 export async function POST(request: NextRequest) {
@@ -56,9 +61,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch user's custom categories
-    const categoriesRes = await supabase.from('categories').select('name').eq('user_id', user.id)
-    const customCategories = categoriesRes.data?.map(c => c.name) || []
-    const allCategories = [...new Set([...DEFAULT_CATEGORIES, ...customCategories])].sort()
+    const categoriesRes = await supabase.from('categories').select('id, name').eq('user_id', user.id)
+    const userCategories = categoriesRes.data || []
+    const customCategoryNames = userCategories.map(c => c.name)
+    const allCategories = [...new Set([...DEFAULT_CATEGORIES, ...customCategoryNames])].sort()
     
     // Fetch all mappings with pagination to bypass 1000 row limit
     type MappingRow = { description_pattern: string; category_id: string; categories: { name: string } | null }
@@ -69,13 +75,14 @@ export async function POST(request: NextRequest) {
       [{ column: 'user_id', value: user.id }]
     )
     
-    // Transform mappings to include category name
-    const mappings = allMappingsData.map(m => ({
+    // Transform mappings for the matching utility
+    const existingMappings = allMappingsData.map(m => ({
       description_pattern: m.description_pattern,
-      category: (m.categories as unknown as { name: string } | null)?.name || ''
-    })).filter(m => m.category)
+      category_id: m.category_id,
+      category_name: (m.categories as unknown as { name: string } | null)?.name || ''
+    })).filter(m => m.category_name)
 
-    const parsePrompt = buildParsePrompt(allCategories, mappings)
+    const parsePrompt = buildParsePrompt()
 
     const isPdf = file.type === 'application/pdf' || file.name.endsWith('.pdf')
     
@@ -147,11 +154,10 @@ export async function POST(request: NextRequest) {
 
     let jsonStr = jsonMatch[0]
     
-    // Fix truncated JSON - find all complete transaction objects
+    // Fix truncated JSON - find all complete transaction objects (without category since we parse without it now)
     if (!jsonStr.trim().endsWith(']')) {
-      // Use regex to find all complete transaction objects
       const completeObjects: string[] = []
-      const objectRegex = /\{[^{}]*"date"[^{}]*"amount"[^{}]*"description"[^{}]*"category"[^{}]*"type"[^{}]*\}/g
+      const objectRegex = /\{[^{}]*"date"[^{}]*"amount"[^{}]*"description"[^{}]*"type"[^{}]*\}/g
       let match
       while ((match = objectRegex.exec(jsonStr)) !== null) {
         completeObjects.push(match[0])
@@ -163,7 +169,7 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    let transactions
+    let transactions: { date: string; amount: number; description: string; type: string; category?: string }[]
     try {
       transactions = JSON.parse(jsonStr)
     } catch (parseError) {
@@ -174,23 +180,75 @@ export async function POST(request: NextRequest) {
       }, { status: 500 })
     }
     
-    // Log first few transactions to see their structure
-    console.log('First 3 parsed transactions:', JSON.stringify(transactions.slice(0, 3), null, 2))
-    
-    // Check if transactions have categories
-    const withCategory = transactions.filter((t: { category?: string }) => t.category)
-    const withoutCategory = transactions.filter((t: { category?: string }) => !t.category)
-    console.log(`Transactions with category: ${withCategory.length}, without: ${withoutCategory.length}`)
-    
     if (!Array.isArray(transactions) || transactions.length === 0) {
       return NextResponse.json({ 
         error: 'No transactions found in the statement' 
       }, { status: 400 })
     }
 
+    console.log(`Parsed ${transactions.length} transactions from statement`)
+
+    // ===== 3-STEP OPTIMIZED MAPPING =====
+    // Step 1 & 2: Try exact and fuzzy matching first
+    const uniqueDescriptions = [...new Set(transactions.map(t => t.description))]
+    const { matched, needsAI } = await batchMatchDescriptions(
+      supabase,
+      user.id,
+      uniqueDescriptions,
+      existingMappings
+    )
+    
+    console.log(`Mapping results: ${matched.length} matched (exact/fuzzy), ${needsAI.length} need AI`)
+
+    // Build a map of description -> category for matched ones
+    const descriptionToCategory = new Map<string, string>()
+    for (const m of matched) {
+      if (m.category) {
+        descriptionToCategory.set(m.description, m.category)
+      }
+    }
+
+    // Step 3: Use AI only for unmatched descriptions
+    const aiCategories = new Map<string, string>()
+    if (needsAI.length > 0) {
+      const categorizePrompt = buildCategorizePrompt(allCategories, needsAI)
+      
+      const aiMessage = await anthropic.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4096,
+        messages: [{ role: 'user', content: categorizePrompt }],
+      })
+      
+      const aiResponseText = aiMessage.content[0].type === 'text' ? aiMessage.content[0].text : ''
+      const aiJsonMatch = aiResponseText.match(/\[[\s\S]*\]/)
+      
+      if (aiJsonMatch) {
+        try {
+          const aiResults = JSON.parse(aiJsonMatch[0]) as { description: string; category: string }[]
+          for (const r of aiResults) {
+            if (r.description && r.category) {
+              aiCategories.set(r.description, r.category)
+            }
+          }
+          console.log(`AI categorized ${aiCategories.size} descriptions`)
+        } catch (e) {
+          console.error('Failed to parse AI categorization response:', e)
+        }
+      }
+    }
+
+    // Merge AI results into description map
+    for (const [desc, cat] of aiCategories) {
+      descriptionToCategory.set(desc, cat)
+    }
+
+    // Apply categories to all transactions
+    for (const t of transactions) {
+      t.category = descriptionToCategory.get(t.description) || 'Other'
+    }
+
     // Find new categories that don't exist in user's DB and create them
-    // Note: we check against customCategories (actual DB categories), not allCategories (which includes defaults)
-    const existingDbCategoryNames = new Set(customCategories.map(c => c.toLowerCase()))
+    const existingDbCategoryNames = new Set(customCategoryNames.map(c => c.toLowerCase()))
     const newCategories = new Set<string>()
     
     for (const t of transactions) {
@@ -202,8 +260,7 @@ export async function POST(request: NextRequest) {
     // Create new categories in the database
     if (newCategories.size > 0) {
       const categoriesToInsert = Array.from(newCategories).map(name => {
-        // Determine type based on first transaction with this category
-        const firstTx = transactions.find((t: { category: string }) => t.category === name)
+        const firstTx = transactions.find(t => t.category === name)
         const type = firstTx?.type === 'income' ? 'income' : 'expense'
         return {
           name,
@@ -225,11 +282,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Log transaction categories for debugging
-    const txCategories = [...new Set(transactions.map((t: { category: string }) => t.category))]
-    console.log('Transaction categories:', txCategories)
+    // Log summary
+    const txCategories = [...new Set(transactions.map(t => t.category))]
+    console.log('Final transaction categories:', txCategories)
 
-    return NextResponse.json({ transactions, newCategories: Array.from(newCategories) })
+    return NextResponse.json({ 
+      transactions, 
+      newCategories: Array.from(newCategories),
+      matchStats: {
+        exactOrFuzzy: matched.length,
+        ai: aiCategories.size,
+        total: uniqueDescriptions.length
+      }
+    })
   } catch (error: unknown) {
     console.error('Error parsing statement:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
