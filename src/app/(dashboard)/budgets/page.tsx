@@ -28,6 +28,7 @@ type Transaction = {
 }
 
 type CategorySpending = {
+  categoryId: string
   category: string
   lastMonth: number
   average: number
@@ -45,6 +46,8 @@ export default function BudgetsPage() {
   const [budgetAmount, setBudgetAmount] = useState<string>('')
   const [effectiveFrom, setEffectiveFrom] = useState<string>(new Date().toISOString().split('T')[0])
   const [saving, setSaving] = useState(false)
+  const [editingBudgets, setEditingBudgets] = useState<Record<string, string>>({})
+  const [savingBudget, setSavingBudget] = useState<string | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -122,6 +125,45 @@ export default function BudgetsPage() {
     }
   }
 
+  const handleInlineBudgetChange = (categoryId: string, value: string) => {
+    setEditingBudgets(prev => ({ ...prev, [categoryId]: value }))
+  }
+
+  const handleInlineBudgetSave = async (categoryId: string, categoryName: string) => {
+    const value = editingBudgets[categoryId]
+    if (value === undefined || value === '') return
+    
+    const amount = parseFloat(value)
+    if (isNaN(amount) || amount < 0) return
+
+    setSavingBudget(categoryId)
+    try {
+      const response = await fetch('/api/budgets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category_id: categoryId,
+          amount,
+          effective_from: new Date().toISOString().split('T')[0]
+        })
+      })
+      
+      if (response.ok) {
+        await fetchData()
+        // Clear the editing state for this category
+        setEditingBudgets(prev => {
+          const next = { ...prev }
+          delete next[categoryId]
+          return next
+        })
+      }
+    } catch (error) {
+      console.error('Error saving budget:', error)
+    } finally {
+      setSavingBudget(null)
+    }
+  }
+
   // Calculate spending data per category
   const categorySpending = useMemo((): CategorySpending[] => {
     const now = new Date()
@@ -182,10 +224,11 @@ export default function BudgetsPage() {
       const average = spending ? spending.total / Math.max(monthCount, 1) : 0
       
       result.push({
+        categoryId: category.id,
         category: category.name,
         lastMonth,
         average,
-        budget: budget || null,
+        budget: budget ?? null,
         difference: budget ? budget - lastMonth : null,
         overBudget: budget ? lastMonth > budget : false
       })
@@ -310,8 +353,21 @@ export default function BudgetsPage() {
                   <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
                     {formatAmount(row.average)}
                   </td>
-                  <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
-                    {row.budget ? formatAmount(row.budget) : <span className="text-gray-400">—</span>}
+                  <td className="py-3 px-4 text-right">
+                    <input
+                      type="number"
+                      value={editingBudgets[row.categoryId] ?? (row.budget ?? '')}
+                      onChange={(e) => handleInlineBudgetChange(row.categoryId, e.target.value)}
+                      onBlur={() => handleInlineBudgetSave(row.categoryId, row.category)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleInlineBudgetSave(row.categoryId, row.category)
+                        }
+                      }}
+                      disabled={savingBudget === row.categoryId}
+                      placeholder="—"
+                      className="w-24 px-2 py-1 text-right border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 disabled:opacity-50"
+                    />
                   </td>
                   <td className="py-3 px-4 text-right">
                     {row.difference !== null ? (
