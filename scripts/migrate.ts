@@ -331,6 +331,54 @@ const MIGRATIONS = [
       END $$;
     `
   },
+  {
+    name: 'Create claude_usage table',
+    sql: `
+      CREATE TABLE IF NOT EXISTS claude_usage (
+        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+        action VARCHAR(100) NOT NULL,
+        model VARCHAR(50) NOT NULL,
+        input_tokens INTEGER NOT NULL DEFAULT 0,
+        output_tokens INTEGER NOT NULL DEFAULT 0,
+        cost_usd DECIMAL(10, 6) NOT NULL DEFAULT 0,
+        metadata JSONB,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+    `
+  },
+  {
+    name: 'Create claude_usage indexes',
+    sql: `
+      CREATE INDEX IF NOT EXISTS idx_claude_usage_user_id ON claude_usage(user_id);
+      CREATE INDEX IF NOT EXISTS idx_claude_usage_action ON claude_usage(action);
+      CREATE INDEX IF NOT EXISTS idx_claude_usage_created_at ON claude_usage(created_at);
+    `
+  },
+  {
+    name: 'Enable claude_usage RLS',
+    sql: `ALTER TABLE claude_usage ENABLE ROW LEVEL SECURITY;`
+  },
+  {
+    name: 'Claude_usage SELECT policy',
+    sql: `
+      DO $$ BEGIN
+        CREATE POLICY "Users can view their own claude usage"
+          ON claude_usage FOR SELECT USING (auth.uid() = user_id);
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
+    `
+  },
+  {
+    name: 'Claude_usage INSERT policy',
+    sql: `
+      DO $$ BEGIN
+        CREATE POLICY "Users can insert their own claude usage"
+          ON claude_usage FOR INSERT WITH CHECK (auth.uid() = user_id);
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
+    `
+  },
 ]
 
 async function runMigrations() {
