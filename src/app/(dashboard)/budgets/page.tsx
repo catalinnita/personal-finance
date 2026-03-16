@@ -1,0 +1,385 @@
+'use client'
+
+import { useState, useEffect, useMemo } from 'react'
+import { Trash2, Plus, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { useCurrency } from '@/hooks/useCurrency'
+
+type Category = {
+  id: string
+  name: string
+  type: string
+}
+
+type Budget = {
+  id: string
+  category_id: string
+  category_name: string
+  amount: number
+  effective_from: string
+  created_at: string
+}
+
+type Transaction = {
+  id: string
+  date: string
+  amount: number
+  description: string
+  category: string
+}
+
+type CategorySpending = {
+  category: string
+  lastMonth: number
+  average: number
+  budget: number | null
+  difference: number | null
+  overBudget: boolean
+}
+
+export default function BudgetsPage() {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [budgets, setBudgets] = useState<Budget[]>([])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [budgetAmount, setBudgetAmount] = useState<string>('')
+  const [effectiveFrom, setEffectiveFrom] = useState<string>(new Date().toISOString().split('T')[0])
+  const [saving, setSaving] = useState(false)
+  const { formatAmount, loading: currencyLoading } = useCurrency()
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const [categoriesRes, budgetsRes, transactionsRes] = await Promise.all([
+        fetch('/api/categories'),
+        fetch('/api/budgets'),
+        fetch('/api/transactions')
+      ])
+      
+      const categoriesData = await categoriesRes.json()
+      const budgetsData = await budgetsRes.json()
+      const transactionsData = await transactionsRes.json()
+      
+      if (categoriesData.categories) {
+        // Only expense categories can have budgets
+        setCategories(categoriesData.categories.filter((c: Category) => c.type === 'expense'))
+      }
+      if (budgetsData.budgets) {
+        setBudgets(budgetsData.budgets)
+      }
+      if (transactionsData.transactions) {
+        setTransactions(transactionsData.transactions)
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAddBudget = async () => {
+    if (!selectedCategory || !budgetAmount) return
+    
+    setSaving(true)
+    try {
+      const response = await fetch('/api/budgets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category_id: selectedCategory,
+          amount: parseFloat(budgetAmount),
+          effective_from: effectiveFrom
+        })
+      })
+      
+      if (response.ok) {
+        await fetchData()
+        setSelectedCategory('')
+        setBudgetAmount('')
+        setEffectiveFrom(new Date().toISOString().split('T')[0])
+      }
+    } catch (error) {
+      console.error('Error adding budget:', error)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDeleteBudget = async (id: string) => {
+    try {
+      const response = await fetch(`/api/budgets?id=${id}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.ok) {
+        setBudgets(budgets.filter(b => b.id !== id))
+      }
+    } catch (error) {
+      console.error('Error deleting budget:', error)
+    }
+  }
+
+  // Calculate spending data per category
+  const categorySpending = useMemo((): CategorySpending[] => {
+    const now = new Date()
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
+    const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1)
+
+    // Get current budget for each category (most recent effective_from <= today)
+    const currentBudgets = new Map<string, number>()
+    const today = new Date().toISOString().split('T')[0]
+    
+    for (const budget of budgets) {
+      if (budget.effective_from <= today) {
+        const existing = currentBudgets.get(budget.category_name)
+        if (!existing) {
+          currentBudgets.set(budget.category_name, budget.amount)
+        }
+      }
+    }
+
+    // Calculate spending per category
+    const categoryData = new Map<string, { lastMonth: number; total: number; months: Set<string> }>()
+    
+    for (const tx of transactions) {
+      if (tx.amount >= 0) continue // Skip income
+      
+      const txDate = new Date(tx.date)
+      const category = tx.category || 'Other'
+      
+      if (!categoryData.has(category)) {
+        categoryData.set(category, { lastMonth: 0, total: 0, months: new Set() })
+      }
+      
+      const data = categoryData.get(category)!
+      const absAmount = Math.abs(tx.amount)
+      
+      // Last month spending
+      if (txDate >= lastMonthStart && txDate <= lastMonthEnd) {
+        data.lastMonth += absAmount
+      }
+      
+      // 6-month average
+      if (txDate >= sixMonthsAgo) {
+        data.total += absAmount
+        data.months.add(`${txDate.getFullYear()}-${txDate.getMonth()}`)
+      }
+    }
+
+    // Build result array for categories with budgets
+    const result: CategorySpending[] = []
+    
+    for (const category of categories) {
+      const spending = categoryData.get(category.name)
+      const budget = currentBudgets.get(category.name)
+      
+      const lastMonth = spending?.lastMonth || 0
+      const monthCount = spending?.months.size || 1
+      const average = spending ? spending.total / Math.max(monthCount, 1) : 0
+      
+      result.push({
+        category: category.name,
+        lastMonth,
+        average,
+        budget: budget || null,
+        difference: budget ? budget - lastMonth : null,
+        overBudget: budget ? lastMonth > budget : false
+      })
+    }
+
+    // Sort: categories with budgets first, then by name
+    return result.sort((a, b) => {
+      if (a.budget && !b.budget) return -1
+      if (!a.budget && b.budget) return 1
+      return a.category.localeCompare(b.category)
+    })
+  }, [categories, budgets, transactions])
+
+  // Group budgets by category for history view
+  const budgetHistory = useMemo(() => {
+    const grouped = new Map<string, Budget[]>()
+    
+    for (const budget of budgets) {
+      const key = budget.category_name
+      if (!grouped.has(key)) {
+        grouped.set(key, [])
+      }
+      grouped.get(key)!.push(budget)
+    }
+    
+    return grouped
+  }, [budgets])
+
+  if (loading || currencyLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-6xl">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Budgets</h1>
+
+      {/* Add Budget Form */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Set Budget</h2>
+        <div className="flex flex-wrap gap-4 items-end">
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Category
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="">Select category...</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="w-40">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Amount
+            </label>
+            <input
+              type="number"
+              value={budgetAmount}
+              onChange={(e) => setBudgetAmount(e.target.value)}
+              placeholder="0.00"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+          </div>
+          <div className="w-40">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Effective From
+            </label>
+            <input
+              type="date"
+              value={effectiveFrom}
+              onChange={(e) => setEffectiveFrom(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+          </div>
+          <button
+            onClick={handleAddBudget}
+            disabled={!selectedCategory || !budgetAmount || saving}
+            className="flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            {saving ? 'Saving...' : 'Add Budget'}
+          </button>
+        </div>
+      </div>
+
+      {/* Budget vs Spending Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Budget vs Spending</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Category</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Last Month</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">6-Month Avg</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Budget</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Difference</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categorySpending.map((row) => (
+                <tr 
+                  key={row.category}
+                  className={`border-b border-gray-100 dark:border-gray-700/50 ${
+                    row.overBudget ? 'bg-error-50 dark:bg-error-500/10' : ''
+                  }`}
+                >
+                  <td className="py-3 px-4 text-gray-900 dark:text-white font-medium">
+                    {row.category}
+                  </td>
+                  <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                    {formatAmount(row.lastMonth)}
+                  </td>
+                  <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                    {formatAmount(row.average)}
+                  </td>
+                  <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
+                    {row.budget ? formatAmount(row.budget) : <span className="text-gray-400">—</span>}
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    {row.difference !== null ? (
+                      <span className={`flex items-center justify-end gap-1 ${
+                        row.overBudget 
+                          ? 'text-error-600 dark:text-error-400' 
+                          : 'text-success-600 dark:text-success-400'
+                      }`}>
+                        {row.overBudget ? (
+                          <TrendingUp className="w-4 h-4" />
+                        ) : row.difference === 0 ? (
+                          <Minus className="w-4 h-4" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4" />
+                        )}
+                        {formatAmount(Math.abs(row.difference))}
+                        {row.overBudget ? ' over' : ' under'}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Budget History */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Budget History</h2>
+        {budgetHistory.size === 0 ? (
+          <p className="text-gray-500 dark:text-gray-400">No budgets set yet.</p>
+        ) : (
+          <div className="space-y-6">
+            {Array.from(budgetHistory.entries()).map(([categoryName, categoryBudgets]) => (
+              <div key={categoryName}>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2">{categoryName}</h3>
+                <div className="space-y-2">
+                  {categoryBudgets.map((budget) => (
+                    <div 
+                      key={budget.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                    >
+                      <div>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {formatAmount(budget.amount)}
+                        </span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                          from {new Date(budget.effective_from).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteBudget(budget.id)}
+                        className="p-2 text-gray-400 hover:text-error-500 transition-colors"
+                        title="Delete budget entry"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

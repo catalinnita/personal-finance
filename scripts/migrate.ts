@@ -254,6 +254,76 @@ const MIGRATIONS = [
     name: 'Add expense_type to categories',
     sql: `ALTER TABLE categories ADD COLUMN IF NOT EXISTS expense_type VARCHAR(20) DEFAULT 'variable';`
   },
+  {
+    name: 'Add budget_group to categories for 50/30/20 rule',
+    sql: `ALTER TABLE categories ADD COLUMN IF NOT EXISTS budget_group VARCHAR(20) DEFAULT 'needs' CHECK (budget_group IN ('needs', 'wants', 'savings'));`
+  },
+  {
+    name: 'Create budgets table',
+    sql: `
+      CREATE TABLE IF NOT EXISTS budgets (
+        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+        category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+        amount DECIMAL(12, 2) NOT NULL,
+        effective_from DATE NOT NULL DEFAULT CURRENT_DATE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(user_id, category_id, effective_from)
+      );
+    `
+  },
+  {
+    name: 'Create budgets indexes',
+    sql: `
+      CREATE INDEX IF NOT EXISTS idx_budgets_user_id ON budgets(user_id);
+      CREATE INDEX IF NOT EXISTS idx_budgets_category_id ON budgets(category_id);
+      CREATE INDEX IF NOT EXISTS idx_budgets_effective_from ON budgets(effective_from);
+    `
+  },
+  {
+    name: 'Enable budgets RLS',
+    sql: `ALTER TABLE budgets ENABLE ROW LEVEL SECURITY;`
+  },
+  {
+    name: 'Budgets SELECT policy',
+    sql: `
+      DO $$ BEGIN
+        CREATE POLICY "Users can view their own budgets"
+          ON budgets FOR SELECT USING (auth.uid() = user_id);
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
+    `
+  },
+  {
+    name: 'Budgets INSERT policy',
+    sql: `
+      DO $$ BEGIN
+        CREATE POLICY "Users can insert their own budgets"
+          ON budgets FOR INSERT WITH CHECK (auth.uid() = user_id);
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
+    `
+  },
+  {
+    name: 'Budgets UPDATE policy',
+    sql: `
+      DO $$ BEGIN
+        CREATE POLICY "Users can update their own budgets"
+          ON budgets FOR UPDATE USING (auth.uid() = user_id);
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
+    `
+  },
+  {
+    name: 'Budgets DELETE policy',
+    sql: `
+      DO $$ BEGIN
+        CREATE POLICY "Users can delete their own budgets"
+          ON budgets FOR DELETE USING (auth.uid() = user_id);
+      EXCEPTION WHEN duplicate_object THEN NULL;
+      END $$;
+    `
+  },
 ]
 
 async function runMigrations() {

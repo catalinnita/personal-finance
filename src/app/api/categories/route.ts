@@ -64,7 +64,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id, expense_type } = await request.json()
+    const { id, expense_type, budget_group } = await request.json()
 
     if (!id) {
       return NextResponse.json({ error: 'Category ID required' }, { status: 400 })
@@ -74,9 +74,17 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid expense_type' }, { status: 400 })
     }
 
+    if (budget_group && !['needs', 'wants', 'savings'].includes(budget_group)) {
+      return NextResponse.json({ error: 'Invalid budget_group' }, { status: 400 })
+    }
+
+    const updateData: Record<string, string> = {}
+    if (expense_type) updateData.expense_type = expense_type
+    if (budget_group) updateData.budget_group = budget_group
+
     const { data, error } = await supabase
       .from('categories')
-      .update({ expense_type })
+      .update(updateData)
       .eq('id', id)
       .eq('user_id', user.id)
       .select()
