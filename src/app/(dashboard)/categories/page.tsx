@@ -268,7 +268,7 @@ export default function CategoriesPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
-                      <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium">Category</th>
+                      <th className="text-left py-3 px-2 text-gray-500 dark:text-gray-400 font-medium sticky left-0 bg-white dark:bg-gray-800 z-10">Category</th>
                       <th className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">Avg/Last</th>
                       {availableMonths.map(period => (
                         <th key={period} className="text-right py-3 px-2 text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
@@ -288,7 +288,7 @@ export default function CategoriesPage() {
                       return (
                         <>
                           <tr key={category} className="border-b border-gray-100 dark:border-gray-700/50">
-                            <td className="py-3 px-2 text-gray-900 dark:text-white">
+                            <td className="py-3 px-2 text-gray-900 dark:text-white sticky left-0 bg-white dark:bg-gray-800 z-10">
                               <span className="flex items-center gap-2">
                                 {category}
                                 {isFixed && (
@@ -323,7 +323,7 @@ export default function CategoriesPage() {
                   </tbody>
                   <tfoot>
                     <tr className="bg-gray-100 dark:bg-gray-700/50 font-bold">
-                      <td className="py-3 px-2 text-gray-900 dark:text-white">Total</td>
+                      <td className="py-3 px-2 text-gray-900 dark:text-white sticky left-0 bg-gray-100 dark:bg-gray-700/50 z-10">Total</td>
                       <td className="py-3 px-2 text-right text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-600/50">
                         {formatAmount(
                           displayCategories.reduce((sum, cat) => sum + getCategoryAvgValue(cat, availableMonths), 0)
