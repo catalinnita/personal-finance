@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, PieChart, X } from 'lucide-react'
+import { Loader2, PieChart, X, Download } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
@@ -203,6 +203,47 @@ export default function CategoriesPage() {
     setSelectedMonth(availableMonths.length > 0 ? availableMonths[availableMonths.length - 1] : null)
   }
 
+  const downloadCategorySummary = () => {
+    const headers = ['Category', 'Avg/Last', ...availableMonths.map(period => 
+      useMonthYear ? period.substring(0, 3) + '\'' + period.split(' ')[1]?.substring(2) : period.substring(0, 3)
+    ), 'Total']
+    
+    const rows = displayCategories.map(category => {
+      const avgValue = getCategoryAvgValue(category, availableMonths)
+      const categoryTotal = Object.values(monthlyCategories).reduce(
+        (sum, monthData) => sum + (monthData[category] || 0), 0
+      )
+      return [
+        category,
+        avgValue.toFixed(2),
+        ...availableMonths.map(period => (monthlyCategories[period]?.[category] || 0).toFixed(2)),
+        categoryTotal.toFixed(2)
+      ]
+    })
+    
+    // Add totals row
+    const totalsRow = [
+      'Total',
+      displayCategories.reduce((sum, cat) => sum + getCategoryAvgValue(cat, availableMonths), 0).toFixed(2),
+      ...availableMonths.map(period => 
+        displayCategories.reduce((sum, cat) => sum + (monthlyCategories[period]?.[cat] || 0), 0).toFixed(2)
+      ),
+      displayCategories.reduce((sum, cat) => 
+        sum + Object.values(monthlyCategories).reduce((s, m) => s + (m[cat] || 0), 0), 0
+      ).toFixed(2)
+    ]
+    rows.push(totalsRow)
+    
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `category_summary_${selectedYears.join('-')}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   if (loading || currencyLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -263,7 +304,16 @@ export default function CategoriesPage() {
           {/* Summary table - moved above month tabs */}
           {displayCategories.length > 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Category Summary</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Category Summary</h2>
+                <button
+                  onClick={() => downloadCategorySummary()}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  Export CSV
+                </button>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
