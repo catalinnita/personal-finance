@@ -1,0 +1,24 @@
+{
+  "framework": "vitest",
+  "testKeyword": "it",
+  "describeNestingMaxDepth": 2,
+  "hookStyle": "beforeEach",
+  "namingPattern": "sentence-case",
+  "asyncStyle": "async/await",
+  "assertionPreferences": {
+    "equality": "toEqual",
+    "partial": "toMatchObject",
+    "exact": "toStrictEqual"
+  },
+  "filePattern": "**/*.test.{ts,tsx}",
+  "importStyle": "named",
+  "mockLibrary": "vi",
+  "notes": [
+    "All tests use 'it' not 'test'",
+    "Test names use sentence-case without 'should' prefix",
+    "Mocks use vi.fn() and vi.mock()",
+    "Supabase client is always mocked via vi.mock('@/lib/supabase/server')",
+    "Next.js navigation is mocked globally in vitest.setup.ts",
+    "fetch is mocked globally in vitest.setup.ts"
+  ]
+}
