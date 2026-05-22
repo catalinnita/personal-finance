@@ -1,6 +1,6 @@
 # Personal Finance App
 
-A personal finance tracker built with Next.js, Supabase, and Claude AI for automatic transaction categorization.
+AI-powered personal finance tracker — upload bank statements, auto-categorize transactions with Claude, and visualize spending across budgets, categories, timelines, and income. Built with Next.js, Supabase, and Google OAuth.
 
 ## Features
 
