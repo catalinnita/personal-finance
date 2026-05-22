@@ -39,24 +39,24 @@ export default function DashboardLayout({
         <div className="flex items-center gap-2">
           <Link
             href="/settings"
+            aria-label="Settings"
             className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            title="Settings"
           >
-            <Settings className="w-5 h-5" />
+            <Settings aria-hidden="true" className="w-5 h-5" />
           </Link>
           <button
             onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
           >
-            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {theme === 'dark' ? <Sun aria-hidden="true" className="w-5 h-5" /> : <Moon aria-hidden="true" className="w-5 h-5" />}
           </button>
           <button
             onClick={handleLogout}
+            aria-label="Log out"
             className="p-2 text-gray-500 hover:text-error-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            title="Logout"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut aria-hidden="true" className="w-5 h-5" />
           </button>
         </div>
       </header>

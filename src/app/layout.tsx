@@ -9,8 +9,22 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Personal Finance",
-  description: "Track your personal finances",
+  title: {
+    default: "Kentic — Personal Finance Tracker",
+    template: "%s | Kentic",
+  },
+  description:
+    "Track your income and expenses, manage budgets, and visualise your personal finances with Kentic.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+  openGraph: {
+    title: "Kentic — Personal Finance Tracker",
+    description:
+      "Track your income and expenses, manage budgets, and visualise your personal finances.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

@@ -4,17 +4,11 @@ import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/paginate'
 import { batchMatchDescriptions } from '@/lib/mapping-utils'
 import { logClaudeUsage } from '@/lib/claude-usage'
+import { DEFAULT_CATEGORIES, CLAUDE_MODEL, CLAUDE_MAX_TOKENS_CATEGORIZE } from '@/config/constants'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
-
-const DEFAULT_CATEGORIES = [
-  'Salary', 'Groceries', 'Utilities', 'Entertainment', 'Transportation',
-  'Healthcare', 'Shopping', 'Dining', 'Subscriptions', 'Transfer',
-  'Investment', 'Insurance', 'Education', 'Travel', 'Loans',
-  'AI', 'Theraphy', 'Housing', 'Taxes', 'Private School'
-]
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,8 +87,8 @@ Return ONLY a JSON array with objects containing "description" and "category" fo
 Be accurate and consistent. Do NOT skip any description.`
 
       const message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4096,
+        model: CLAUDE_MODEL,
+        max_tokens: CLAUDE_MAX_TOKENS_CATEGORIZE,
         messages: [{ role: 'user', content: prompt }],
       })
 

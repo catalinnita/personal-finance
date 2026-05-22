@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-type Currency = {
+interface Currency {
   code: string
   symbol: string
   name: string

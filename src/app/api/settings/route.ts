@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { DEFAULT_CURRENCY, DEFAULT_HIGHLIGHT_THRESHOLD, DEFAULT_MOVING_AVERAGE_PERIOD } from '@/config/constants'
 
 const CURRENCIES = [
   { code: 'USD', symbol: '$', name: 'US Dollar' },
@@ -34,7 +35,7 @@ export async function GET() {
     }
 
     // Return default settings if none exist
-    const userSettings = settings || { currency: 'USD', highlight_threshold: 500, moving_average_period: 6 }
+    const userSettings = settings || { currency: DEFAULT_CURRENCY, highlight_threshold: DEFAULT_HIGHLIGHT_THRESHOLD, moving_average_period: DEFAULT_MOVING_AVERAGE_PERIOD }
 
     return NextResponse.json({ 
       settings: userSettings,
@@ -64,13 +65,13 @@ export async function PUT(request: NextRequest) {
     }
 
     // Validate highlight_threshold
-    const threshold = highlight_threshold !== undefined ? Number(highlight_threshold) : 500
+    const threshold = highlight_threshold !== undefined ? Number(highlight_threshold) : DEFAULT_HIGHLIGHT_THRESHOLD
     if (isNaN(threshold) || threshold < 0) {
       return NextResponse.json({ error: 'Invalid highlight threshold' }, { status: 400 })
     }
 
     // Validate moving_average_period
-    const avgPeriod = moving_average_period !== undefined ? Number(moving_average_period) : 6
+    const avgPeriod = moving_average_period !== undefined ? Number(moving_average_period) : DEFAULT_MOVING_AVERAGE_PERIOD
     if (isNaN(avgPeriod) || avgPeriod < 1 || avgPeriod > 24) {
       return NextResponse.json({ error: 'Moving average period must be between 1 and 24' }, { status: 400 })
     }
@@ -80,7 +81,7 @@ export async function PUT(request: NextRequest) {
       .from('user_settings')
       .upsert({
         user_id: user.id,
-        currency: currency || 'USD',
+        currency: currency || DEFAULT_CURRENCY,
         highlight_threshold: threshold,
         moving_average_period: avgPeriod,
         updated_at: new Date().toISOString(),

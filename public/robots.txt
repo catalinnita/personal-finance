@@ -1,0 +1,20 @@
+User-agent: *
+# Disallow all dashboard routes (private user data)
+Disallow: /upload
+Disallow: /transactions
+Disallow: /cleanup
+Disallow: /manage-categories
+Disallow: /mappings
+Disallow: /balance
+Disallow: /income
+Disallow: /income-timeline
+Disallow: /categories
+Disallow: /timeline
+Disallow: /budgets
+Disallow: /budget-rule
+Disallow: /settings
+Disallow: /api/
+
+# Allow the login page
+Allow: /login
+Allow: /auth/callback

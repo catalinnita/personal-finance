@@ -57,7 +57,8 @@ export default function Sidebar() {
         />
       )}
       
-      <aside 
+      <aside
+        aria-label="Main navigation"
         className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out flex flex-col pointer-events-auto
           ${showFull ? 'w-[280px]' : 'w-[80px]'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -95,13 +96,15 @@ export default function Sidebar() {
                       <Link
                         key={item.href}
                         href={item.href}
+                        aria-label={!showFull ? item.label : undefined}
+                        aria-current={isActive ? 'page' : undefined}
                         className={`relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-sm cursor-pointer ${
-                          isActive 
-                            ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400' 
+                          isActive
+                            ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400'
                             : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5'
                         } ${!showFull ? 'justify-center' : ''}`}
                       >
-                        <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                        <item.icon aria-hidden="true" className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-500 dark:text-brand-400' : 'text-gray-500 dark:text-gray-400'}`} />
                         {showFull && <span>{item.label}</span>}
                       </Link>
                     )
@@ -118,13 +121,16 @@ export default function Sidebar() {
 
 export function MobileMenuButton() {
   const { isMobileOpen, toggleMobileSidebar } = useSidebar()
-  
+
   return (
     <button
       onClick={toggleMobileSidebar}
+      aria-label={isMobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+      aria-expanded={isMobileOpen}
+      aria-controls="main-sidebar"
       className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
     >
-      {isMobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      {isMobileOpen ? <X aria-hidden="true" className="w-6 h-6" /> : <Menu aria-hidden="true" className="w-6 h-6" />}
     </button>
   )
 }

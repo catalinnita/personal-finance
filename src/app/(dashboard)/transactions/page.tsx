@@ -168,7 +168,7 @@ export default function TransactionsPage() {
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-theme-sm">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full" aria-label="Transactions">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                   <th className="text-left py-4 px-6 text-gray-500 dark:text-gray-400 font-medium text-sm">Date</th>
@@ -199,15 +199,17 @@ export default function TransactionsPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => handleEdit(t)}
+                          aria-label={`Edit transaction: ${t.description}`}
                           className="p-2 text-gray-400 hover:text-brand-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
-                          <Pencil className="w-4 h-4" />
+                          <Pencil aria-hidden="true" className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(t.id)}
+                          aria-label={`Delete transaction: ${t.description}`}
                           className="p-2 text-gray-400 hover:text-error-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 aria-hidden="true" className="w-4 h-4" />
                         </button>
                       </div>
                     </td>

@@ -66,12 +66,17 @@ export default function TransactionModal({ transaction, isOpen, onClose, onSave 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="transaction-modal-title"
+    >
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-200 dark:border-gray-700 shadow-theme-lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Transaction</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-900 dark:hover:text-white">
-            <X className="w-5 h-5" />
+          <h2 id="transaction-modal-title" className="text-xl font-semibold text-gray-900 dark:text-white">Edit Transaction</h2>
+          <button onClick={onClose} aria-label="Close dialog" className="text-gray-400 hover:text-gray-900 dark:hover:text-white">
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 

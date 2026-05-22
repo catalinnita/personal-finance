@@ -7,15 +7,11 @@ import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
 import { useSelectedCategories } from '@/hooks/useSelectedCategories'
 
-type CategoryData = {
-  [category: string]: number
-}
+type CategoryData = Record<string, number>
 
-type MonthlyCategories = {
-  [month: string]: CategoryData
-}
+type MonthlyCategories = Record<string, CategoryData>
 
-const CATEGORY_COLORS: { [key: string]: string } = {
+const CATEGORY_COLORS: Record<string, string> = {
   Salary: 'bg-green-500',
   Groceries: 'bg-blue-500',
   Utilities: 'bg-yellow-500',
@@ -41,7 +37,7 @@ export default function CategoriesPage() {
   const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
   const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
   const [allUserCategories, setAllUserCategories] = useState<string[]>([])
-  const [categoryExpenseTypes, setCategoryExpenseTypes] = useState<{ [name: string]: 'fixed' | 'variable' }>({})
+  const [categoryExpenseTypes, setCategoryExpenseTypes] = useState<Record<string, 'fixed' | 'variable'>>({})
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
   useEffect(() => {
@@ -70,7 +66,7 @@ export default function CategoriesPage() {
         const expenseCategories = categoriesData.categories.filter((c: { type: string }) => c.type === 'expense')
         setAllUserCategories(expenseCategories.map((c: { name: string }) => c.name).sort())
         // Store expense_type mapping
-        const expenseTypeMap: { [name: string]: 'fixed' | 'variable' } = {}
+        const expenseTypeMap: Record<string, 'fixed' | 'variable'> = {}
         expenseCategories.forEach((c: { name: string; expense_type?: 'fixed' | 'variable' }) => {
           expenseTypeMap[c.name] = c.expense_type || 'variable'
         })

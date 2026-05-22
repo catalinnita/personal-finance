@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react'
 import { Loader2, Check } from 'lucide-react'
 
-type Currency = {
+interface Currency {
   code: string
   symbol: string
   name: string
 }
 
-type Settings = {
+interface Settings {
   currency: string
   highlight_threshold: number
   moving_average_period: number

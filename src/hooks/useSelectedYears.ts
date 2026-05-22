@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { STORAGE_KEY_SELECTED_YEARS } from '@/config/constants'
 
-const STORAGE_KEY = 'personal-finance-selected-years'
+const STORAGE_KEY = STORAGE_KEY_SELECTED_YEARS
 
 export function useSelectedYears(availableYears: number[]) {
   const [selectedYears, setSelectedYears] = useState<number[]>([])

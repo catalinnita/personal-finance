@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { MOBILE_BREAKPOINT } from "@/config/constants";
 
 type SidebarContextType = {
   isExpanded: boolean;
@@ -30,7 +31,7 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth < 1024;
+      const mobile = window.innerWidth < MOBILE_BREAKPOINT;
       setIsMobile(mobile);
       if (!mobile) {
         setIsMobileOpen(false);

@@ -2,25 +2,22 @@
 
 import { useState, useEffect, DragEvent } from 'react'
 import { Loader2, GripVertical, X, AlertCircle, Sparkles } from 'lucide-react'
+import { DEFAULT_CATEGORIES_UI } from '@/config/constants'
 
-type Category = {
+interface Category {
   id: string
   name: string
   type: 'income' | 'expense'
 }
 
-type CategoryMapping = {
+interface CategoryMapping {
   id: string
   description_pattern: string
   category_id: string
   category: string
 }
 
-const DEFAULT_CATEGORIES = [
-  'Salary', 'Groceries', 'Utilities', 'Entertainment', 'Transportation',
-  'Healthcare', 'Shopping', 'Dining', 'Subscriptions', 'Transfer',
-  'Investment', 'Rent', 'Insurance', 'Education', 'Travel', 'Other'
-]
+const DEFAULT_CATEGORIES = DEFAULT_CATEGORIES_UI
 
 export default function MappingsPage() {
   const [categories, setCategories] = useState<Category[]>([])

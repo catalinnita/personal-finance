@@ -10,14 +10,14 @@ const STOP_WORDS = new Set([
   'from', 'with', 'ltd', 'limited', 'inc', 'corp', 'plc', 'co', 'uk', 'gb',
 ])
 
-type MappingResult = {
+interface MappingResult {
   description: string
   category: string | null
   category_id: string | null
   matchType: 'exact' | 'fuzzy' | 'ai' | 'none'
 }
 
-type ExistingMapping = {
+interface ExistingMapping {
   description_pattern: string
   category_id: string
   category_name: string

@@ -46,12 +46,8 @@ export async function GET() {
       category: categoryMap.get(t.description) || 'Other'
     }))
 
-    // Debug: count categories
-    const categoryCounts: Record<string, number> = {}
-    transactionsWithCategory.forEach(t => {
-      categoryCounts[t.category] = (categoryCounts[t.category] || 0) + 1
-    })
-    console.log('Category distribution:', categoryCounts)
+    // Log count only — do not log category names or distribution (user data)
+    console.log('Transactions returned:', transactionsWithCategory.length)
 
     return NextResponse.json({ transactions: transactionsWithCategory })
   } catch (error) {
@@ -104,7 +100,7 @@ export async function POST(request: NextRequest) {
       categoryNameToId[c.name.toLowerCase()] = c.id
     })
 
-    console.log('Available categories:', userCategories?.map(c => c.name))
+    console.log('Available categories count:', userCategories?.length ?? 0)
 
     // Extract category from each new transaction and create/update mappings
     type MappingEntry = { user_id: string; description_pattern: string; category_id: string }
@@ -129,7 +125,7 @@ export async function POST(request: NextRequest) {
     const mappingsToUpsert = Array.from(mappingsMap.values())
 
     if (unmappedCategories.length > 0) {
-      console.log('Categories not found in DB:', [...new Set(unmappedCategories)])
+      console.log('Unmapped category count:', new Set(unmappedCategories).size)
     }
     console.log('Mappings to create:', mappingsToUpsert.length)
 

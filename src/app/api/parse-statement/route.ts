@@ -4,17 +4,11 @@ import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/paginate'
 import { batchMatchDescriptions } from '@/lib/mapping-utils'
 import { logClaudeUsage } from '@/lib/claude-usage'
+import { DEFAULT_CATEGORIES, CLAUDE_MODEL, CLAUDE_MAX_TOKENS_PARSE, CLAUDE_MAX_TOKENS_CATEGORIZE } from '@/config/constants'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
-
-const DEFAULT_CATEGORIES = [
-  'Salary', 'Groceries', 'Utilities', 'Entertainment', 'Transportation',
-  'Healthcare', 'Shopping', 'Dining', 'Subscriptions', 'Transfer',
-  'Investment', 'Insurance', 'Education', 'Travel', 'Loans',
-  'AI', 'Theraphy', 'Housing', 'Taxes', 'Private School'
-]
 
 // Prompt for initial parsing - extracts transactions without categories
 function buildParsePrompt() {
@@ -94,8 +88,8 @@ export async function POST(request: NextRequest) {
       const base64 = buffer.toString('base64')
       
       message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8192,
+        model: CLAUDE_MODEL,
+        max_tokens: CLAUDE_MAX_TOKENS_PARSE,
         messages: [
           {
             role: 'user',
@@ -120,8 +114,8 @@ export async function POST(request: NextRequest) {
       const text = await file.text()
       
       message = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8192,
+        model: CLAUDE_MODEL,
+        max_tokens: CLAUDE_MAX_TOKENS_PARSE,
         messages: [
           {
             role: 'user',
@@ -144,7 +138,8 @@ export async function POST(request: NextRequest) {
 
     const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
     
-    console.log('Claude response:', responseText.substring(0, 500))
+    // Do not log response content — may contain sensitive financial data
+    console.log('Claude parse response received, length:', responseText.length)
     
     // Extract JSON from response - try multiple patterns
     let jsonMatch = responseText.match(/\[[\s\S]*\]/)
@@ -226,8 +221,8 @@ export async function POST(request: NextRequest) {
       const categorizePrompt = buildCategorizePrompt(allCategories, needsAI)
       
       const aiMessage = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4096,
+        model: CLAUDE_MODEL,
+        max_tokens: CLAUDE_MAX_TOKENS_CATEGORIZE,
         messages: [{ role: 'user', content: categorizePrompt }],
       })
 
@@ -301,13 +296,13 @@ export async function POST(request: NextRequest) {
       if (insertError) {
         console.error('Error creating new categories:', insertError)
       } else {
-        console.log(`Created ${newCategories.size} new categories:`, insertedCategories?.map(c => c.name))
+        console.log(`Created ${newCategories.size} new categories`)
       }
     }
 
     // Log summary
     const txCategories = [...new Set(transactions.map(t => t.category))]
-    console.log('Final transaction categories:', txCategories)
+    console.log('Unique categories assigned:', txCategories.length)
 
     return NextResponse.json({ 
       transactions, 

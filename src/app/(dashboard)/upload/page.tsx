@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Upload, FileText, Check, Loader2, X, AlertCircle, StopCircle } from 'lucide-react'
+import { STORAGE_KEY_UPLOAD } from '@/config/constants'
 
 type ParsedTransaction = {
   date: string
@@ -29,7 +30,7 @@ type ProcessState = {
   cancelled: boolean
 }
 
-const STORAGE_KEY = 'upload_process_state'
+const STORAGE_KEY = STORAGE_KEY_UPLOAD
 
 export default function UploadPage() {
   const [files, setFiles] = useState<File[]>([])
@@ -310,13 +311,13 @@ export default function UploadPage() {
             >
               {files.length > 0 ? (
                 <>
-                  <FileText className="w-12 h-12 text-brand-500 mb-3" />
+                  <FileText aria-hidden="true" className="w-12 h-12 text-brand-500 mb-3" />
                   <p className="text-gray-900 dark:text-white font-medium">{files.length} file(s) selected</p>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Click to change files</p>
                 </>
               ) : (
                 <>
-                  <Upload className="w-12 h-12 text-gray-400 mb-3" />
+                  <Upload aria-hidden="true" className="w-12 h-12 text-gray-400 mb-3" />
                   <p className="text-gray-900 dark:text-white font-medium">Drop your statements here</p>
                   <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">or click to browse (multiple files supported)</p>
                 </>

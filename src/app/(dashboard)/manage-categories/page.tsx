@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, Pencil, Trash2, Loader2, Save, X } from 'lucide-react'
 
-type Category = {
+interface Category {
   id: string
   name: string
   type: 'income' | 'expense'

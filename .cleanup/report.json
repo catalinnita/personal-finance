@@ -1,0 +1,115 @@
+{
+  "startedAt": "2026-05-22T00:00:00Z",
+  "completedAt": "2026-05-22T00:00:00Z",
+  "preflightNotes": {
+    "testSuite": "absent — no test script in package.json; all test checks skipped",
+    "gitState": "project is inside a parent monorepo; standalone git-revert not available per-step",
+    "config": "no code-cleanup.config.json found — all defaults applied"
+  },
+  "steps": [
+    {
+      "order": 1,
+      "name": "css-refactor",
+      "type": "agent",
+      "status": "no-changes",
+      "fixesApplied": 0,
+      "filesModified": 0,
+      "testResult": "skipped",
+      "testFixesApplied": 0,
+      "log": "step-1-css-refactor.md",
+      "notes": "CSS is fully tokenised via Tailwind @theme in globals.css. No standalone CSS files with hardcoded values."
+    },
+    {
+      "order": 2,
+      "name": "type-cleaner",
+      "type": "skill",
+      "status": "applied",
+      "fixesApplied": 10,
+      "filesModified": 7,
+      "testResult": "skipped",
+      "testFixesApplied": 0,
+      "log": "step-2-type-cleaner.md",
+      "flags": [
+        "3 files with (as unknown as ...) casts — need Supabase type generation",
+        "Currency interface duplicated in 2 files",
+        "Category interface duplicated in 2 files"
+      ]
+    },
+    {
+      "order": 3,
+      "name": "config-extractor",
+      "type": "skill",
+      "status": "applied",
+      "fixesApplied": 10,
+      "filesModified": 9,
+      "filesCreated": 1,
+      "testResult": "skipped",
+      "testFixesApplied": 0,
+      "log": "step-3-config-extractor.md",
+      "flags": [
+        "Typo 'Theraphy' preserved in constants.ts to avoid data migration"
+      ]
+    },
+    {
+      "order": 4,
+      "name": "accessibility",
+      "type": "skill",
+      "status": "applied",
+      "violationsFound": 18,
+      "fixesApplied": 13,
+      "filesModified": 6,
+      "testResult": "skipped",
+      "testFixesApplied": 0,
+      "log": "step-4-accessibility.md",
+      "manualReview": [
+        "Focus trap missing in TransactionModal",
+        "confirm() dialog — replace with accessible alertdialog",
+        "Colour contrast — verify with axe DevTools in light/dark",
+        "outline:none — verify focus-visible on all interactive elements",
+        "Sidebar collapsed icon accessibility — verify with screen reader"
+      ]
+    },
+    {
+      "order": 5,
+      "name": "seo",
+      "type": "skill",
+      "status": "applied",
+      "issuesFound": 8,
+      "fixesApplied": 5,
+      "filesModified": 1,
+      "filesCreated": 2,
+      "testResult": "skipped",
+      "testFixesApplied": 0,
+      "log": "step-5-seo.md",
+      "manualReview": [
+        "og:image missing — create social preview image",
+        "Page-specific titles — add layout.tsx per dashboard route",
+        "Sitemap — add src/app/sitemap.ts"
+      ]
+    },
+    {
+      "order": 6,
+      "name": "security",
+      "type": "skill",
+      "status": "applied",
+      "issuesFound": 9,
+      "fixesApplied": 5,
+      "filesModified": 4,
+      "testResult": "skipped",
+      "testFixesApplied": 0,
+      "log": "step-6-security.md",
+      "criticalIssues": [
+        "CRITICAL: .env with real credentials committed to repository — rotate all keys immediately"
+      ],
+      "manualReview": [
+        "Content-Security-Policy not configured",
+        "No rate limiting on API routes",
+        "Strict-Transport-Security — add once on HTTPS"
+      ]
+    }
+  ],
+  "totalFilesModified": 27,
+  "totalFixesApplied": 43,
+  "stepsReverted": 0,
+  "testGatingApplied": false
+}

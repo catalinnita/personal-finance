@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { STORAGE_KEY_SELECTED_CATEGORIES } from '@/config/constants'
 
-const DEFAULT_STORAGE_KEY = 'selected-categories'
+const DEFAULT_STORAGE_KEY = STORAGE_KEY_SELECTED_CATEGORIES
 
 export function useSelectedCategories(availableCategories: string[], storageKey: string = DEFAULT_STORAGE_KEY) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
