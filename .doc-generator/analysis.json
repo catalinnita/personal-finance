@@ -1,0 +1,190 @@
+{
+  "pkg": {
+    "name": "personal-finance",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "eslint",
+      "test": "vitest run",
+      "test:watch": "vitest",
+      "test:coverage": "vitest run --coverage",
+      "db:check": "tsx scripts/migrate.ts check",
+      "db:migrate": "tsx scripts/migrate.ts run",
+      "db:seed": "tsx scripts/migrate.ts seed",
+      "db:seed-mappings": "tsx scripts/migrate.ts seed-mappings"
+    },
+    "dependencies": {
+      "@anthropic-ai/sdk": "^0.78.0",
+      "@supabase/ssr": "^0.9.0",
+      "@supabase/supabase-js": "^2.99.0",
+      "lucide-react": "^0.577.0",
+      "next": "16.1.6",
+      "pg": "^8.20.0",
+      "react": "19.2.3",
+      "react-dom": "19.2.3",
+      "recharts": "^3.8.0"
+    },
+    "devDependencies": {
+      "@tailwindcss/postcss": "^4",
+      "@testing-library/dom": "^10.4.1",
+      "@testing-library/jest-dom": "^6.9.1",
+      "@testing-library/react": "^16.3.2",
+      "@testing-library/user-event": "^14.6.1",
+      "@types/node": "^20",
+      "@types/pg": "^8.18.0",
+      "@types/react": "^19",
+      "@types/react-dom": "^19",
+      "@vitejs/plugin-react": "^4.4.1",
+      "@vitest/coverage-v8": "^4.1.7",
+      "babel-plugin-react-compiler": "1.0.0",
+      "dotenv": "^17.3.1",
+      "eslint": "^9",
+      "eslint-config-next": "16.1.6",
+      "jsdom": "^29.1.1",
+      "tailwindcss": "^4",
+      "tsx": "^4.21.0",
+      "typescript": "^5",
+      "vitest": "^4.1.7"
+    }
+  },
+  "readme": {
+    "overview": "AI-powered personal finance tracker — upload bank statements, auto-categorize transactions with Claude, and visualize spending across budgets, categories, timelines, and income. Built with Next.js, Supabase, and Google OAuth.",
+    "installation": "",
+    "sections": {
+      "personal finance app": "AI-powered personal finance tracker — upload bank statements, auto-categorize transactions with Claude, and visualize spending across budgets, categories, timelines, and income. Built with Next.js, Supabase, and Google OAuth.\n\nDEMO: https://personal-finance-pi-eight.vercel.app/",
+      "features": "- **Google Authentication** - Secure login with Google OAuth\n- **Statement Upload** - Upload bank statements (CSV/TXT) and parse transactions with AI\n- **Smart Categorization** - Claude AI automatically categorizes transactions\n- **Transaction Management** - View, edit, and delete transactions\n- **Balance Dashboard** - Yearly and monthly income, expenses, and savings overview",
+      "setup": "",
+      "1. environment variables": "Create a `.env` file with:\n\n```\nNEXT_PUBLIC_SUPABASE_URL=your_supabase_url\nNEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key\nANTHROPIC_API_KEY=your_anthropic_api_key\n```",
+      "2. supabase setup": "1. Create a new Supabase project at [supabase.com](https://supabase.com)\n2. Run the SQL in `supabase-schema.sql` in the SQL Editor\n3. Enable Google OAuth in Authentication > Providers > Google\n4. Add your redirect URL: `http://localhost:3000/auth/callback`",
+      "3. run the app": "```bash\nnpm install\nnpm run dev\n```\n\nOpen [http://localhost:3000](http://localhost:3000)"
+    },
+    "raw": "# Personal Finance App\n\nAI-powered personal finance tracker — upload bank statements, auto-categorize transactions with Claude, and visualize spending across budgets, categories, timelines, and income. Built with Next.js, Supabase, and Google OAuth.\n\nDEMO: https://personal-finance-pi-eight.vercel.app/\n\n## Features\n\n- **Google Authentication** - Secure login with Google OAuth\n- **Statement Upload** - Upload bank statements (CSV/TXT) and parse transactions with AI\n- **Smart Categorization** - Claude AI automatically categorizes transactions\n- **Transaction Management** - View, edit, and delete transactions\n- **Balance Dashboard** - Yearly and monthly income, expenses, and savings overview\n\n## Setup\n\n### 1. Environment Variables\n\nCreate a `.env` file with:\n\n```\nNEXT_PUBLIC_SUPABASE_URL=your_supabase_url\nNEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key\nANTHROPIC_API_KEY=your_anthropic_api_key\n```\n\n### 2. Supabase Setup\n\n1. Create a new Supabase project at [supabase.com](https://supabase.com)\n2. Run the SQL in `supabase-schema.sql` in the SQL Editor\n3. Enable Google OAuth in Authentication > Providers > Google\n4. Add your redirect URL: `http://localhost:3000/auth/callback`\n\n### 3. Run the App\n\n```bash\nnpm install\nnpm run dev\n```\n\nOpen [http://localhost:3000](http://localhost:3000)\n"
+  },
+  "framework": "nextjs",
+  "pkgManager": "npm",
+  "hasTS": true,
+  "stateLibs": [],
+  "testRunner": "vitest",
+  "envVars": [],
+  "apiRoutes": [
+    {
+      "method": "GET",
+      "path": "/api/budgets",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/budgets/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "POST",
+      "path": "/api/budgets",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/budgets/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/budgets",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/budgets/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/categories/[id]",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/categories/[id]/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/categories/[id]",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/categories/[id]/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/categories/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "POST",
+      "path": "/api/categories",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/categories/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/categories",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/categories/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/category-mappings/[id]",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/category-mappings/[id]/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "GET",
+      "path": "/api/category-mappings",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/category-mappings/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "POST",
+      "path": "/api/category-mappings",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/category-mappings/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "POST",
+      "path": "/api/identify-categories",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/identify-categories/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "POST",
+      "path": "/api/parse-statement",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/parse-statement/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "GET",
+      "path": "/api/settings",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/settings/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/settings",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/settings/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/transactions/[id]",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/transactions/[id]/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/transactions/[id]",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/transactions/[id]/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "GET",
+      "path": "/api/transactions",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/transactions/route.ts",
+      "framework": "nextjs-app"
+    },
+    {
+      "method": "POST",
+      "path": "/api/transactions",
+      "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/api/transactions/route.ts",
+      "framework": "nextjs-app"
+    }
+  ],
+  "title": "Personal Finance",
+  "description": "AI-powered personal finance tracker — upload bank statements, auto-categorize transactions with Claude, and visualize spending across budgets, categories, timelines, and income. Built with Next.js, Supabase, and Google OAuth."
+}

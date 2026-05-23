@@ -1,0 +1,23 @@
+{
+  "index": "Overview",
+  "balancepage": "BalancePage",
+  "budgetrulepage": "BudgetRulePage",
+  "budgetspage": "BudgetsPage",
+  "categoriespage": "CategoriesPage",
+  "cleanuppage": "CleanupPage",
+  "dashboardlayout": "DashboardLayout",
+  "incomepage": "IncomePage",
+  "incometimelinepage": "IncomeTimelinePage",
+  "loginpage": "LoginPage",
+  "managecategoriespage": "ManageCategoriesPage",
+  "mappingspage": "MappingsPage",
+  "rootlayout": "RootLayout",
+  "settingspage": "SettingsPage",
+  "sidebar": "Sidebar",
+  "sidebar-test": "Sidebar.test",
+  "timelinepage": "TimelinePage",
+  "transactionmodal": "TransactionModal",
+  "transactionmodal-test": "TransactionModal.test",
+  "transactionspage": "TransactionsPage",
+  "uploadpage": "UploadPage"
+}

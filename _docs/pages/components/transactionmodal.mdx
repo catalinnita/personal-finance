@@ -1,0 +1,26 @@
+# TransactionModal
+
+The `TransactionModal` component.
+
+## Usage
+
+```tsx
+import { TransactionModal } from '...'
+
+<TransactionModal
+  transaction={/* Transaction | null */}
+  isOpen={true}
+  onClose={() => {}}
+>
+  {/* children */}
+</TransactionModal>
+```
+
+## Props
+
+| Prop | Type | Default | Required | Description |
+|---|---|---|---|---|
+| `transaction` | `Transaction \| null` | — | Yes | — |
+| `isOpen` | `boolean` | — | Yes | — |
+| `onClose` | `() => void` | — | Yes | — |
+| `onSave` | `(transaction: Partial<Transaction>) => void` | — | Yes | — |
