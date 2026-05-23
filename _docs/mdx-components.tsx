@@ -1,6 +1,5 @@
 import { useMDXComponents as getDocsMDXComponents } from 'nextra-theme-docs'
-import type { MDXComponents } from 'mdx/types'
 
-export function useMDXComponents(components: MDXComponents = {}): MDXComponents {
-  return getDocsMDXComponents(components) as unknown as MDXComponents
+export function useMDXComponents(components: Parameters<typeof getDocsMDXComponents>[0] = {}) {
+  return getDocsMDXComponents(components)
 }
