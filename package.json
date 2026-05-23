@@ -20,11 +20,14 @@
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.0",
     "lucide-react": "^0.577.0",
-    "next": "16.1.6",
+    "next": "16.2.6",
     "pg": "^8.20.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "recharts": "^3.8.0"
+  },
+  "overrides": {
+    "flatted": ">=3.4.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -41,7 +44,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "dotenv": "^17.3.1",
     "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.2.6",
     "jsdom": "^29.1.1",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
