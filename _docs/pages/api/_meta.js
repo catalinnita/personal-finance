@@ -1,4 +1,4 @@
-{
+export default {
   "index": "Overview",
   "budgets": "/budgets",
   "categories": "/categories",
