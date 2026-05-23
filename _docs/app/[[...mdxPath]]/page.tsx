@@ -11,7 +11,8 @@ export async function generateMetadata(props: { params: Promise<{ mdxPath?: stri
 }
 
 type WrapperProps = { toc: unknown; metadata: unknown; sourceCode: string; children: ReactNode }
-const Wrapper = useMDXComponents().wrapper as ComponentType<WrapperProps>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Wrapper = (useMDXComponents() as any).wrapper as ComponentType<WrapperProps>
 
 export default async function Page(props: { params: Promise<{ mdxPath?: string[] }> }) {
   const params = await props.params

@@ -1,5 +1,6 @@
 import { useMDXComponents as getDocsMDXComponents } from 'nextra-theme-docs'
 
-export function useMDXComponents(components: Parameters<typeof getDocsMDXComponents>[0] = {}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useMDXComponents(components: any = {}) {
   return getDocsMDXComponents(components)
 }
