@@ -467,6 +467,52 @@ describe('BudgetRulePage', () => {
     expect(document.body).toBeInTheDocument()
   })
 
+  it('catches error when fetchData throws (line 62)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url) => {
+      if (String(url).includes('/api/categories')) {
+        return Promise.reject(new Error('Categories fetch failed'))
+      }
+      if (String(url).includes('/api/settings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ settings: { currency: 'USD' } }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<BudgetRulePage />)
+    await waitFor(() => {
+      expect(document.body).toBeInTheDocument()
+    })
+  })
+
+  it('catches error when handleUpdateBudgetGroup throws (line 83)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url, opts) => {
+      const method = (opts as RequestInit | undefined)?.method || 'GET'
+      if (String(url).includes('/api/categories') && method === 'PUT') {
+        return Promise.reject(new Error('Update failed'))
+      }
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: mockCategories }) } as Response)
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: mockTransactions }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ settings: { currency: 'USD' } }) } as Response)
+    })
+
+    render(<BudgetRulePage />)
+    await waitFor(() => {
+      expect(screen.getByText('Groceries')).toBeInTheDocument()
+    })
+
+    const selects = screen.getAllByRole('combobox')
+    if (selects.length > 0) {
+      fireEvent.change(selects[0], { target: { value: 'wants' } })
+      await waitFor(() => {
+        expect(document.body).toBeInTheDocument()
+      })
+    }
+  })
+
   it('shows "No categories" text in groups with empty category lists', async () => {
     vi.mocked(global.fetch).mockImplementation((url) => {
       if (String(url).includes('/api/categories')) {

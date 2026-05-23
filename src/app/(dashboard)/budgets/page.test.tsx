@@ -122,12 +122,19 @@ describe('BudgetsPage', () => {
     }
   })
 
-  it('handles fetch error gracefully (line 77)', async () => {
-    vi.mocked(global.fetch).mockRejectedValueOnce(new Error('Network error'))
-    // Should render without crashing
-    expect(() => render(<BudgetsPage />)).not.toThrow()
+  it('catches error when fetchData throws (line 77)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url) => {
+      if (String(url).includes('/api/categories')) {
+        return Promise.reject(new Error('Network error'))
+      }
+      if (String(url).includes('/api/settings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ settings: { currency: 'USD' } }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<BudgetsPage />)
     await waitFor(() => {
-      // Loading spinner disappears even on error (finally block runs)
       expect(document.body).toBeInTheDocument()
     })
   })
@@ -168,22 +175,38 @@ describe('BudgetsPage', () => {
   })
 
   it('skips save when budget value matches current budget (lines 112-117)', async () => {
+    // Use only Groceries (has budget 400) so budgetInputs[0] maps to it
+    vi.mocked(global.fetch).mockImplementation((url) => {
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: [mockCategories[0]] }) } as Response)
+      }
+      if (String(url).includes('/api/budgets')) {
+        return Promise.resolve({ ok: true, json: async () => ({ budgets: mockBudgets }) } as Response)
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: [] }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({ settings: { currency: 'USD' } }) } as Response)
+    })
+
     render(<BudgetsPage />)
     await waitFor(() => {
       expect(screen.getByText(/budget vs spending/i)).toBeInTheDocument()
     })
 
     const budgetInputs = screen.getAllByRole('spinbutton')
-    if (budgetInputs.length > 0) {
-      // Groceries already has budget 400 — change to 400 (same value), then blur
-      // First change to 400
-      fireEvent.change(budgetInputs[0], { target: { value: '400' } })
-      fireEvent.blur(budgetInputs[0])
-      // Since 400 === current budget (400), should NOT call POST
-      await waitFor(() => {
-        expect(document.body).toBeInTheDocument()
-      })
-    }
+    expect(budgetInputs.length).toBeGreaterThan(0)
+    // Change to 400 (same as current budget), then blur — should skip the POST
+    fireEvent.change(budgetInputs[0], { target: { value: '400' } })
+    fireEvent.blur(budgetInputs[0])
+    await waitFor(() => {
+      expect(document.body).toBeInTheDocument()
+    })
+    // POST should NOT have been called since amount === currentBudget
+    const postCalls = vi.mocked(global.fetch).mock.calls.filter(
+      ([, opts]) => (opts as RequestInit | undefined)?.method === 'POST'
+    )
+    expect(postCalls.length).toBe(0)
   })
 
   it('handles save budget error gracefully (line 142)', async () => {

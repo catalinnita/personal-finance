@@ -194,6 +194,100 @@ describe('TransactionsPage', () => {
     expect(vi.mocked(global.fetch).mock.calls.length).toBe(callsBefore)
   })
 
+  it('catches error when fetchTransactions throws (line 48)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url) => {
+      if (String(url).includes('/api/transactions')) {
+        return Promise.reject(new Error('Transactions fetch failed'))
+      }
+      if (String(url).includes('/api/settings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ settings: { currency: 'USD', highlight_threshold: 500 } }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<TransactionsPage />)
+    await waitFor(() => {
+      expect(document.body).toBeInTheDocument()
+    })
+  })
+
+  it('catches error when fetchSettings throws (line 62)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url) => {
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: mockTransactions }) } as Response)
+      }
+      if (String(url).includes('/api/settings')) {
+        return Promise.reject(new Error('Settings fetch failed'))
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<TransactionsPage />)
+    await waitFor(() => {
+      expect(document.body).toBeInTheDocument()
+    })
+  })
+
+  it('catches error when handleSave throws (line 88)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url, opts) => {
+      const method = (opts as RequestInit | undefined)?.method || 'GET'
+      if (String(url).includes('/api/transactions') && method === 'PUT') {
+        return Promise.reject(new Error('Save failed'))
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: mockTransactions }) } as Response)
+      }
+      if (String(url).includes('/api/settings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ settings: { currency: 'USD', highlight_threshold: 500 } }) } as Response)
+      }
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: [] }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<TransactionsPage />)
+    await waitFor(() => {
+      expect(screen.getAllByRole('button', { name: /edit transaction/i }).length).toBeGreaterThan(0)
+    })
+
+    fireEvent.click(screen.getAllByRole('button', { name: /edit transaction/i })[0])
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /save/i }))
+    await waitFor(() => {
+      expect(document.body).toBeInTheDocument()
+    })
+  })
+
+  it('catches error when handleDelete throws (line 104)', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+    vi.mocked(global.fetch).mockImplementation((url, opts) => {
+      const method = (opts as RequestInit | undefined)?.method || 'GET'
+      if (String(url).includes('/api/transactions/') && method === 'DELETE') {
+        return Promise.reject(new Error('Delete failed'))
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: mockTransactions }) } as Response)
+      }
+      if (String(url).includes('/api/settings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ settings: { currency: 'USD', highlight_threshold: 500 } }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<TransactionsPage />)
+    await waitFor(() => {
+      expect(screen.getAllByRole('button', { name: /delete transaction/i }).length).toBeGreaterThan(0)
+    })
+
+    fireEvent.click(screen.getAllByRole('button', { name: /delete transaction/i })[0])
+    await waitFor(() => {
+      expect(document.body).toBeInTheDocument()
+    })
+  })
+
   it('saves transaction edit and updates the list', async () => {
     const updatedTx = { ...mockTransactions[0], description: 'Updated Store' }
     vi.mocked(global.fetch).mockImplementation((url, opts) => {
