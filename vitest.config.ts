@@ -20,6 +20,7 @@ export default defineConfig({
         'src/app/globals.css',
         'src/app/favicon.ico',
         'src/test/**',
+        'src/types'
       ],
       thresholds: {
         lines: 80,

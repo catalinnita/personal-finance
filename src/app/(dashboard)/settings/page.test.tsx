@@ -175,6 +175,63 @@ describe('SettingsPage', () => {
     })
   })
 
+  it('handles fetch settings error gracefully (line 40)', async () => {
+    vi.mocked(global.fetch).mockRejectedValueOnce(new Error('Network error'))
+    expect(() => render(<SettingsPage />)).not.toThrow()
+    await waitFor(() => {
+      expect(document.body).toBeInTheDocument()
+    })
+  })
+
+  it('handles save settings error gracefully (line 68)', async () => {
+    vi.mocked(global.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          settings: { currency: 'USD', highlight_threshold: 500, moving_average_period: 6 },
+          currencies: [{ code: 'USD', symbol: '$', name: 'US Dollar' }],
+        }),
+      } as Response)
+      .mockRejectedValueOnce(new Error('Save failed'))
+
+    render(<SettingsPage />)
+    await waitFor(() => expect(screen.getAllByRole('button', { name: /save/i }).length).toBeGreaterThan(0))
+    fireEvent.click(screen.getAllByRole('button', { name: /save/i })[0])
+    // Should not throw
+    await waitFor(() => {
+      expect(document.body).toBeInTheDocument()
+    })
+  })
+
+  it('saves moving avg period on blur (line 195)', async () => {
+    vi.mocked(global.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          settings: { currency: 'USD', highlight_threshold: 500, moving_average_period: 6 },
+          currencies: [{ code: 'USD', symbol: '$', name: 'US Dollar' }],
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ settings: { currency: 'USD', highlight_threshold: 500, moving_average_period: 9 } }),
+      } as Response)
+
+    render(<SettingsPage />)
+    await waitFor(() => expect(screen.getByDisplayValue('6')).toBeInTheDocument())
+
+    const movingAvgInput = screen.getByDisplayValue('6')
+    fireEvent.change(movingAvgInput, { target: { value: '9' } })
+    fireEvent.blur(movingAvgInput)
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/settings',
+        expect.objectContaining({ method: 'PUT' })
+      )
+    })
+  })
+
   it('updates threshold input on change (lines 155)', async () => {
     render(<SettingsPage />)
     await waitFor(() => expect(screen.getByDisplayValue('500')).toBeInTheDocument())

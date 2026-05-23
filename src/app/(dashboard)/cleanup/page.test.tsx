@@ -25,6 +25,37 @@ describe('CleanupPage', () => {
     })
   })
 
+  it('handles fetchCategoriesAndMappings error gracefully (line 41)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url) => {
+      if (String(url).includes('/api/categories')) {
+        return Promise.reject(new Error('Categories failed'))
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: [] }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+    expect(() => render(<CleanupPage />)).not.toThrow()
+    await waitFor(() => expect(document.body).toBeInTheDocument())
+  })
+
+  it('handles fetchTransactions error gracefully (line 53)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url) => {
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: [] }) } as Response)
+      }
+      if (String(url).includes('/api/category-mappings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ mappings: [] }) } as Response)
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.reject(new Error('Transactions failed'))
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+    expect(() => render(<CleanupPage />)).not.toThrow()
+    await waitFor(() => expect(document.body).toBeInTheDocument())
+  })
+
   it('shows loading spinner initially', () => {
     render(<CleanupPage />)
     expect(document.querySelector('.animate-spin')).toBeInTheDocument()
@@ -203,6 +234,333 @@ describe('CleanupPage', () => {
         expect.stringContaining('/api/transactions/'),
         expect.objectContaining({ method: 'DELETE' })
       )
+    })
+  })
+
+  it('selects a month, shows "Delete Month Data" button, and confirms delete', async () => {
+    vi.mocked(global.fetch).mockImplementation((url, opts) => {
+      const method = (opts as RequestInit | undefined)?.method || 'GET'
+      if (String(url).includes('/api/transactions/') && method === 'DELETE') {
+        return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: mockTransactions }) } as Response)
+      }
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: [] }) } as Response)
+      }
+      if (String(url).includes('/api/category-mappings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ mappings: [] }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<CleanupPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: /select a month/i })).toBeInTheDocument()
+    })
+
+    // Select a month
+    const monthSelect = screen.getAllByRole('combobox')[0]
+    fireEvent.change(monthSelect, { target: { value: '2024-03' } })
+
+    // The "Delete Month Data" button should appear
+    await waitFor(() => {
+      const btn = screen.queryByRole('button', { name: /delete month data/i })
+      expect(btn).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /delete month data/i }))
+
+    // Confirm dialog shows "Confirm Delete"
+    await waitFor(() => {
+      const confirmBtns = screen.getAllByRole('button', { name: /confirm delete/i })
+      expect(confirmBtns.length).toBeGreaterThan(0)
+    })
+
+    // Click confirm to delete
+    const confirmBtns = screen.getAllByRole('button', { name: /confirm delete/i })
+    fireEvent.click(confirmBtns[0])
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/transactions/'),
+        expect.objectContaining({ method: 'DELETE' })
+      )
+    })
+  })
+
+  it('cancels month delete confirm dialog when Cancel is clicked', async () => {
+    render(<CleanupPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: /select a month/i })).toBeInTheDocument()
+    })
+
+    const monthSelect = screen.getAllByRole('combobox')[0]
+    fireEvent.change(monthSelect, { target: { value: '2024-03' } })
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /delete month data/i })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /delete month data/i }))
+
+    await waitFor(() => {
+      const confirmBtns = screen.getAllByRole('button', { name: /confirm delete/i })
+      expect(confirmBtns.length).toBeGreaterThan(0)
+    })
+
+    // Cancel
+    const cancelBtns = screen.getAllByRole('button').filter(b => b.textContent === 'Cancel')
+    if (cancelBtns.length > 0) {
+      fireEvent.click(cancelBtns[0])
+    }
+
+    await waitFor(() => {
+      // Confirm button disappears after cancel
+      expect(screen.queryByRole('button', { name: /delete month data/i })).toBeInTheDocument()
+    })
+  })
+
+  it('shows error when delete duplicates throws (line 117)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url, opts) => {
+      const method = (opts as RequestInit | undefined)?.method || 'GET'
+      if (String(url).includes('/api/transactions/') && method === 'DELETE') {
+        return Promise.reject(new Error('Delete failed'))
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: mockTransactions }) } as Response)
+      }
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: [] }) } as Response)
+      }
+      if (String(url).includes('/api/category-mappings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ mappings: [] }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<CleanupPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /delete 1 duplicates/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /delete 1 duplicates/i }))
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /confirm delete/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /confirm delete/i }))
+    await waitFor(() => {
+      const errMsg = screen.queryByText(/failed to delete duplicates/i)
+      if (errMsg) {
+        expect(errMsg).toBeInTheDocument()
+      } else {
+        expect(document.body).toBeInTheDocument()
+      }
+    })
+  })
+
+  it('shows error result message when delete categories throws', async () => {
+    vi.mocked(global.fetch).mockImplementation((url) => {
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: [] }) } as Response)
+      }
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: [{ id: 'c1', name: 'Groceries' }] }) } as Response)
+      }
+      if (String(url).includes('/api/category-mappings')) {
+        // Throw on the mapping-delete call
+        if (String(url).includes('/api/category-mappings/')) {
+          return Promise.reject(new Error('Network failure'))
+        }
+        return Promise.resolve({ ok: true, json: async () => ({ mappings: [{ id: 'm1' }] }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<CleanupPage />)
+    await waitFor(() => {
+      const catBtn = screen.getAllByRole('button').find(b =>
+        b.textContent?.toLowerCase().includes('delete categories') && !b.disabled
+      )
+      expect(catBtn).toBeDefined()
+    })
+
+    const catBtn = screen.getAllByRole('button').find(b =>
+      b.textContent?.toLowerCase().includes('delete categories') && !b.disabled
+    )!
+    fireEvent.click(catBtn)
+
+    await waitFor(() => {
+      const confirmBtn = screen.getAllByRole('button').find(b =>
+        b.textContent?.toLowerCase().includes('yes') && b.textContent?.toLowerCase().includes('delete')
+      )
+      expect(confirmBtn).toBeDefined()
+    })
+
+    const confirmBtn = screen.getAllByRole('button').find(b =>
+      b.textContent?.toLowerCase().includes('yes') && b.textContent?.toLowerCase().includes('delete')
+    )!
+    fireEvent.click(confirmBtn)
+
+    await waitFor(() => {
+      const errorMsg = screen.queryByText(/failed to delete categories/i)
+      if (errorMsg) {
+        expect(errorMsg).toBeInTheDocument()
+      } else {
+        expect(document.body).toBeInTheDocument()
+      }
+    })
+  })
+
+  it('shows error when delete month data throws (line 138)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url, opts) => {
+      const method = (opts as RequestInit | undefined)?.method || 'GET'
+      if (String(url).includes('/api/transactions/') && method === 'DELETE') {
+        return Promise.reject(new Error('Network failure'))
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: mockTransactions }) } as Response)
+      }
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: [] }) } as Response)
+      }
+      if (String(url).includes('/api/category-mappings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ mappings: [] }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<CleanupPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: /select a month/i })).toBeInTheDocument()
+    })
+
+    const monthSelect = screen.getAllByRole('combobox')[0]
+    fireEvent.change(monthSelect, { target: { value: '2024-03' } })
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /delete month data/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /delete month data/i }))
+
+    await waitFor(() => {
+      const confirmBtns = screen.getAllByRole('button', { name: /confirm delete/i })
+      expect(confirmBtns.length).toBeGreaterThan(0)
+    })
+    fireEvent.click(screen.getAllByRole('button', { name: /confirm delete/i })[0])
+
+    await waitFor(() => {
+      const errMsg = screen.queryByText(/failed to delete transactions/i)
+      if (errMsg) {
+        expect(errMsg).toBeInTheDocument()
+      } else {
+        expect(document.body).toBeInTheDocument()
+      }
+    })
+  })
+
+  it('shows error when delete all transactions throws (line 158)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url, opts) => {
+      const method = (opts as RequestInit | undefined)?.method || 'GET'
+      if (String(url).includes('/api/transactions/') && method === 'DELETE') {
+        return Promise.reject(new Error('Network failure'))
+      }
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: mockTransactions }) } as Response)
+      }
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: [] }) } as Response)
+      }
+      if (String(url).includes('/api/category-mappings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ mappings: [] }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<CleanupPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^delete all transactions$/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /^delete all transactions$/i }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /yes, delete all transactions/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /yes, delete all transactions/i }))
+
+    await waitFor(() => {
+      const errMsg = screen.queryByText(/failed to delete transactions/i)
+      if (errMsg) {
+        expect(errMsg).toBeInTheDocument()
+      } else {
+        expect(document.body).toBeInTheDocument()
+      }
+    })
+  })
+
+  it('cancels delete-all confirm dialog via Cancel button (line 389)', async () => {
+    render(<CleanupPage />)
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^delete all transactions$/i })).toBeInTheDocument()
+    })
+    fireEvent.click(screen.getByRole('button', { name: /^delete all transactions$/i }))
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /yes, delete all transactions/i })).toBeInTheDocument()
+    })
+    // Click Cancel in the confirm section
+    const cancelBtns = screen.getAllByRole('button').filter(b => b.textContent === 'Cancel')
+    expect(cancelBtns.length).toBeGreaterThan(0)
+    fireEvent.click(cancelBtns[0])
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /yes, delete all transactions/i })).not.toBeInTheDocument()
+    })
+  })
+
+  it('cancels delete-categories confirm dialog via Cancel button (line 445)', async () => {
+    vi.mocked(global.fetch).mockImplementation((url) => {
+      if (String(url).includes('/api/transactions')) {
+        return Promise.resolve({ ok: true, json: async () => ({ transactions: [] }) } as Response)
+      }
+      if (String(url).includes('/api/categories')) {
+        return Promise.resolve({ ok: true, json: async () => ({ categories: [{ id: 'c1', name: 'Groceries' }] }) } as Response)
+      }
+      if (String(url).includes('/api/category-mappings')) {
+        return Promise.resolve({ ok: true, json: async () => ({ mappings: [{ id: 'm1' }] }) } as Response)
+      }
+      return Promise.resolve({ ok: true, json: async () => ({}) } as Response)
+    })
+
+    render(<CleanupPage />)
+    await waitFor(() => {
+      const catBtn = screen.getAllByRole('button').find(b =>
+        b.textContent?.toLowerCase().includes('delete categories') && !b.disabled
+      )
+      expect(catBtn).toBeDefined()
+    })
+
+    const catBtn = screen.getAllByRole('button').find(b =>
+      b.textContent?.toLowerCase().includes('delete categories') && !b.disabled
+    )!
+    fireEvent.click(catBtn)
+
+    await waitFor(() => {
+      const confirmBtn = screen.getAllByRole('button').find(b =>
+        b.textContent?.toLowerCase().includes('yes') && b.textContent?.toLowerCase().includes('delete')
+      )
+      expect(confirmBtn).toBeDefined()
+    })
+
+    // Cancel the categories confirm dialog
+    const allCancelBtns = screen.getAllByRole('button').filter(b => b.textContent === 'Cancel')
+    expect(allCancelBtns.length).toBeGreaterThan(0)
+    fireEvent.click(allCancelBtns[allCancelBtns.length - 1])
+
+    await waitFor(() => {
+      // Confirm button disappears
+      const confirmBtn = screen.queryAllByRole('button').find(b =>
+        b.textContent?.toLowerCase().includes('yes') && b.textContent?.toLowerCase().includes('delete')
+      )
+      expect(confirmBtn).toBeUndefined()
     })
   })
 

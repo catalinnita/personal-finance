@@ -189,4 +189,16 @@ describe('PUT /api/categories', () => {
     const body = await res.json()
     expect(body.error).toMatch(/Failed to update category/)
   })
+
+  it('updates category with only budget_group (no expense_type) — covers lines 82-83', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: mockUser }, error: null })
+    const updated = { id: 'c-1', name: 'Groceries', budget_group: 'wants' }
+    mockQuery.single.mockResolvedValue({ data: updated, error: null })
+
+    const req = makeRequest('PUT', { id: 'c-1', budget_group: 'wants' })
+    const res = await PUT(req)
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.category.budget_group).toBe('wants')
+  })
 })
