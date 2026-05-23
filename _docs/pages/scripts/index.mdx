@@ -1,0 +1,135 @@
+# Scripts
+
+All available scripts from `package.json`.
+
+## General
+
+### `dev`
+
+Start the development server with hot reload
+
+
+```bash
+npm run dev
+```
+
+> **Command:** `next dev`
+
+### `build`
+
+Build the application for production
+
+
+```bash
+npm run build
+```
+
+> **Command:** `next build`
+
+### `start`
+
+Start the production server
+
+
+```bash
+npm run start
+```
+
+> **Command:** `next start`
+
+### `lint`
+
+Lint source files with ESLint
+
+
+```bash
+npm run lint
+```
+
+> **Command:** `eslint`
+
+### `test`
+
+Run the test suite with Vitest
+
+
+```bash
+npm run test
+```
+
+> **Command:** `vitest run`
+
+---
+
+## Testing
+
+### `test:watch`
+
+Run the test suite with Vitest
+
+
+```bash
+npm run test:watch
+```
+
+> **Command:** `vitest`
+
+### `test:coverage`
+
+Run the test suite with Vitest
+
+
+```bash
+npm run test:coverage
+```
+
+> **Command:** `vitest run --coverage`
+
+---
+
+## Database
+
+### `db:check`
+
+
+
+
+```bash
+npm run db:check
+```
+
+> **Command:** `tsx scripts/migrate.ts check`
+
+### `db:migrate`
+
+
+
+
+```bash
+npm run db:migrate
+```
+
+> **Command:** `tsx scripts/migrate.ts run`
+
+### `db:seed`
+
+
+
+
+```bash
+npm run db:seed
+```
+
+> **Command:** `tsx scripts/migrate.ts seed`
+
+### `db:seed-mappings`
+
+
+
+
+```bash
+npm run db:seed-mappings
+```
+
+> **Command:** `tsx scripts/migrate.ts seed-mappings`
+
