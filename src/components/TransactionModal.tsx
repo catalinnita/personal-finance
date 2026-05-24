@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { Transaction } from '@/types/database'
+import { SelectField } from './SelectField'
 
 type TransactionModalProps = {
   transaction: Transaction | null
@@ -105,15 +106,9 @@ export default function TransactionModal({ transaction, isOpen, onClose, onSave 
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-            >
-              {categories.map((cat) => (
+            <SelectField value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">{categories.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+              ))}</SelectField>
           </div>
 
           <div>

@@ -8,6 +8,7 @@ import { useCurrency } from '@/hooks/useCurrency'
 import { TextBlock } from '../../../components/TextBlock'
 import { LoadingState } from '../../../components/LoadingState'
 import { PageHeading } from '../../../components/PageHeading'
+import { SelectField } from '../../../components/SelectField'
 
 const MONTHS = [
   { value: 0, label: 'All Months' },
@@ -136,25 +137,13 @@ export default function TransactionsPage() {
     <div>
       <PageHeading className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6" label="Transactions">{years.length > 0 && (
           <div className="flex items-center gap-3">
-            <select
-              value={selectedYear ?? ''}
-              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-            >
-              {years.map(year => (
+            <SelectField value={selectedYear ?? ''} onChange={(e) => setSelectedYear(parseInt(e.target.value))} className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">{years.map(year => (
                 <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
+              ))}</SelectField>
             
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-              className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-            >
-              {MONTHS.map(month => (
+            <SelectField value={selectedMonth} onChange={(e) => setSelectedMonth(parseInt(e.target.value))} className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">{MONTHS.map(month => (
                 <option key={month.value} value={month.value}>{month.label}</option>
-              ))}
-            </select>
+              ))}</SelectField>
           </div>
         )}</PageHeading>
 
