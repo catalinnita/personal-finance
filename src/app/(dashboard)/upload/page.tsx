@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Upload, FileText, Check, Loader2, AlertCircle, StopCircle } from 'lucide-react'
 import { STORAGE_KEY_UPLOAD } from '@/config/constants'
 import { CloseButton } from '../../../components/CloseButton'
+import { SectionCard } from '../../../components/SectionCard'
 
 type ParsedTransaction = {
   date: string
@@ -354,11 +355,7 @@ export default function UploadPage() {
       {/* Processing Progress */}
       {processState && (
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Processing Files
-            </h2>
-            {isProcessing ? (
+          <SectionCard className="flex items-center justify-between mb-4" hClassName="text-lg font-semibold text-gray-900 dark:text-white" label="Processing Files">{isProcessing ? (
               <button
                 onClick={handleCancel}
                 className="flex items-center gap-2 bg-error-500 hover:bg-error-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
@@ -373,8 +370,7 @@ export default function UploadPage() {
               >
                 Upload More
               </button>
-            ) : null}
-          </div>
+            ) : null}</SectionCard>
 
           {/* File Progress List */}
           <div className="space-y-3">

@@ -6,6 +6,7 @@ import { DEFAULT_CATEGORIES_UI } from '@/config/constants'
 import { CloseButton } from '../../../components/CloseButton'
 import { PageHeader } from '../../../components/PageHeader'
 import { LoadingState } from '../../../components/LoadingState'
+import { ActionButton } from '../../../components/ActionButton'
 
 interface Category {
   id: string
@@ -318,12 +319,7 @@ export default function MappingsPage() {
               </h2>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={handleIdentifyWithAI}
-                disabled={identifying || unmappedDescriptions.length === 0}
-                className="flex items-center gap-2 px-3 py-1.5 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                {identifying ? (
+              <ActionButton onClick={handleIdentifyWithAI} disabled={identifying || unmappedDescriptions.length === 0} className="flex items-center gap-2 px-3 py-1.5 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white text-sm font-medium rounded-lg transition-colors">{identifying ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Identifying {identifyProgress.current}/{identifyProgress.total}...
@@ -333,8 +329,7 @@ export default function MappingsPage() {
                     <Sparkles className="w-4 h-4" />
                     Identify with AI
                   </>
-                )}
-              </button>
+                )}</ActionButton>
               <button
                 onClick={() => setShowUnmapped(false)}
                 className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm"

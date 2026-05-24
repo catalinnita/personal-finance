@@ -9,6 +9,7 @@ import { useSelectedCategories } from '@/hooks/useSelectedCategories'
 import { CloseButton } from '../../../components/CloseButton'
 import { TextBlock } from '../../../components/TextBlock'
 import { LoadingState } from '../../../components/LoadingState'
+import { PageHeading } from '../../../components/PageHeading'
 
 type CategoryData = {
   [category: string]: number
@@ -208,9 +209,7 @@ export default function IncomePage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Income by Source</h1>
-        {years.length > 0 && (
+      <PageHeading className="flex items-center justify-between mb-6" label="Income by Source">{years.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {years.map(year => (
               <button
@@ -226,8 +225,7 @@ export default function IncomePage() {
               </button>
             ))}
           </div>
-        )}
-      </div>
+        )}</PageHeading>
 
       {transactions.length === 0 ? (
         <TextBlock>No transactions yet. Upload a statement to see your income.</TextBlock>

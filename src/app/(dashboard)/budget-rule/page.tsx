@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 
 import { useCurrency } from '@/hooks/useCurrency'
 import { CloseButton } from '../../../components/CloseButton'
+import { SectionCard } from '../../../components/SectionCard'
 
 type Category = {
   id: string
@@ -256,9 +257,7 @@ export default function BudgetRulePage() {
       </div>
 
       {/* Pie Chart */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Last Month Spending Distribution</h2>
-        {pieData.length > 0 ? (
+      <SectionCard className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm" hClassName="text-lg font-semibold text-gray-900 dark:text-white mb-4" label="Last Month Spending Distribution">{pieData.length > 0 ? (
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -293,8 +292,7 @@ export default function BudgetRulePage() {
           <p className="text-gray-500 dark:text-gray-400 text-center py-8">
             No spending data for last month
           </p>
-        )}
-      </div>
+        )}</SectionCard>
 
       {/* Category Assignment */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">

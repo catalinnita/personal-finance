@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Loader2, Check } from 'lucide-react'
 import { LoadingState } from '../../../components/LoadingState'
+import { ActionButton } from '../../../components/ActionButton'
 
 interface Currency {
   code: string
@@ -158,19 +159,13 @@ export default function SettingsPage() {
                 className="flex-1 px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 disabled:opacity-50"
                 placeholder="500"
               />
-              <button
-                onClick={handleThresholdChange}
-                disabled={saving}
-                className="px-4 py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
-              >
-                {saving ? (
+              <ActionButton onClick={handleThresholdChange} disabled={saving} className="px-4 py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white font-medium rounded-lg transition-colors flex items-center gap-2">{saving ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : saved ? (
                   <Check className="w-5 h-5" />
                 ) : (
                   'Save'
-                )}
-              </button>
+                )}</ActionButton>
             </div>
           </div>
 
@@ -196,19 +191,13 @@ export default function SettingsPage() {
                 className="flex-1 px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 disabled:opacity-50"
                 placeholder="6"
               />
-              <button
-                onClick={handleMovingAvgChange}
-                disabled={saving}
-                className="px-4 py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
-              >
-                {saving ? (
+              <ActionButton onClick={handleMovingAvgChange} disabled={saving} className="px-4 py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-400 text-white font-medium rounded-lg transition-colors flex items-center gap-2">{saving ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : saved ? (
                   <Check className="w-5 h-5" />
                 ) : (
                   'Save'
-                )}
-              </button>
+                )}</ActionButton>
             </div>
           </div>
         </div>

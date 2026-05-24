@@ -7,6 +7,7 @@ import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
 import { TextBlock } from '../../../components/TextBlock'
 import { LoadingState } from '../../../components/LoadingState'
+import { PageHeading } from '../../../components/PageHeading'
 
 type BalanceData = {
   income: number
@@ -104,9 +105,7 @@ export default function BalancePage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Balance Overview</h1>
-        {years.length > 0 && (
+      <PageHeading className="flex items-center justify-between mb-6" label="Balance Overview">{years.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {years.map(year => (
               <button
@@ -122,8 +121,7 @@ export default function BalancePage() {
               </button>
             ))}
           </div>
-        )}
-      </div>
+        )}</PageHeading>
 
       {transactions.length === 0 ? (
         <TextBlock>No transactions yet. Upload a statement to see your balance.</TextBlock>

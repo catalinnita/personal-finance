@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Trash2, Plus, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { Trash2, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { useCurrency } from '@/hooks/useCurrency'
+import { SectionCard } from '../../../components/SectionCard'
 
 type Category = {
   id: string
@@ -334,9 +335,7 @@ export default function BudgetsPage() {
       </div>
 
       {/* Budget History */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Budget History</h2>
-        {budgetHistory.size === 0 ? (
+      <SectionCard className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-theme-sm" hClassName="text-lg font-semibold text-gray-900 dark:text-white mb-4" label="Budget History">{budgetHistory.size === 0 ? (
           <p className="text-gray-500 dark:text-gray-400">No budgets set yet.</p>
         ) : (
           <div className="space-y-6">
@@ -370,8 +369,7 @@ export default function BudgetsPage() {
               </div>
             ))}
           </div>
-        )}
-      </div>
+        )}</SectionCard>
     </div>
   )
 }
