@@ -3,6 +3,7 @@
 AI-powered personal finance tracker — upload bank statements, auto-categorize transactions with Claude, and visualize spending across budgets, categories, timelines, and income. Built with Next.js, Supabase, and Google OAuth.
 
 DEMO: https://personal-finance-pi-eight.vercel.app/
+
 DOCUMENTATION: https://personal-finance-njov.vercel.app/
 
 ## Features
