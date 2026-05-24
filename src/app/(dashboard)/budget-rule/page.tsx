@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 
 import { useCurrency } from '@/hooks/useCurrency'
 import { CloseButton } from '../../../components/CloseButton'
+import { LoadingState } from '../../../components/LoadingState'
 import { SectionCard } from '../../../components/SectionCard'
 
 type Category = {
@@ -202,9 +203,7 @@ export default function BudgetRulePage() {
 
   if (loading || currencyLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
-      </div>
+      <LoadingState />
     )
   }
 

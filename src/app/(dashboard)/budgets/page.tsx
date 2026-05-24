@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Trash2, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { useCurrency } from '@/hooks/useCurrency'
+import { LoadingState } from '../../../components/LoadingState'
 import { SectionCard } from '../../../components/SectionCard'
 
 type Category = {
@@ -244,9 +245,7 @@ export default function BudgetsPage() {
 
   if (loading || currencyLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
-      </div>
+      <LoadingState />
     )
   }
 
