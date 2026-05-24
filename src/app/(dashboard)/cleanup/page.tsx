@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { Loader2, Trash2, AlertTriangle, Calendar, Copy, Database, Tags } from 'lucide-react'
+import { LoadingState } from '../../../components/LoadingState'
 
 type Transaction = {
   id: string
@@ -198,9 +199,7 @@ export default function CleanupPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-      </div>
+      <LoadingState />
     )
   }
 

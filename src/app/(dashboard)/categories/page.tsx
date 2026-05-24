@@ -1,11 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, PieChart, X, Download } from 'lucide-react'
+import { PieChart, Download } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
 import { useSelectedCategories } from '@/hooks/useSelectedCategories'
+import { CloseButton } from '../../../components/CloseButton'
+import { TextBlock } from '../../../components/TextBlock'
+import { LoadingState } from '../../../components/LoadingState'
 
 type CategoryData = Record<string, number>
 
@@ -242,9 +245,7 @@ export default function CategoriesPage() {
 
   if (loading || currencyLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-      </div>
+      <LoadingState />
     )
   }
 
@@ -272,9 +273,7 @@ export default function CategoriesPage() {
       </div>
 
       {transactions.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-          <p className="text-gray-500 dark:text-gray-400">No transactions yet. Upload a statement to see your expenses.</p>
-        </div>
+        <TextBlock>No transactions yet. Upload a statement to see your expenses.</TextBlock>
       ) : (
         <div className="space-y-6">
           {/* Category Filter */}
@@ -484,12 +483,7 @@ export default function CategoriesPage() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 {expandedCell.category} - {expandedCell.month}
               </h3>
-              <button
-                onClick={() => setExpandedCell(null)}
-                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
+              <CloseButton onClick={() => setExpandedCell(null)} className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" xClassName="w-5 h-5 text-gray-500" />
             </div>
             <div className="p-4 overflow-y-auto max-h-[60vh]">
               <div className="space-y-2">

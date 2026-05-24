@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Pencil, Trash2, Loader2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import TransactionModal from '@/components/TransactionModal'
 import { useCurrency } from '@/hooks/useCurrency'
+import { TextBlock } from '../../../components/TextBlock'
+import { LoadingState } from '../../../components/LoadingState'
 
 const MONTHS = [
   { value: 0, label: 'All Months' },
@@ -125,9 +127,7 @@ export default function TransactionsPage() {
 
   if (loading || currencyLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-      </div>
+      <LoadingState />
     )
   }
 
@@ -162,9 +162,7 @@ export default function TransactionsPage() {
       </div>
 
       {filteredTransactions.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-          <p className="text-gray-500 dark:text-gray-400">No transactions yet. Upload a statement to get started.</p>
-        </div>
+        <TextBlock>No transactions yet. Upload a statement to get started.</TextBlock>
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-theme-sm">
           <div className="overflow-x-auto">

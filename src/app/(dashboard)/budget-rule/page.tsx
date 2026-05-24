@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
-import { X } from 'lucide-react'
+
 import { useCurrency } from '@/hooks/useCurrency'
+import { CloseButton } from '../../../components/CloseButton'
 
 type Category = {
   id: string
@@ -399,12 +400,7 @@ export default function BudgetRulePage() {
                   {BUDGET_GROUPS[modalGroup].label} Breakdown
                 </h2>
               </div>
-              <button
-                onClick={() => setModalGroup(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <CloseButton onClick={() => setModalGroup(null)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" xClassName="w-5 h-5" />
             </div>
             <div className="p-4 overflow-y-auto max-h-[60vh]">
               <table className="w-full">

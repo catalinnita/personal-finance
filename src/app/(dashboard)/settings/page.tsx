@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Loader2, Check } from 'lucide-react'
+import { LoadingState } from '../../../components/LoadingState'
 
 interface Currency {
   code: string
@@ -91,9 +92,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-      </div>
+      <LoadingState />
     )
   }
 

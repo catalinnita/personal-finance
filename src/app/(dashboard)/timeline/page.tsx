@@ -1,10 +1,13 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Loader2, TrendingUp, TrendingDown } from 'lucide-react'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
 import { useSelectedCategories } from '@/hooks/useSelectedCategories'
+import { TextBlock } from '../../../components/TextBlock'
+import { PageHeader } from '../../../components/PageHeader'
+import { LoadingState } from '../../../components/LoadingState'
 
 type Transaction = {
   id: string
@@ -273,9 +276,7 @@ export default function TimelinePage() {
 
   if (loading || currencyLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-      </div>
+      <LoadingState />
     )
   }
 
@@ -295,12 +296,7 @@ export default function TimelinePage() {
         </div>
       )}
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Spending Timeline</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Track your spending evolution by category over time
-          </p>
-        </div>
+        <PageHeader label="Spending Timeline">Track your spending evolution by category over time</PageHeader>
         {years.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {years.map(year => (
@@ -321,9 +317,7 @@ export default function TimelinePage() {
       </div>
 
       {transactions.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-          <p className="text-gray-500 dark:text-gray-400">No transactions yet. Upload a statement to see your spending timeline.</p>
-        </div>
+        <TextBlock>No transactions yet. Upload a statement to see your spending timeline.</TextBlock>
       ) : (
         <>
           {/* Category Filter */}
@@ -640,9 +634,7 @@ export default function TimelinePage() {
         </div>
 
         {selectedCategories.length === 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-            <p className="text-gray-500 dark:text-gray-400">Select at least one category to view the timeline.</p>
-          </div>
+          <TextBlock>Select at least one category to view the timeline.</TextBlock>
         )}
       </>
     )}

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Upload, FileText, Check, Loader2, X, AlertCircle, StopCircle } from 'lucide-react'
+import { Upload, FileText, Check, Loader2, AlertCircle, StopCircle } from 'lucide-react'
 import { STORAGE_KEY_UPLOAD } from '@/config/constants'
+import { CloseButton } from '../../../components/CloseButton'
 
 type ParsedTransaction = {
   date: string
@@ -333,12 +334,7 @@ export default function UploadPage() {
                     <FileText className="w-4 h-4 text-gray-400" />
                     <span className="text-sm text-gray-700 dark:text-gray-300">{file.name}</span>
                   </div>
-                  <button
-                    onClick={() => removeFile(index)}
-                    className="p-1 text-gray-400 hover:text-error-500"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <CloseButton onClick={() => removeFile(index)} className="p-1 text-gray-400 hover:text-error-500" xClassName="w-4 h-4" />
                 </div>
               ))}
             </div>

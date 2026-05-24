@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { TrendingUp, TrendingDown, PiggyBank, Loader2 } from 'lucide-react'
+import { TrendingUp, TrendingDown, PiggyBank } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
+import { TextBlock } from '../../../components/TextBlock'
+import { LoadingState } from '../../../components/LoadingState'
 
 type BalanceData = {
   income: number
@@ -96,9 +98,7 @@ export default function BalancePage() {
 
   if (loading || currencyLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-      </div>
+      <LoadingState />
     )
   }
 
@@ -126,9 +126,7 @@ export default function BalancePage() {
       </div>
 
       {transactions.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-theme-sm">
-          <p className="text-gray-500 dark:text-gray-400">No transactions yet. Upload a statement to see your balance.</p>
-        </div>
+        <TextBlock>No transactions yet. Upload a statement to see your balance.</TextBlock>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect, DragEvent } from 'react'
-import { Loader2, GripVertical, X, AlertCircle, Sparkles } from 'lucide-react'
+import { Loader2, GripVertical, AlertCircle, Sparkles } from 'lucide-react'
 import { DEFAULT_CATEGORIES_UI } from '@/config/constants'
+import { CloseButton } from '../../../components/CloseButton'
+import { PageHeader } from '../../../components/PageHeader'
+import { LoadingState } from '../../../components/LoadingState'
 
 interface Category {
   id: string
@@ -256,21 +259,14 @@ export default function MappingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-      </div>
+      <LoadingState />
     )
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Description Mappings</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Drag descriptions between categories to reassign them
-          </p>
-        </div>
+        <PageHeader label="Description Mappings">Drag descriptions between categories to reassign them</PageHeader>
         <input
           type="text"
           value={searchTerm}
@@ -420,12 +416,7 @@ export default function MappingsPage() {
                       <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1" title={mapping.description_pattern}>
                         {mapping.description_pattern}
                       </span>
-                      <button
-                        onClick={() => handleDeleteMapping(mapping.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-error-500 transition-opacity"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
+                      <CloseButton onClick={() => handleDeleteMapping(mapping.id)} className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-error-500 transition-opacity" xClassName="w-3.5 h-3.5" />
                     </div>
                   )
                 })}

@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, Loader2, Save, X } from 'lucide-react'
+import { Plus, Pencil, Trash2, Save } from 'lucide-react'
+import { CloseButton } from '../../../components/CloseButton'
+import { LoadingState } from '../../../components/LoadingState'
 
 interface Category {
   id: string
@@ -89,9 +91,7 @@ export default function ManageCategoriesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-      </div>
+      <LoadingState />
     )
   }
 
@@ -151,9 +151,7 @@ export default function ManageCategoriesPage() {
                   <button onClick={handleUpdateCategory} className="p-1 text-success-500 hover:text-success-400">
                     <Save className="w-4 h-4" />
                   </button>
-                  <button onClick={() => setEditingCategory(null)} className="p-1 text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                    <X className="w-4 h-4" />
-                  </button>
+                  <CloseButton onClick={() => setEditingCategory(null)} className="p-1 text-gray-400 hover:text-gray-900 dark:hover:text-white" xClassName="w-4 h-4" />
                 </div>
               ) : (
                 <>
