@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { Loader2, Check } from 'lucide-react'
+import { useSettingsQuery, useQueryClient, queryKeys } from '@/hooks/queries'
 import { LoadingState } from '../../../components/LoadingState'
 import { ActionButton } from '../../../components/ActionButton'
-
-interface Currency {
-  code: string
-  symbol: string
-  name: string
-}
 
 interface Settings {
   currency: string
@@ -18,37 +13,26 @@ interface Settings {
 }
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<Settings | null>(null)
-  const [currencies, setCurrencies] = useState<Currency[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
+  const { data: settingsData, isLoading } = useSettingsQuery()
+  const settings = settingsData?.settings ?? null
+  const currencies = settingsData?.currencies ?? []
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [thresholdInput, setThresholdInput] = useState('')
   const [movingAvgInput, setMovingAvgInput] = useState('')
 
   useEffect(() => {
-    fetchSettings()
-  }, [])
-
-  const fetchSettings = async () => {
-    try {
-      const response = await fetch('/api/settings')
-      const data = await response.json()
-      setSettings(data.settings)
-      setCurrencies(data.currencies || [])
-      setThresholdInput(String(data.settings?.highlight_threshold || 500))
-      setMovingAvgInput(String(data.settings?.moving_average_period || 6))
-    } catch (error) {
-      console.error('Error fetching settings:', error)
-    } finally {
-      setLoading(false)
+    if (settingsData) {
+      setThresholdInput(String(settingsData.settings?.highlight_threshold ?? 500))
+      setMovingAvgInput(String(settingsData.settings?.moving_average_period ?? 6))
     }
-  }
+  }, [settingsData])
 
   const saveSettings = async (updates: Partial<Settings>) => {
     setSaving(true)
     setSaved(false)
-    
+
     try {
       const response = await fetch('/api/settings', {
         method: 'PUT',
@@ -59,10 +43,9 @@ export default function SettingsPage() {
           ...updates
         }),
       })
-      
+
       if (response.ok) {
-        const data = await response.json()
-        setSettings(data.settings)
+        queryClient.invalidateQueries({ queryKey: queryKeys.settings })
         setSaved(true)
         setTimeout(() => setSaved(false), 2000)
       }
@@ -91,7 +74,7 @@ export default function SettingsPage() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <LoadingState />
     )

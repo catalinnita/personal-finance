@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useSettingsQuery } from './queries'
 
 interface Currency {
   code: string
@@ -22,28 +22,9 @@ const CURRENCIES: Record<string, Currency> = {
 }
 
 export function useCurrency() {
-  const [currencyCode, setCurrencyCode] = useState<string>('USD')
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchSettings()
-  }, [])
-
-  const fetchSettings = async () => {
-    try {
-      const response = await fetch('/api/settings')
-      if (response.ok) {
-        const data = await response.json()
-        setCurrencyCode(data.settings?.currency || 'USD')
-      }
-    } catch (error) {
-      console.error('Error fetching currency settings:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const currency = CURRENCIES[currencyCode] || CURRENCIES.USD
+  const { data, isLoading } = useSettingsQuery()
+  const currencyCode = data?.settings?.currency ?? 'USD'
+  const currency = CURRENCIES[currencyCode] ?? CURRENCIES.USD
 
   const formatAmount = (amount: number): string => {
     const absAmount = Math.abs(amount)
@@ -51,7 +32,6 @@ export function useCurrency() {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(absAmount)
-    
     return `${currency.symbol}${formatted}`
   }
 
@@ -63,9 +43,8 @@ export function useCurrency() {
   return {
     currency,
     currencyCode,
-    loading,
+    loading: isLoading,
     formatAmount,
     formatAmountWithSign,
-    refetch: fetchSettings,
   }
 }

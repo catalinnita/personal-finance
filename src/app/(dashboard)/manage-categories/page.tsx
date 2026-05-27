@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Plus, Pencil, Trash2, Save } from 'lucide-react'
+import { useCategoriesQuery, useQueryClient, queryKeys } from '@/hooks/queries'
 import { CloseButton } from '../../../components/CloseButton'
 import { LoadingState } from '../../../components/LoadingState'
 
@@ -13,28 +14,13 @@ interface Category {
 }
 
 export default function ManageCategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
-  
+  const queryClient = useQueryClient()
+  const { data: categoriesRaw = [], isLoading } = useCategoriesQuery()
+  const categories = categoriesRaw as Category[]
+
   const [newCategoryName, setNewCategoryName] = useState('')
   const [newCategoryType, setNewCategoryType] = useState<'income' | 'expense'>('expense')
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
-
-  useEffect(() => {
-    fetchCategories()
-  }, [])
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories')
-      const data = await response.json()
-      if (data.categories) setCategories(data.categories)
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return
@@ -47,8 +33,7 @@ export default function ManageCategoriesPage() {
       })
 
       if (response.ok) {
-        const data = await response.json()
-        setCategories([...categories, data.category])
+        queryClient.invalidateQueries({ queryKey: queryKeys.categories })
         setNewCategoryName('')
       }
     } catch (error) {
@@ -67,8 +52,7 @@ export default function ManageCategoriesPage() {
       })
 
       if (response.ok) {
-        const data = await response.json()
-        setCategories(categories.map(c => c.id === editingCategory.id ? data.category : c))
+        queryClient.invalidateQueries({ queryKey: queryKeys.categories })
         setEditingCategory(null)
       }
     } catch (error) {
@@ -82,14 +66,14 @@ export default function ManageCategoriesPage() {
     try {
       const response = await fetch(`/api/categories/${id}`, { method: 'DELETE' })
       if (response.ok) {
-        setCategories(categories.filter(c => c.id !== id))
+        queryClient.invalidateQueries({ queryKey: queryKeys.categories })
       }
     } catch (error) {
       console.error('Error deleting category:', error)
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <LoadingState />
     )
@@ -173,9 +157,7 @@ export default function ManageCategoriesPage() {
                               body: JSON.stringify({ id: category.id, expense_type: newExpenseType }),
                             })
                             if (response.ok) {
-                              setCategories(categories.map(c => 
-                                c.id === category.id ? { ...c, expense_type: newExpenseType } : c
-                              ))
+                              queryClient.invalidateQueries({ queryKey: queryKeys.categories })
                             }
                           } catch (error) {
                             console.error('Error updating expense type:', error)

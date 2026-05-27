@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { Transaction } from '@/types/database'
+import { useCategoriesQuery } from '@/hooks/queries'
 import { SelectField } from './SelectField'
 
 type TransactionModalProps = {
@@ -26,24 +27,9 @@ export default function TransactionModal({ transaction, isOpen, onClose, onSave 
     description: '',
     type: 'expense' as 'income' | 'expense',
   })
-  const [categories, setCategories] = useState<string[]>(defaultCategories)
 
-  useEffect(() => {
-    fetchCategories()
-  }, [])
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories')
-      const data = await response.json()
-      if (data.categories) {
-        const customCats = data.categories.map((c: { name: string }) => c.name)
-        setCategories([...new Set([...defaultCategories, ...customCats])].sort())
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    }
-  }
+  const { data: categoriesData = [] } = useCategoriesQuery()
+  const categories = [...new Set([...defaultCategories, ...categoriesData.map(c => c.name)])].sort()
 
   useEffect(() => {
     if (transaction) {

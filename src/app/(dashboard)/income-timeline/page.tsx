@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { TrendingUp, TrendingDown } from 'lucide-react'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
 import { useSelectedCategories } from '@/hooks/useSelectedCategories'
+import { useTransactionsQuery, useSettingsQuery, useCategoriesQuery } from '@/hooks/queries'
 import { TextBlock } from '../../../components/TextBlock'
 import { PageHeader } from '../../../components/PageHeader'
 import { LoadingState } from '../../../components/LoadingState'
@@ -25,50 +26,18 @@ type CategoryMonthlyData = {
 }
 
 export default function IncomeTimelinePage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data: transactions = [], isLoading } = useTransactionsQuery()
+  const { data: settingsData } = useSettingsQuery()
+  const { data: categoriesRaw = [] } = useCategoriesQuery()
+  const movingAvgPeriod = settingsData?.settings?.moving_average_period ?? 6
   const [scaleMode, setScaleMode] = useState<'relative' | 'absolute'>('relative')
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null)
-  const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
-  const [allUserCategories, setAllUserCategories] = useState<string[]>([])
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
-    try {
-      const [transRes, settingsRes, categoriesRes] = await Promise.all([
-        fetch('/api/transactions'),
-        fetch('/api/settings'),
-        fetch('/api/categories')
-      ])
-      const transData = await transRes.json()
-      const settingsData = await settingsRes.json()
-      const categoriesData = await categoriesRes.json()
-      
-      if (transData.transactions) {
-        setTransactions(transData.transactions)
-      }
-      if (settingsData.settings?.moving_average_period) {
-        setMovingAvgPeriod(settingsData.settings.moving_average_period)
-      }
-      if (categoriesData.categories) {
-        // Only include income categories
-        setAllUserCategories(
-          categoriesData.categories
-            .filter((c: { type: string }) => c.type === 'income')
-            .map((c: { name: string }) => c.name)
-            .sort()
-        )
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const allUserCategories = useMemo(
+    () => categoriesRaw.filter(c => c.type === 'income').map(c => c.name).sort(),
+    [categoriesRaw]
+  )
 
   const years = useMemo(() => {
     const yearSet = new Set(transactions.map(t => new Date(t.date).getFullYear()))
@@ -255,7 +224,7 @@ export default function IncomeTimelinePage() {
     return movingAvg
   }
 
-  if (loading || currencyLoading) {
+  if (isLoading || currencyLoading) {
     return (
       <LoadingState />
     )

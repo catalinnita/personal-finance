@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 
 import { useCurrency } from '@/hooks/useCurrency'
+import { useTransactionsQuery, useCategoriesQuery, useQueryClient, queryKeys } from '@/hooks/queries'
 import { CloseButton } from '../../../components/CloseButton'
 import { LoadingState } from '../../../components/LoadingState'
 import { SectionCard } from '../../../components/SectionCard'
@@ -34,39 +35,13 @@ const BUDGET_GROUPS = {
 const EXCLUDED_GROUP = { label: 'Excluded', color: '#6b7280', description: 'Categories not included in 50/30/20 calculations' }
 
 export default function BudgetRulePage() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
+  const { data: categoriesRaw = [], isLoading } = useCategoriesQuery()
+  const { data: transactions = [] } = useTransactionsQuery()
+  const categories = categoriesRaw as Category[]
   const [saving, setSaving] = useState<string | null>(null)
   const [modalGroup, setModalGroup] = useState<keyof typeof BUDGET_GROUPS | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
-    try {
-      const [categoriesRes, transactionsRes] = await Promise.all([
-        fetch('/api/categories'),
-        fetch('/api/transactions')
-      ])
-      
-      const categoriesData = await categoriesRes.json()
-      const transactionsData = await transactionsRes.json()
-      
-      if (categoriesData.categories) {
-        setCategories(categoriesData.categories)
-      }
-      if (transactionsData.transactions) {
-        setTransactions(transactionsData.transactions)
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleUpdateBudgetGroup = async (categoryId: string, budgetGroup: string) => {
     setSaving(categoryId)
@@ -76,11 +51,9 @@ export default function BudgetRulePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: categoryId, budget_group: budgetGroup })
       })
-      
+
       if (response.ok) {
-        setCategories(categories.map(c => 
-          c.id === categoryId ? { ...c, budget_group: budgetGroup as 'needs' | 'wants' | 'savings' | 'excluded' } : c
-        ))
+        queryClient.invalidateQueries({ queryKey: queryKeys.categories })
       }
     } catch (error) {
       console.error('Error updating category:', error)
@@ -201,7 +174,7 @@ export default function BudgetRulePage() {
     }).sort((a, b) => b.usedValue - a.usedValue)
   }
 
-  if (loading || currencyLoading) {
+  if (isLoading || currencyLoading) {
     return (
       <LoadingState />
     )

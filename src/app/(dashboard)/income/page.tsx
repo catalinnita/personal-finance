@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { PieChart } from 'lucide-react'
-import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
 import { useSelectedCategories } from '@/hooks/useSelectedCategories'
+import { useTransactionsQuery, useSettingsQuery, useCategoriesQuery } from '@/hooks/queries'
 import { CloseButton } from '../../../components/CloseButton'
 import { TextBlock } from '../../../components/TextBlock'
 import { LoadingState } from '../../../components/LoadingState'
@@ -33,53 +33,26 @@ const CATEGORY_COLORS: { [key: string]: string } = {
 }
 
 export default function IncomePage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data: transactions = [], isLoading } = useTransactionsQuery()
+  const { data: settingsData } = useSettingsQuery()
+  const { data: categoriesRaw = [] } = useCategoriesQuery()
+  const movingAvgPeriod = settingsData?.settings?.moving_average_period ?? 6
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
   const [expandedCell, setExpandedCell] = useState<{ category: string; month: string } | null>(null)
-  const [movingAvgPeriod, setMovingAvgPeriod] = useState(6)
-  const [allUserCategories, setAllUserCategories] = useState<string[]>([])
-  const [categoryExpenseTypes, setCategoryExpenseTypes] = useState<{ [name: string]: 'fixed' | 'variable' }>({})
   const { formatAmount, loading: currencyLoading } = useCurrency()
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  const allUserCategories = useMemo(
+    () => categoriesRaw.filter(c => c.type === 'income').map(c => c.name).sort(),
+    [categoriesRaw]
+  )
 
-  const fetchData = async () => {
-    try {
-      const [transRes, settingsRes, categoriesRes] = await Promise.all([
-        fetch('/api/transactions'),
-        fetch('/api/settings'),
-        fetch('/api/categories')
-      ])
-      const transData = await transRes.json()
-      const settingsData = await settingsRes.json()
-      const categoriesData = await categoriesRes.json()
-      
-      if (transData.transactions) {
-        setTransactions(transData.transactions)
-      }
-      if (settingsData.settings?.moving_average_period) {
-        setMovingAvgPeriod(settingsData.settings.moving_average_period)
-      }
-      if (categoriesData.categories) {
-        // Only include income categories
-        const incomeCategories = categoriesData.categories.filter((c: { type: string }) => c.type === 'income')
-        setAllUserCategories(incomeCategories.map((c: { name: string }) => c.name).sort())
-        // Store expense_type mapping
-        const expenseTypeMap: { [name: string]: 'fixed' | 'variable' } = {}
-        incomeCategories.forEach((c: { name: string; expense_type?: 'fixed' | 'variable' }) => {
-          expenseTypeMap[c.name] = c.expense_type || 'variable'
-        })
-        setCategoryExpenseTypes(expenseTypeMap)
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const categoryExpenseTypes = useMemo(() => {
+    const map: { [name: string]: 'fixed' | 'variable' } = {}
+    categoriesRaw.filter(c => c.type === 'income').forEach(c => {
+      map[c.name] = c.expense_type || 'variable'
+    })
+    return map
+  }, [categoriesRaw])
 
   const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort((a, b) => b - a)
   const { selectedYears, toggleYear } = useSelectedYears(years)
@@ -201,7 +174,7 @@ export default function IncomePage() {
     setSelectedMonth(availableMonths.length > 0 ? availableMonths[availableMonths.length - 1] : null)
   }
 
-  if (loading || currencyLoading) {
+  if (isLoading || currencyLoading) {
     return (
       <LoadingState />
     )

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Trash2, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { useCurrency } from '@/hooks/useCurrency'
+import { useTransactionsQuery, useCategoriesQuery, useBudgetsQuery, useQueryClient, queryKeys } from '@/hooks/queries'
 import { LoadingState } from '../../../components/LoadingState'
 import { SectionCard } from '../../../components/SectionCard'
 
@@ -41,55 +42,26 @@ type CategorySpending = {
 }
 
 export default function BudgetsPage() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [budgets, setBudgets] = useState<Budget[]>([])
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
+  const { data: categoriesRaw = [], isLoading } = useCategoriesQuery()
+  const { data: budgets = [] } = useBudgetsQuery()
+  const { data: transactions = [] } = useTransactionsQuery()
+  const categories = useMemo(
+    () => categoriesRaw.filter(c => c.type === 'expense') as Category[],
+    [categoriesRaw]
+  )
   const [editingBudgets, setEditingBudgets] = useState<Record<string, string>>({})
   const [savingBudget, setSavingBudget] = useState<string | null>(null)
   const { formatAmount, loading: currencyLoading } = useCurrency()
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
-    try {
-      const [categoriesRes, budgetsRes, transactionsRes] = await Promise.all([
-        fetch('/api/categories'),
-        fetch('/api/budgets'),
-        fetch('/api/transactions')
-      ])
-      
-      const categoriesData = await categoriesRes.json()
-      const budgetsData = await budgetsRes.json()
-      const transactionsData = await transactionsRes.json()
-      
-      if (categoriesData.categories) {
-        // Only expense categories can have budgets
-        setCategories(categoriesData.categories.filter((c: Category) => c.type === 'expense'))
-      }
-      if (budgetsData.budgets) {
-        setBudgets(budgetsData.budgets)
-      }
-      if (transactionsData.transactions) {
-        setTransactions(transactionsData.transactions)
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleDeleteBudget = async (id: string) => {
     try {
       const response = await fetch(`/api/budgets?id=${id}`, {
         method: 'DELETE'
       })
-      
+
       if (response.ok) {
-        setBudgets(budgets.filter(b => b.id !== id))
+        queryClient.invalidateQueries({ queryKey: queryKeys.budgets })
       }
     } catch (error) {
       console.error('Error deleting budget:', error)
@@ -132,8 +104,7 @@ export default function BudgetsPage() {
       })
       
       if (response.ok) {
-        await fetchData()
-        // Clear the editing state for this category
+        queryClient.invalidateQueries({ queryKey: queryKeys.budgets })
         setEditingBudgets(prev => {
           const next = { ...prev }
           delete next[categoryId]
@@ -243,7 +214,7 @@ export default function BudgetsPage() {
     return grouped
   }, [budgets])
 
-  if (loading || currencyLoading) {
+  if (isLoading || currencyLoading) {
     return (
       <LoadingState />
     )

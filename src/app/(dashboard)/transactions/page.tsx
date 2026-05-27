@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { Transaction } from '@/types/database'
 import TransactionModal from '@/components/TransactionModal'
 import { useCurrency } from '@/hooks/useCurrency'
+import { useTransactionsQuery, useSettingsQuery, useQueryClient, queryKeys } from '@/hooks/queries'
 import { TextBlock } from '../../../components/TextBlock'
 import { LoadingState } from '../../../components/LoadingState'
 import { PageHeading } from '../../../components/PageHeading'
@@ -27,45 +28,16 @@ const MONTHS = [
 ]
 
 export default function TransactionsPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
+  const { data: transactions = [], isLoading } = useTransactionsQuery()
+  const { data: settingsData } = useSettingsQuery()
+  const highlightThreshold = settingsData?.settings?.highlight_threshold ?? 500
+
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedYear, setSelectedYear] = useState<number | null>(null)
   const [selectedMonth, setSelectedMonth] = useState<number>(0)
-  const [highlightThreshold, setHighlightThreshold] = useState<number>(500)
   const { formatAmount, loading: currencyLoading } = useCurrency()
-
-  useEffect(() => {
-    fetchTransactions()
-    fetchSettings()
-  }, [])
-
-  const fetchTransactions = async () => {
-    try {
-      const response = await fetch('/api/transactions')
-      const data = await response.json()
-      if (data.transactions) {
-        setTransactions(data.transactions)
-      }
-    } catch (error) {
-      console.error('Error fetching transactions:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchSettings = async () => {
-    try {
-      const response = await fetch('/api/settings')
-      const data = await response.json()
-      if (data.settings?.highlight_threshold !== undefined) {
-        setHighlightThreshold(Number(data.settings.highlight_threshold))
-      }
-    } catch (error) {
-      console.error('Error fetching settings:', error)
-    }
-  }
 
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction)
@@ -83,10 +55,7 @@ export default function TransactionsPage() {
       })
 
       if (response.ok) {
-        const data = await response.json()
-        setTransactions(transactions.map(t => 
-          t.id === editingTransaction.id ? data.transaction : t
-        ))
+        queryClient.invalidateQueries({ queryKey: queryKeys.transactions })
       }
     } catch (error) {
       console.error('Error updating transaction:', error)
@@ -97,37 +66,32 @@ export default function TransactionsPage() {
     if (!confirm('Are you sure you want to delete this transaction?')) return
 
     try {
-      const response = await fetch(`/api/transactions/${id}`, {
-        method: 'DELETE',
-      })
-
+      const response = await fetch(`/api/transactions/${id}`, { method: 'DELETE' })
       if (response.ok) {
-        setTransactions(transactions.filter(t => t.id !== id))
+        queryClient.invalidateQueries({ queryKey: queryKeys.transactions })
       }
     } catch (error) {
       console.error('Error deleting transaction:', error)
     }
   }
 
-  // Get available years from transactions
-  const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort((a, b) => b - a)
-  
-  // Set default year if not set and transactions exist
+  const years = useMemo(
+    () => [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort((a, b) => b - a),
+    [transactions],
+  )
+
   useEffect(() => {
-    if (years.length > 0 && selectedYear === null) {
-      setSelectedYear(years[0])
-    }
+    if (years.length > 0 && selectedYear === null) setSelectedYear(years[0])
   }, [years, selectedYear])
 
-  // Filter transactions by year and month
-  const filteredTransactions = transactions.filter(t => {
+  const filteredTransactions = useMemo(() => transactions.filter(t => {
     const date = new Date(t.date)
     const yearMatch = selectedYear === null || date.getFullYear() === selectedYear
     const monthMatch = selectedMonth === 0 || (date.getMonth() + 1) === selectedMonth
     return yearMatch && monthMatch
-  })
+  }), [transactions, selectedYear, selectedMonth])
 
-  if (loading || currencyLoading) {
+  if (isLoading || currencyLoading) {
     return (
       <LoadingState />
     )

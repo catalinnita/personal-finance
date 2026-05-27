@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, PiggyBank } from 'lucide-react'
-import { Transaction } from '@/types/database'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useSelectedYears } from '@/hooks/useSelectedYears'
+import { useTransactionsQuery } from '@/hooks/queries'
 import { TextBlock } from '../../../components/TextBlock'
 import { LoadingState } from '../../../components/LoadingState'
 import { PageHeading } from '../../../components/PageHeading'
@@ -20,27 +19,8 @@ type MonthlyData = {
 }
 
 export default function BalancePage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data: transactions = [], isLoading } = useTransactionsQuery()
   const { formatAmount, loading: currencyLoading } = useCurrency()
-
-  useEffect(() => {
-    fetchTransactions()
-  }, [])
-
-  const fetchTransactions = async () => {
-    try {
-      const response = await fetch('/api/transactions')
-      const data = await response.json()
-      if (data.transactions) {
-        setTransactions(data.transactions)
-      }
-    } catch (error) {
-      console.error('Error fetching transactions:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const years = [...new Set(transactions.map(t => new Date(t.date).getFullYear()))].sort((a, b) => b - a)
   const { selectedYears, toggleYear } = useSelectedYears(years)
@@ -97,7 +77,7 @@ export default function BalancePage() {
       ).filter(key => monthlyData[key])
     : months.filter(month => monthlyData[month])
 
-  if (loading || currencyLoading) {
+  if (isLoading || currencyLoading) {
     return (
       <LoadingState />
     )

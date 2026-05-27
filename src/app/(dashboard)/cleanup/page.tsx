@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Loader2, Trash2, AlertTriangle, Calendar, Copy, Database, Tags } from 'lucide-react'
+import { useTransactionsQuery, useCategoriesQuery, useCategoryMappingsQuery, useQueryClient, queryKeys } from '@/hooks/queries'
 import { LoadingState } from '../../../components/LoadingState'
 
 type Transaction = {
@@ -14,48 +15,16 @@ type Transaction = {
 }
 
 export default function CleanupPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
+  const { data: transactions = [], isLoading } = useTransactionsQuery()
+  const { data: categoriesData = [] } = useCategoriesQuery()
+  const { data: mappingsData = [] } = useCategoryMappingsQuery()
+  const categoriesCount = categoriesData.length
+  const mappingsCount = mappingsData.length
   const [deleting, setDeleting] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState<string>('')
   const [confirmAction, setConfirmAction] = useState<'duplicates' | 'month' | 'all' | 'categories' | null>(null)
-  const [categoriesCount, setCategoriesCount] = useState(0)
-  const [mappingsCount, setMappingsCount] = useState(0)
   const [result, setResult] = useState<{ type: 'success' | 'error', message: string } | null>(null)
-
-  useEffect(() => {
-    fetchTransactions()
-    fetchCategoriesAndMappings()
-  }, [])
-
-  const fetchCategoriesAndMappings = async () => {
-    try {
-      const [categoriesRes, mappingsRes] = await Promise.all([
-        fetch('/api/categories'),
-        fetch('/api/category-mappings')
-      ])
-      const categoriesData = await categoriesRes.json()
-      const mappingsData = await mappingsRes.json()
-      setCategoriesCount(categoriesData.categories?.length || 0)
-      setMappingsCount(mappingsData.mappings?.length || 0)
-    } catch (error) {
-      console.error('Error fetching categories/mappings:', error)
-    }
-  }
-
-  const fetchTransactions = async () => {
-    try {
-      const response = await fetch('/api/transactions')
-      const data = await response.json()
-      if (data.transactions) {
-        setTransactions(data.transactions)
-      }
-    } catch (error) {
-      console.error('Error fetching transactions:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const availableMonths = useMemo(() => {
     const monthSet = new Set<string>()
@@ -113,7 +82,7 @@ export default function CleanupPage() {
       )
       await Promise.all(deletePromises)
       setResult({ type: 'success', message: `Successfully deleted ${duplicates.length} duplicate transactions.` })
-      await fetchTransactions()
+      queryClient.invalidateQueries({ queryKey: queryKeys.transactions })
     } catch (error) {
       setResult({ type: 'error', message: 'Failed to delete duplicates. Please try again.' })
     } finally {
@@ -134,7 +103,7 @@ export default function CleanupPage() {
       await Promise.all(deletePromises)
       setResult({ type: 'success', message: `Successfully deleted ${transactionsInMonth.length} transactions from ${formatMonth(selectedMonth)}.` })
       setSelectedMonth('')
-      await fetchTransactions()
+      queryClient.invalidateQueries({ queryKey: queryKeys.transactions })
     } catch (error) {
       setResult({ type: 'error', message: 'Failed to delete transactions. Please try again.' })
     } finally {
@@ -154,7 +123,7 @@ export default function CleanupPage() {
       )
       await Promise.all(deletePromises)
       setResult({ type: 'success', message: `Successfully deleted all ${transactions.length} transactions. Categories and mappings have been preserved.` })
-      await fetchTransactions()
+      queryClient.invalidateQueries({ queryKey: queryKeys.transactions })
     } catch (error) {
       setResult({ type: 'error', message: 'Failed to delete transactions. Please try again.' })
     } finally {
@@ -169,26 +138,15 @@ export default function CleanupPage() {
     setResult(null)
     
     try {
-      // Delete all mappings first (they depend on categories)
-      const mappingsRes = await fetch('/api/category-mappings')
-      const mappingsData = await mappingsRes.json()
-      const mappings = mappingsData.mappings || []
-      
-      for (const mapping of mappings) {
+      for (const mapping of mappingsData) {
         await fetch(`/api/category-mappings/${mapping.id}`, { method: 'DELETE' })
       }
-      
-      // Then delete all categories
-      const categoriesRes = await fetch('/api/categories')
-      const categoriesData = await categoriesRes.json()
-      const categories = categoriesData.categories || []
-      
-      for (const category of categories) {
+      for (const category of categoriesData) {
         await fetch(`/api/categories/${category.id}`, { method: 'DELETE' })
       }
-      
-      setResult({ type: 'success', message: `Successfully deleted ${categories.length} categories and ${mappings.length} mappings.` })
-      await fetchCategoriesAndMappings()
+      setResult({ type: 'success', message: `Successfully deleted ${categoriesData.length} categories and ${mappingsData.length} mappings.` })
+      queryClient.invalidateQueries({ queryKey: queryKeys.categories })
+      queryClient.invalidateQueries({ queryKey: queryKeys.categoryMappings })
     } catch (error) {
       setResult({ type: 'error', message: 'Failed to delete categories and mappings. Please try again.' })
     } finally {
@@ -197,7 +155,7 @@ export default function CleanupPage() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <LoadingState />
     )

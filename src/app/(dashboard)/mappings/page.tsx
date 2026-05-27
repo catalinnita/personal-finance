@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, DragEvent } from 'react'
+import { useState, useMemo, DragEvent } from 'react'
 import { Loader2, GripVertical, AlertCircle, Sparkles } from 'lucide-react'
 import { DEFAULT_CATEGORIES_UI } from '@/config/constants'
+import { useTransactionsQuery, useCategoriesQuery, useCategoryMappingsQuery, useQueryClient, queryKeys } from '@/hooks/queries'
 import { CloseButton } from '../../../components/CloseButton'
 import { PageHeader } from '../../../components/PageHeader'
 import { LoadingState } from '../../../components/LoadingState'
@@ -18,17 +19,24 @@ interface CategoryMapping {
   id: string
   description_pattern: string
   category_id: string
-  category: string
 }
 
 const DEFAULT_CATEGORIES = DEFAULT_CATEGORIES_UI
 
 export default function MappingsPage() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [mappings, setMappings] = useState<CategoryMapping[]>([])
-  const [unmappedDescriptions, setUnmappedDescriptions] = useState<string[]>([])
-  const [loading, setLoading] = useState(true)
-  
+  const queryClient = useQueryClient()
+  const { data: categories = [], isLoading } = useCategoriesQuery()
+  const { data: mappings = [] } = useCategoryMappingsQuery()
+  const { data: transactions = [] } = useTransactionsQuery()
+
+  const unmappedDescriptions = useMemo(() => {
+    const mappedPatterns = mappings.map(m => m.description_pattern.toLowerCase())
+    const allDescriptions = [...new Set(transactions.map(t => t.description))] as string[]
+    return allDescriptions
+      .filter(d => !mappedPatterns.some(p => d.toLowerCase() === p.toLowerCase()))
+      .sort()
+  }, [transactions, mappings])
+
   const [draggedItem, setDraggedItem] = useState<string | null>(null)
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -36,45 +44,6 @@ export default function MappingsPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [identifying, setIdentifying] = useState(false)
   const [identifyProgress, setIdentifyProgress] = useState({ current: 0, total: 0 })
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
-    try {
-      const [categoriesRes, mappingsRes, transactionsRes] = await Promise.all([
-        fetch('/api/categories'),
-        fetch('/api/category-mappings'),
-        fetch('/api/transactions'),
-      ])
-      
-      const categoriesData = await categoriesRes.json()
-      const mappingsData = await mappingsRes.json()
-      const transactionsData = await transactionsRes.json()
-      
-      if (categoriesData.categories) setCategories(categoriesData.categories)
-      if (mappingsData.mappings) {
-        console.log('Total mappings from API:', mappingsData.mappings.length, mappingsData.count)
-        setMappings(mappingsData.mappings)
-      }
-      
-      // Find unmapped descriptions
-      if (transactionsData.transactions && mappingsData.mappings) {
-        const mappedPatterns: string[] = mappingsData.mappings.map((m: CategoryMapping) => m.description_pattern.toLowerCase())
-        const allDescriptions = [...new Set(transactionsData.transactions.map((t: { description: string }) => t.description))] as string[]
-        // Check if description matches any pattern (case-insensitive)
-        const unmapped = allDescriptions.filter(d => 
-          !mappedPatterns.some(pattern => d.toLowerCase() === pattern.toLowerCase())
-        )
-        setUnmappedDescriptions(unmapped.sort())
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleUpdateMapping = async (descriptionPattern: string, categoryId: string) => {
     try {
@@ -92,12 +61,7 @@ export default function MappingsPage() {
       console.log('Response:', response.status, data)
 
       if (response.ok && data.mapping) {
-        setMappings(prev => [
-          ...prev.filter(m => m.description_pattern !== descriptionPattern), 
-          data.mapping
-        ])
-        // Remove from unmapped if it was there
-        setUnmappedDescriptions(prev => prev.filter(d => d !== descriptionPattern))
+        queryClient.invalidateQueries({ queryKey: queryKeys.categoryMappings })
       } else {
         console.error('Failed to save mapping:', data.error || 'Unknown error')
       }
@@ -110,7 +74,7 @@ export default function MappingsPage() {
     try {
       const response = await fetch(`/api/category-mappings/${id}`, { method: 'DELETE' })
       if (response.ok) {
-        setMappings(mappings.filter(m => m.id !== id))
+        queryClient.invalidateQueries({ queryKey: queryKeys.categoryMappings })
       }
     } catch (error) {
       console.error('Error deleting mapping:', error)
@@ -140,13 +104,8 @@ export default function MappingsPage() {
         if (response.ok) {
           const data = await response.json()
           
-          // If new categories were created, refresh the categories list
           if (data.newCategories && data.newCategories.length > 0) {
-            const categoriesRes = await fetch('/api/categories')
-            const categoriesData = await categoriesRes.json()
-            if (categoriesData.categories) {
-              setCategories(categoriesData.categories)
-            }
+            queryClient.invalidateQueries({ queryKey: queryKeys.categories })
           }
           
           // Create mappings for each identified category
@@ -258,7 +217,7 @@ export default function MappingsPage() {
     return colors[index % colors.length]
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <LoadingState />
     )
