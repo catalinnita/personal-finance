@@ -1,0 +1,2235 @@
+{
+  "patterns": [
+    {
+      "hash": "aca3d8e7bb51241d",
+      "occurrences": 34,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/settings/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/Sidebar.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 110,
+          "endLine": 124
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 217,
+          "endLine": 255
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 305,
+          "endLine": 343
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 342,
+          "endLine": 372
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 346,
+          "endLine": 369
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 256,
+          "endLine": 270
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 283,
+          "endLine": 297
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 402,
+          "endLine": 420
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 440,
+          "endLine": 468
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 495,
+          "endLine": 524
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 213,
+          "endLine": 227
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 240,
+          "endLine": 254
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 350,
+          "endLine": 368
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 388,
+          "endLine": 416
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 443,
+          "endLine": 472
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 286,
+          "endLine": 300
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 338,
+          "endLine": 352
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 360,
+          "endLine": 370
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 438,
+          "endLine": 478
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 481,
+          "endLine": 500
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+          "startLine": 286,
+          "endLine": 303
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+          "startLine": 353,
+          "endLine": 370
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+          "startLine": 389,
+          "endLine": 435
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+          "startLine": 406,
+          "endLine": 432
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/settings/page.tsx",
+          "startLine": 127,
+          "endLine": 137
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 305,
+          "endLine": 319
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 357,
+          "endLine": 371
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 379,
+          "endLine": 389
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 457,
+          "endLine": 497
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 500,
+          "endLine": 519
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+          "startLine": 329,
+          "endLine": 344
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+          "startLine": 384,
+          "endLine": 414
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/Sidebar.tsx",
+          "startLine": 84,
+          "endLine": 115
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/Sidebar.tsx",
+          "startLine": 92,
+          "endLine": 112
+        }
+      ],
+      "fingerprint": "<div className=«string»>{«expression»}</div>",
+      "score": 68
+    },
+    {
+      "hash": "d2e7e316545fee13",
+      "occurrences": 10,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/manage-categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/settings/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 99,
+          "endLine": 101
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 245,
+          "endLine": 247
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 201,
+          "endLine": 203
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 202,
+          "endLine": 204
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 257,
+          "endLine": 259
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/manage-categories/page.tsx",
+          "startLine": 92,
+          "endLine": 94
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+          "startLine": 259,
+          "endLine": 261
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/settings/page.tsx",
+          "startLine": 94,
+          "endLine": 96
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 276,
+          "endLine": 278
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx",
+          "startLine": 128,
+          "endLine": 130
+        }
+      ],
+      "fingerprint": "<div className=«string»><Loader2 className=«string»/></div>",
+      "score": 20
+    },
+    {
+      "hash": "354878399b563cde",
+      "occurrences": 8,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 129,
+          "endLine": 131
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 275,
+          "endLine": 277
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 232,
+          "endLine": 234
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 305,
+          "endLine": 307
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 612,
+          "endLine": 614
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 324,
+          "endLine": 326
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 643,
+          "endLine": 645
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx",
+          "startLine": 165,
+          "endLine": 167
+        }
+      ],
+      "fingerprint": "<div className=«string»><p className=«string»>«text»</p></div>",
+      "score": 16
+    },
+    {
+      "hash": "ebd1d7a1677af3dd",
+      "occurrences": 6,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/manage-categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 402,
+          "endLine": 407
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 487,
+          "endLine": 492
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 435,
+          "endLine": 440
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/manage-categories/page.tsx",
+          "startLine": 154,
+          "endLine": 156
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+          "startLine": 423,
+          "endLine": 428
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+          "startLine": 336,
+          "endLine": 341
+        }
+      ],
+      "fingerprint": "<button onClick=«handler» className=«string»><X className=«string»/></button>",
+      "score": 12
+    },
+    {
+      "hash": "f25640e408e2601e",
+      "occurrences": 5,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 373,
+          "endLine": 394
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 269,
+          "endLine": 331
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 327,
+          "endLine": 369
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 275,
+          "endLine": 317
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx",
+          "startLine": 181,
+          "endLine": 218
+        }
+      ],
+      "fingerprint": "<tbody >{«expression»}</tbody>",
+      "score": 10
+    },
+    {
+      "hash": "36cd3a4feca41f5e",
+      "occurrences": 4,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 107,
+          "endLine": 126
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 253,
+          "endLine": 272
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 210,
+          "endLine": 229
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx",
+          "startLine": 136,
+          "endLine": 162
+        }
+      ],
+      "fingerprint": "<div className=«string»><h1 className=«string»>«text»</h1>{«expression»}</div>",
+      "score": 8
+    },
+    {
+      "hash": "319554db513a003e",
+      "occurrences": 3,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 258,
+          "endLine": 296
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 337,
+          "endLine": 374
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+          "startLine": 361,
+          "endLine": 381
+        }
+      ],
+      "fingerprint": "<div className=«string»><h2 className=«string»>«text»</h2>{«expression»}</div>",
+      "score": 6
+    },
+    {
+      "hash": "3a9617f04e8f7b27",
+      "occurrences": 3,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/manage-categories/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 317,
+          "endLine": 340
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 355,
+          "endLine": 378
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/manage-categories/page.tsx",
+          "startLine": 132,
+          "endLine": 217
+        }
+      ],
+      "fingerprint": "<div className=«string»>{«expression»}{«expression»}</div>",
+      "score": 6
+    },
+    {
+      "hash": "fd9c5e02fef4e3dc",
+      "occurrences": 3,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 279,
+          "endLine": 284
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+          "startLine": 268,
+          "endLine": 273
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 298,
+          "endLine": 303
+        }
+      ],
+      "fingerprint": "<div ><h1 className=«string»>«text»</h1><p className=«string»>«text»</p></div>",
+      "score": 6
+    },
+    {
+      "hash": "b4f950997475f291",
+      "occurrences": 3,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/manage-categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/TransactionModal.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/manage-categories/page.tsx",
+          "startLine": 114,
+          "endLine": 121
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/manage-categories/page.tsx",
+          "startLine": 143,
+          "endLine": 150
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/TransactionModal.tsx",
+          "startLine": 96,
+          "endLine": 103
+        }
+      ],
+      "fingerprint": "<select value=«expression» onChange=«handler» className=«string»><option value=«string»>«text»</option><option value=«string»>«text»</option></select>",
+      "score": 6
+    },
+    {
+      "hash": "c9a0ac1ea0924e5d",
+      "occurrences": 3,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/settings/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/mappings/page.tsx",
+          "startLine": 325,
+          "endLine": 341
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/settings/page.tsx",
+          "startLine": 162,
+          "endLine": 174
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/settings/page.tsx",
+          "startLine": 200,
+          "endLine": 212
+        }
+      ],
+      "fingerprint": "<button onClick=«expression» disabled=«expression» className=«string»>{«expression»}</button>",
+      "score": 6
+    },
+    {
+      "hash": "5c83aaecd47479b4",
+      "occurrences": 3,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/TransactionModal.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx",
+          "startLine": 141,
+          "endLine": 149
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/transactions/page.tsx",
+          "startLine": 151,
+          "endLine": 159
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/TransactionModal.tsx",
+          "startLine": 108,
+          "endLine": 116
+        }
+      ],
+      "fingerprint": "<select value=«expression» onChange=«handler» className=«string»>{«expression»}</select>",
+      "score": 6
+    },
+    {
+      "hash": "fa35fa6dd1f8b69d",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 361,
+          "endLine": 397
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 257,
+          "endLine": 334
+        }
+      ],
+      "fingerprint": "<div className=«string»><h2 className=«string»>«text»</h2><div className=«string»><table className=«string»><thead ><tr className=«string»><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th></tr></thead><tbody >{«expression»}</tbody></table></div></div>",
+      "score": 4
+    },
+    {
+      "hash": "b4fca8b11a9daf53",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 363,
+          "endLine": 396
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 259,
+          "endLine": 333
+        }
+      ],
+      "fingerprint": "<div className=«string»><table className=«string»><thead ><tr className=«string»><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th></tr></thead><tbody >{«expression»}</tbody></table></div>",
+      "score": 4
+    },
+    {
+      "hash": "230a56ff5ae553f3",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 364,
+          "endLine": 395
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 260,
+          "endLine": 332
+        }
+      ],
+      "fingerprint": "<table className=«string»><thead ><tr className=«string»><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th></tr></thead><tbody >{«expression»}</tbody></table>",
+      "score": 4
+    },
+    {
+      "hash": "06d8d7bf36bd8094",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 365,
+          "endLine": 372
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 261,
+          "endLine": 268
+        }
+      ],
+      "fingerprint": "<thead ><tr className=«string»><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th></tr></thead>",
+      "score": 4
+    },
+    {
+      "hash": "c7daab0f81f8cb00",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 366,
+          "endLine": 371
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 262,
+          "endLine": 267
+        }
+      ],
+      "fingerprint": "<tr className=«string»><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th><th className=«string»>«text»</th></tr>",
+      "score": 4
+    },
+    {
+      "hash": "5e52e8810f08bbc5",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 203,
+          "endLine": 205
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budgets/page.tsx",
+          "startLine": 246,
+          "endLine": 248
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string»></div></div>",
+      "score": 4
+    },
+    {
+      "hash": "f2db21acfbbb517a",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 252,
+          "endLine": 548
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 209,
+          "endLine": 496
+        }
+      ],
+      "fingerprint": "<div ><div className=«string»><h1 className=«string»>«text»</h1>{«expression»}</div>{«expression»}{«empty»}{«expression»}</div>",
+      "score": 4
+    },
+    {
+      "hash": "63b7b891ff94e5c1",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 279,
+          "endLine": 473
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 236,
+          "endLine": 421
+        }
+      ],
+      "fingerprint": "<div className=«string»>{«empty»}<div className=«string»><p className=«string»>«text»</p><div className=«string»>{«expression»}</div></div>{«empty»}{«expression»}{«empty»}{«expression»}</div>",
+      "score": 4
+    },
+    {
+      "hash": "cdf77ed164695cc4",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 281,
+          "endLine": 298
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 238,
+          "endLine": 255
+        }
+      ],
+      "fingerprint": "<div className=«string»><p className=«string»>«text»</p><div className=«string»>{«expression»}</div></div>",
+      "score": 4
+    },
+    {
+      "hash": "67ffca00d8481d4f",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 313,
+          "endLine": 395
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 261,
+          "endLine": 343
+        }
+      ],
+      "fingerprint": "<div className=«string»><table className=«string»><thead ><tr className=«string»><th className=«string»>«text»</th><th className=«string»>«text»</th>{«expression»}<th className=«string»>«text»</th></tr></thead><tbody >{«expression»}</tbody><tfoot ><tr className=«string»><td className=«string»>«text»</td><td className=«string»>{«expression»}</td>{«expression»}<td className=«string»>{«expression»}</td></tr></tfoot></table></div>",
+      "score": 4
+    },
+    {
+      "hash": "05600722b137d137",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 314,
+          "endLine": 394
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 262,
+          "endLine": 342
+        }
+      ],
+      "fingerprint": "<table className=«string»><thead ><tr className=«string»><th className=«string»>«text»</th><th className=«string»>«text»</th>{«expression»}<th className=«string»>«text»</th></tr></thead><tbody >{«expression»}</tbody><tfoot ><tr className=«string»><td className=«string»>«text»</td><td className=«string»>{«expression»}</td>{«expression»}<td className=«string»>{«expression»}</td></tr></tfoot></table>",
+      "score": 4
+    },
+    {
+      "hash": "30aa318256fd507a",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 315,
+          "endLine": 326
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 263,
+          "endLine": 274
+        }
+      ],
+      "fingerprint": "<thead ><tr className=«string»><th className=«string»>«text»</th><th className=«string»>«text»</th>{«expression»}<th className=«string»>«text»</th></tr></thead>",
+      "score": 4
+    },
+    {
+      "hash": "b5c8a24348163761",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 316,
+          "endLine": 325
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 264,
+          "endLine": 273
+        }
+      ],
+      "fingerprint": "<tr className=«string»><th className=«string»>«text»</th><th className=«string»>«text»</th>{«expression»}<th className=«string»>«text»</th></tr>",
+      "score": 4
+    },
+    {
+      "hash": "27ccaff822e32beb",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 336,
+          "endLine": 365
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 284,
+          "endLine": 313
+        }
+      ],
+      "fingerprint": "<tr key=«expression» className=«string»><td className=«string»><span className=«string»>{«expression»}{«expression»}</span></td><td className=«string» title=«expression»>{«expression»}</td>{«expression»}<td className=«string»>{«expression»}</td></tr>",
+      "score": 4
+    },
+    {
+      "hash": "bc179285c65fff30",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 337,
+          "endLine": 344
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 285,
+          "endLine": 292
+        }
+      ],
+      "fingerprint": "<td className=«string»><span className=«string»>{«expression»}{«expression»}</span></td>",
+      "score": 4
+    },
+    {
+      "hash": "43362b72e428224e",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 338,
+          "endLine": 343
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 286,
+          "endLine": 291
+        }
+      ],
+      "fingerprint": "<span className=«string»>{«expression»}{«expression»}</span>",
+      "score": 4
+    },
+    {
+      "hash": "f0018f94d633e8ca",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 349,
+          "endLine": 360
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 297,
+          "endLine": 308
+        }
+      ],
+      "fingerprint": "<td key=«expression» className=«string»>{«expression»}</td>",
+      "score": 4
+    },
+    {
+      "hash": "978ba4564828b252",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 370,
+          "endLine": 393
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 318,
+          "endLine": 341
+        }
+      ],
+      "fingerprint": "<tfoot ><tr className=«string»><td className=«string»>«text»</td><td className=«string»>{«expression»}</td>{«expression»}<td className=«string»>{«expression»}</td></tr></tfoot>",
+      "score": 4
+    },
+    {
+      "hash": "656837e2d04a7551",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 371,
+          "endLine": 392
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 319,
+          "endLine": 340
+        }
+      ],
+      "fingerprint": "<tr className=«string»><td className=«string»>«text»</td><td className=«string»>{«expression»}</td>{«expression»}<td className=«string»>{«expression»}</td></tr>",
+      "score": 4
+    },
+    {
+      "hash": "cc59f5ab78edea74",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 401,
+          "endLine": 471
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 349,
+          "endLine": 419
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string»>{«expression»}</div>{«empty»}{«expression»}</div>",
+      "score": 4
+    },
+    {
+      "hash": "2be3543973d1c718",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 406,
+          "endLine": 417
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 354,
+          "endLine": 365
+        }
+      ],
+      "fingerprint": "<button key=«expression» onClick=«handler» className=«expression»><span >{«expression»}</span><span className=«string»>{«expression»}</span></button>",
+      "score": 4
+    },
+    {
+      "hash": "b7d7bc81417d9ad5",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 424,
+          "endLine": 469
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 372,
+          "endLine": 417
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string»><h2 className=«string»><PieChart className=«string»/>{«expression»}</h2><span className=«string»>«text»<span className=«string»>{«expression»}</span></span></div>{«empty»}<div className=«string»>{«expression»}</div></div>",
+      "score": 4
+    },
+    {
+      "hash": "dbe7f8b1c632dde4",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 425,
+          "endLine": 437
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 373,
+          "endLine": 385
+        }
+      ],
+      "fingerprint": "<div className=«string»><h2 className=«string»><PieChart className=«string»/>{«expression»}</h2><span className=«string»>«text»<span className=«string»>{«expression»}</span></span></div>",
+      "score": 4
+    },
+    {
+      "hash": "ed37161a9cde248e",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 426,
+          "endLine": 429
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 374,
+          "endLine": 377
+        }
+      ],
+      "fingerprint": "<h2 className=«string»><PieChart className=«string»/>{«expression»}</h2>",
+      "score": 4
+    },
+    {
+      "hash": "d7f121362bea880c",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 430,
+          "endLine": 436
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 378,
+          "endLine": 384
+        }
+      ],
+      "fingerprint": "<span className=«string»>«text»<span className=«string»>{«expression»}</span></span>",
+      "score": 4
+    },
+    {
+      "hash": "c2ca8bbf0cc8fbe4",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 452,
+          "endLine": 465
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 400,
+          "endLine": 413
+        }
+      ],
+      "fingerprint": "<div key=«expression»><div className=«string»><span className=«string»>{«expression»}</span><span className=«string»>{«expression»}«text»{«expression»}«text»</span></div><div className=«string»><div className=«expression» style=«expression»/></div></div>",
+      "score": 4
+    },
+    {
+      "hash": "45f9641604b8e638",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 453,
+          "endLine": 458
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 401,
+          "endLine": 406
+        }
+      ],
+      "fingerprint": "<div className=«string»><span className=«string»>{«expression»}</span><span className=«string»>{«expression»}«text»{«expression»}«text»</span></div>",
+      "score": 4
+    },
+    {
+      "hash": "c5949b2a86a96ea2",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 459,
+          "endLine": 464
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 407,
+          "endLine": 412
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«expression» style=«expression»/></div>",
+      "score": 4
+    },
+    {
+      "hash": "6cc16d5b4b0fbcd1",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 478,
+          "endLine": 546
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 426,
+          "endLine": 494
+        }
+      ],
+      "fingerprint": "<div className=«string» onClick=«handler»><div className=«string» onClick=«handler»><div className=«string»><h3 className=«string»>{«expression»}«text»{«expression»}</h3><button onClick=«handler» className=«string»><X className=«string»/></button></div><div className=«string»><div className=«string»>{«expression»}</div></div><div className=«string»><div className=«string»><span className=«string»>{«expression»}«text»</span><span className=«string»>«text»{«expression»}</span></div></div></div></div>",
+      "score": 4
+    },
+    {
+      "hash": "c8fcc19f754b77ca",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 479,
+          "endLine": 545
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 427,
+          "endLine": 493
+        }
+      ],
+      "fingerprint": "<div className=«string» onClick=«handler»><div className=«string»><h3 className=«string»>{«expression»}«text»{«expression»}</h3><button onClick=«handler» className=«string»><X className=«string»/></button></div><div className=«string»><div className=«string»>{«expression»}</div></div><div className=«string»><div className=«string»><span className=«string»>{«expression»}«text»</span><span className=«string»>«text»{«expression»}</span></div></div></div>",
+      "score": 4
+    },
+    {
+      "hash": "213e3d6494ad5e0e",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 483,
+          "endLine": 493
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 431,
+          "endLine": 441
+        }
+      ],
+      "fingerprint": "<div className=«string»><h3 className=«string»>{«expression»}«text»{«expression»}</h3><button onClick=«handler» className=«string»><X className=«string»/></button></div>",
+      "score": 4
+    },
+    {
+      "hash": "fe15254315114d93",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 494,
+          "endLine": 525
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 442,
+          "endLine": 473
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string»>{«expression»}</div></div>",
+      "score": 4
+    },
+    {
+      "hash": "d86b616e5a89f919",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 509,
+          "endLine": 522
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 457,
+          "endLine": 470
+        }
+      ],
+      "fingerprint": "<div key=«expression» className=«string»><div className=«string»><span className=«string»>{«expression»}</span><span className=«string»>{«expression»}</span></div><span className=«string»>{«expression»}</span></div>",
+      "score": 4
+    },
+    {
+      "hash": "461decae937deb0f",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 513,
+          "endLine": 518
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 461,
+          "endLine": 466
+        }
+      ],
+      "fingerprint": "<div className=«string»><span className=«string»>{«expression»}</span><span className=«string»>{«expression»}</span></div>",
+      "score": 4
+    },
+    {
+      "hash": "44c45af9d1bca1ec",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 526,
+          "endLine": 544
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 474,
+          "endLine": 492
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string»><span className=«string»>{«expression»}«text»</span><span className=«string»>«text»{«expression»}</span></div></div>",
+      "score": 4
+    },
+    {
+      "hash": "83b74faaa40ff5a6",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/categories/page.tsx",
+          "startLine": 527,
+          "endLine": 543
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income/page.tsx",
+          "startLine": 475,
+          "endLine": 491
+        }
+      ],
+      "fingerprint": "<div className=«string»><span className=«string»>{«expression»}«text»</span><span className=«string»>«text»{«expression»}</span></div>",
+      "score": 4
+    },
+    {
+      "hash": "1c750ffaca618fed",
+      "occurrences": 4,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 252,
+          "endLine": 268
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 323,
+          "endLine": 339
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 379,
+          "endLine": 395
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 435,
+          "endLine": 451
+        }
+      ],
+      "fingerprint": "<div className=«string»><button onClick=«expression» disabled=«expression» className=«string»>{«expression»}«text»</button><button onClick=«handler» disabled=«expression» className=«string»>«text»</button></div>",
+      "score": 4
+    },
+    {
+      "hash": "419e8b523ff89de0",
+      "occurrences": 4,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 253,
+          "endLine": 260
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 324,
+          "endLine": 331
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 380,
+          "endLine": 387
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 436,
+          "endLine": 443
+        }
+      ],
+      "fingerprint": "<button onClick=«expression» disabled=«expression» className=«string»>{«expression»}«text»</button>",
+      "score": 4
+    },
+    {
+      "hash": "fd524250131247ac",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 264,
+          "endLine": 618
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 283,
+          "endLine": 649
+        }
+      ],
+      "fingerprint": "<div className=«string»>{«empty»}{«expression»}<div className=«string»><div ><h1 className=«string»>«text»</h1><p className=«string»>«text»</p></div>{«expression»}</div>{«expression»}</div>",
+      "score": 4
+    },
+    {
+      "hash": "23d94ed9c971bcf6",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 278,
+          "endLine": 302
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 297,
+          "endLine": 321
+        }
+      ],
+      "fingerprint": "<div className=«string»><div ><h1 className=«string»>«text»</h1><p className=«string»>«text»</p></div>{«expression»}</div>",
+      "score": 4
+    },
+    {
+      "hash": "6e770e503dd008e6",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 311,
+          "endLine": 353
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 330,
+          "endLine": 372
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string»><p className=«string»>«text»</p><div className=«string»><span className=«string»>«text»</span><button onClick=«handler» className=«expression»>«text»</button><button onClick=«handler» className=«expression»>«text»</button></div></div><div className=«string»>{«expression»}</div></div>",
+      "score": 4
+    },
+    {
+      "hash": "648c4e85217a6f8c",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 312,
+          "endLine": 337
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 331,
+          "endLine": 356
+        }
+      ],
+      "fingerprint": "<div className=«string»><p className=«string»>«text»</p><div className=«string»><span className=«string»>«text»</span><button onClick=«handler» className=«expression»>«text»</button><button onClick=«handler» className=«expression»>«text»</button></div></div>",
+      "score": 4
+    },
+    {
+      "hash": "c43634039ea6990b",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 314,
+          "endLine": 336
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 333,
+          "endLine": 355
+        }
+      ],
+      "fingerprint": "<div className=«string»><span className=«string»>«text»</span><button onClick=«handler» className=«expression»>«text»</button><button onClick=«handler» className=«expression»>«text»</button></div>",
+      "score": 4
+    },
+    {
+      "hash": "1f84a531c76c3122",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 357,
+          "endLine": 505
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 376,
+          "endLine": 524
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string»><h3 className=«string»>«text»</h3><div className=«string»>{«expression»}</div></div><div className=«string» style=«expression»>{«empty»}<div className=«string»><svg width=«string» height=«string» viewBox=«string» preserveAspectRatio=«string»>{«empty»}{«expression»}{«empty»}{«expression»}</svg>{«empty»}<div className=«string»>{«expression»}</div></div>{«empty»}<div className=«string»>{«expression»}</div></div><p className=«string»>«text»{«expression»}«text»{«expression»}</p></div>",
+      "score": 4
+    },
+    {
+      "hash": "063e1c3981cd6f61",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 358,
+          "endLine": 371
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 377,
+          "endLine": 390
+        }
+      ],
+      "fingerprint": "<div className=«string»><h3 className=«string»>«text»</h3><div className=«string»>{«expression»}</div></div>",
+      "score": 4
+    },
+    {
+      "hash": "2c6e7ac6ef746085",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 364,
+          "endLine": 367
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 383,
+          "endLine": 386
+        }
+      ],
+      "fingerprint": "<div key=«expression» className=«string»><div className=«expression»/><span className=«string»>{«expression»}</span></div>",
+      "score": 4
+    },
+    {
+      "hash": "bb2c68b5290267b5",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 372,
+          "endLine": 501
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 391,
+          "endLine": 520
+        }
+      ],
+      "fingerprint": "<div className=«string» style=«expression»>{«empty»}<div className=«string»><svg width=«string» height=«string» viewBox=«string» preserveAspectRatio=«string»>{«empty»}{«expression»}{«empty»}{«expression»}</svg>{«empty»}<div className=«string»>{«expression»}</div></div>{«empty»}<div className=«string»>{«expression»}</div></div>",
+      "score": 4
+    },
+    {
+      "hash": "4304b5c3bfca1f84",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 374,
+          "endLine": 479
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 393,
+          "endLine": 498
+        }
+      ],
+      "fingerprint": "<div className=«string»><svg width=«string» height=«string» viewBox=«string» preserveAspectRatio=«string»>{«empty»}{«expression»}{«empty»}{«expression»}</svg>{«empty»}<div className=«string»>{«expression»}</div></div>",
+      "score": 4
+    },
+    {
+      "hash": "6cf8ddc429754edb",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 375,
+          "endLine": 436
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 394,
+          "endLine": 455
+        }
+      ],
+      "fingerprint": "<svg width=«string» height=«string» viewBox=«string» preserveAspectRatio=«string»>{«empty»}{«expression»}{«empty»}{«expression»}</svg>",
+      "score": 4
+    },
+    {
+      "hash": "db533197a2c48aa2",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 445,
+          "endLine": 475
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 464,
+          "endLine": 494
+        }
+      ],
+      "fingerprint": "<div key=«expression» className=«string» onMouseEnter=«handler» onMouseLeave=«handler»/>",
+      "score": 4
+    },
+    {
+      "hash": "7590c708e3fbc04f",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 454,
+          "endLine": 470
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 473,
+          "endLine": 489
+        }
+      ],
+      "fingerprint": "<div ><div className=«string»>{«expression»}</div>{«expression»}<div className=«string»>«text»{«expression»}</div><div className=«string»>«text»{«expression»}</div></div>",
+      "score": 4
+    },
+    {
+      "hash": "3406592e6e58d695",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 460,
+          "endLine": 463
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 479,
+          "endLine": 482
+        }
+      ],
+      "fingerprint": "<div key=«expression» className=«string»><div className=«string» style=«expression»/><span >{«expression»}«text»{«expression»}</span></div>",
+      "score": 4
+    },
+    {
+      "hash": "603bc332e674089b",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 483,
+          "endLine": 498
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 502,
+          "endLine": 517
+        }
+      ],
+      "fingerprint": "<div key=«expression» className=«string»><span className=«string» style=«expression»>{«expression»}</span></div>",
+      "score": 4
+    },
+    {
+      "hash": "45e8177eebe0e806",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 509,
+          "endLine": 609
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 528,
+          "endLine": 640
+        }
+      ],
+      "fingerprint": "<div className=«expression»>{«expression»}</div>",
+      "score": 4
+    },
+    {
+      "hash": "46a3dfcb338a6d8b",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 518,
+          "endLine": 606
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 537,
+          "endLine": 637
+        }
+      ],
+      "fingerprint": "<div key=«expression» className=«string»><div className=«string»><div className=«string»><div className=«expression»/><h3 className=«string»>{«expression»}</h3></div>{«expression»}</div><p className=«string»>{«expression»}<span className=«string»>«text»{«expression»}</span></p>{«empty»}{«expression»}</div>",
+      "score": 4
+    },
+    {
+      "hash": "26dd667fbf2db391",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 522,
+          "endLine": 539
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 541,
+          "endLine": 558
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string»><div className=«expression»/><h3 className=«string»>{«expression»}</h3></div>{«expression»}</div>",
+      "score": 4
+    },
+    {
+      "hash": "0c05374397c851a8",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 523,
+          "endLine": 526
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 542,
+          "endLine": 545
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«expression»/><h3 className=«string»>{«expression»}</h3></div>",
+      "score": 4
+    },
+    {
+      "hash": "8f15eb0292e76333",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 528,
+          "endLine": 537
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 547,
+          "endLine": 556
+        }
+      ],
+      "fingerprint": "<div className=«expression»>{«expression»}<span >{«expression»}{«expression»}«text»</span></div>",
+      "score": 4
+    },
+    {
+      "hash": "e214984f1a0270c1",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 541,
+          "endLine": 546
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 560,
+          "endLine": 565
+        }
+      ],
+      "fingerprint": "<p className=«string»>{«expression»}<span className=«string»>«text»{«expression»}</span></p>",
+      "score": 4
+    },
+    {
+      "hash": "75792ba54235466f",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 554,
+          "endLine": 603
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 583,
+          "endLine": 633
+        }
+      ],
+      "fingerprint": "<div className=«string» style=«expression»>{«expression»}</div>",
+      "score": 4
+    },
+    {
+      "hash": "35516462e5f1d758",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 562,
+          "endLine": 600
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 591,
+          "endLine": 630
+        }
+      ],
+      "fingerprint": "<div key=«expression» className=«string» onMouseEnter=«handler» onMouseLeave=«handler»><div className=«string» style=«expression»>{«empty»}<div className=«string» style=«expression»><div className=«string»/></div>{«empty»}<div className=«expression» style=«expression»/></div><div className=«string»><span className=«string» style=«expression»>{«expression»}</span></div></div>",
+      "score": 4
+    },
+    {
+      "hash": "0e263452b226ecf7",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 581,
+          "endLine": 596
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 611,
+          "endLine": 626
+        }
+      ],
+      "fingerprint": "<div className=«string» style=«expression»>{«empty»}<div className=«string» style=«expression»><div className=«string»/></div>{«empty»}<div className=«expression» style=«expression»/></div>",
+      "score": 4
+    },
+    {
+      "hash": "95996737096b7abc",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 583,
+          "endLine": 588
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 613,
+          "endLine": 618
+        }
+      ],
+      "fingerprint": "<div className=«string» style=«expression»><div className=«string»/></div>",
+      "score": 4
+    },
+    {
+      "hash": "0ecac4f7e47e5c96",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/income-timeline/page.tsx",
+          "startLine": 597,
+          "endLine": 599
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/timeline/page.tsx",
+          "startLine": 627,
+          "endLine": 629
+        }
+      ],
+      "fingerprint": "<div className=«string»><span className=«string» style=«expression»>{«expression»}</span></div>",
+      "score": 4
+    },
+    {
+      "hash": "8a1893a3f9127dac",
+      "occurrences": 3,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 243,
+          "endLine": 248
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 370,
+          "endLine": 375
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 426,
+          "endLine": 431
+        }
+      ],
+      "fingerprint": "<div className=«string»><AlertTriangle className=«string»/><p ><strong >«text»</strong>«text»</p></div>",
+      "score": 3
+    },
+    {
+      "hash": "3db7384d6c8e44ed",
+      "occurrences": 3,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 341,
+          "endLine": 348
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 397,
+          "endLine": 404
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/cleanup/page.tsx",
+          "startLine": 453,
+          "endLine": 460
+        }
+      ],
+      "fingerprint": "<button onClick=«handler» disabled=«expression» className=«string»><Trash2 className=«string»/>«text»</button>",
+      "score": 3
+    },
+    {
+      "hash": "8ea251899129813e",
+      "occurrences": 3,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+          "startLine": 421,
+          "endLine": 424
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+          "startLine": 425,
+          "endLine": 428
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+          "startLine": 429,
+          "endLine": 432
+        }
+      ],
+      "fingerprint": "<div ><p className=«string»>{«expression»}</p><p className=«string»>«text»</p></div>",
+      "score": 3
+    },
+    {
+      "hash": "3bfcc2f6b825a4c8",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 244,
+          "endLine": 247
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/balance/page.tsx",
+          "startLine": 248,
+          "endLine": 251
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string»/><span className=«string»>«text»</span></div>",
+      "score": 2
+    },
+    {
+      "hash": "b474d1d95946bcab",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 228,
+          "endLine": 234
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 347,
+          "endLine": 353
+        }
+      ],
+      "fingerprint": "<div className=«string»><div className=«string» style=«expression»/><h3 className=«string»>{«expression»}</h3></div>",
+      "score": 2
+    },
+    {
+      "hash": "decf5c9a5a0f8d3e",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 319,
+          "endLine": 335
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 357,
+          "endLine": 373
+        }
+      ],
+      "fingerprint": "<div key=«expression» className=«string»><span className=«string»>{«expression»}</span><select value=«expression» onChange=«handler» disabled=«expression» className=«string»><option value=«string»>«text»</option><option value=«string»>«text»</option><option value=«string»>«text»</option><option value=«string»>«text»</option></select></div>",
+      "score": 2
+    },
+    {
+      "hash": "157733f059427c8b",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 324,
+          "endLine": 334
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/budget-rule/page.tsx",
+          "startLine": 362,
+          "endLine": 372
+        }
+      ],
+      "fingerprint": "<select value=«expression» onChange=«handler» disabled=«expression» className=«string»><option value=«string»>«text»</option><option value=«string»>«text»</option><option value=«string»>«text»</option><option value=«string»>«text»</option></select>",
+      "score": 2
+    },
+    {
+      "hash": "8023d10a6486b7e2",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+          "startLine": 246,
+          "endLine": 246
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/app/(dashboard)/upload/page.tsx",
+          "startLine": 248,
+          "endLine": 248
+        }
+      ],
+      "fingerprint": "<div className=«string»><Check className=«string»/></div>",
+      "score": 2
+    },
+    {
+      "hash": "51fc948df5c3c62e",
+      "occurrences": 2,
+      "files": [
+        "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/TransactionModal.tsx"
+      ],
+      "locations": [
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/TransactionModal.tsx",
+          "startLine": 84,
+          "endLine": 92
+        },
+        {
+          "file": "/Users/catalinnita/Dev/ai/agents/apps/personal-finance/src/components/TransactionModal.tsx",
+          "startLine": 130,
+          "endLine": 138
+        }
+      ],
+      "fingerprint": "<div ><label className=«string»>«text»</label><input type=«string» value=«expression» onChange=«handler» className=«string»/></div>",
+      "score": 2
+    }
+  ]
+}
